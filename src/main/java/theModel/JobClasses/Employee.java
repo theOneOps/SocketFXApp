@@ -7,6 +7,7 @@ import java.util.UUID;
 public class Employee implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     private String EmpName;
     private String EmpPrename;
     private WorkHour EmpWorkHour;
@@ -14,7 +15,7 @@ public class Employee implements Serializable {
     public Employee()
     {}
 
-    public Employee(String name, String prename, LocalTime hourStart, LocalTime hourEnd)
+    public Employee(String name, String prename, String hourStart, String hourEnd)
     {
         this.EmpName = name;
         this.EmpPrename = prename;
@@ -27,6 +28,8 @@ public class Employee implements Serializable {
         this.EmpPrename = prename;
         EmpWorkHour = workHour;
     }
+
+
 
 
 

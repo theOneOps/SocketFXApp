@@ -7,15 +7,16 @@ import java.util.UUID;
 public class WorkHour implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     private String empID;
     private LocalTime HourStart;
     private LocalTime HourEnd;
 
-    public WorkHour(String id, LocalTime start, LocalTime end)
+    public WorkHour(String id, String start, String end)
     {
         this.empID = id;
-        this.HourStart = start;
-        this.HourEnd = end;
+        this.HourStart = LocalTime.parse(start);
+        this.HourEnd = LocalTime.parse(end);
     }
 
     public String getEmpID() {

@@ -46,9 +46,7 @@ public class LabeledTextFieldHBox extends HBox {
         this.LTFLabel = LTFLabel;
     }
 
-    public TextField getLTFTextField() {
-        return LTFTextField;
-    }
+    public String getLTFTextFieldValue(){return LTFTextField.getText();}
 
     public void setLTFTextField(TextField LTFTextField) {
         this.LTFTextField = LTFTextField;

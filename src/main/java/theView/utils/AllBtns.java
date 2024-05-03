@@ -34,4 +34,12 @@ public class AllBtns extends HBox {
     {
         btn2.setOnAction(e);
     }
+
+    public Button getBtn1() {
+        return btn1;
+    }
+
+    public Button getBtn2() {
+        return btn2;
+    }
 }

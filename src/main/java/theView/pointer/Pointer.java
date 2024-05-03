@@ -3,6 +3,7 @@ package theView.pointer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -31,8 +32,10 @@ public class Pointer extends VBox {
         EmployeesName = new LabeledComboVBox("Employees", new String[]{"Employee1", "Employee2", "Employee3"});
 
         HBox ipPort = new HBox();
-        port = new LabeledTextFieldHBox("Port : ", "1234", 50);
-        ip = new LabeledTextFieldHBox("IP : ", "192.168.2.1");
+        port = new LabeledTextFieldHBox("Port : ", "", 100);
+        port.setPromptText("Enter Port Number");
+        ip = new LabeledTextFieldHBox("IP : ", "", 100);
+        ip.setPromptText("Enter IP Address");
         Region spacerOne = new Region();
         HBox.setHgrow(spacerOne, Priority.ALWAYS);
         ipPort.getChildren().addAll(ip, spacerOne, port);
@@ -81,5 +84,15 @@ public class Pointer extends VBox {
 
     public LabeledTextFieldHBox getIp() {
         return ip;
+    }
+
+    public static void PrintAlert(String title, String content)
+    {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText("important information !");
+        alert.setTitle(title);
+        alert.setContentText(content);
+
+        alert.show();
     }
 }
