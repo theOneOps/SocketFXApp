@@ -4,14 +4,23 @@ module com.example.project {
 
     requires org.controlsfx.controls;
 
-    //opens theView to javafx.fxml;
-    //exports theView;
+    opens theView.manage to javafx.fxml;
+    opens theView.pointer to javafx.fxml;
+    opens theView.utils to javafx.fxml;
 
-    // opens theModel to javafx.fxml;
-    // exports theModel;
+    exports theView.manage;
+    exports theView.pointer;
+    exports theView.utils;
 
-    // opens theController to javafx.fxml;
-    // exports theController;
+
+    opens theModel to javafx.fxml;
+    exports theModel;
+    opens theModel.JobClasses to javafx.base;
+    exports theModel.JobClasses;
+
+
+    opens theController to javafx.fxml;
+    exports theController;
 
     opens StartPoint to javafx.fxml;
     exports StartPoint;

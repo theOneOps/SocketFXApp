@@ -48,6 +48,8 @@ public class LabeledTextFieldHBox extends HBox {
 
     public String getLTFTextFieldValue(){return LTFTextField.getText();}
 
+    public void setLTFTextFieldValue(String txt){ LTFTextField.setText(txt);}
+
     public void setLTFTextField(TextField LTFTextField) {
         this.LTFTextField = LTFTextField;
     }

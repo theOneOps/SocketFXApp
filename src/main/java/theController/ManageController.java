@@ -1,83 +1,128 @@
 package theController;
 
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+
 import javafx.stage.Stage;
 import theModel.DataSerialize;
-import Sockets.GeneralSocket;
+import theView.manage.AppManagement;
 import theView.manage.AppWindowConnect;
+import theView.manage.WindowShowEnt;
+import theView.pointer.Pointer;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ManageController {
-    private AppWindowConnect manageApp;
+    private AppManagement manageApp;
     private DataSerialize dataSerialize;
-    private GeneralSocket gnlSocket;
 
-    public ManageController(AppWindowConnect appWindow, DataSerialize d, Stage stage) throws IOException,
-            ClassNotFoundException, InterruptedException {
-        this.manageApp = appWindow;
+    public ManageController(AppManagement Appmanagement, DataSerialize d, Stage stage) throws IOException,
+            ClassNotFoundException {
+        this.manageApp = Appmanagement;
         this.dataSerialize = d;
         dataSerialize.loadData();
 
-        // we load the name of enterprise in the combobox
-        ArrayList<String> allEEntNames = new ArrayList<String>();
-        allEEntNames.add("choose your enterprise");
-        // we add all enterprises here
-        allEEntNames.addAll(d.getAllEnterprises().keySet());
+        reloadEnterpriseCombox();
 
-        // we clear the combobox
-        manageApp.getEnterpriseName().clearLCBComboBox();
-        //then we fill it with the new array
-        manageApp.getEnterpriseName().setLCBComboBox(allEEntNames.toArray(new String[0]));
+        manageApp.getAppWindowConnect().getCreateBtn().setOnAction(e->{
+            manageApp.getWindowCreateEnt().createEnterprise();
+        });
 
+        // button connection
+        btnConnectionClicked(stage);
 
-        manageApp.getBtnConnexion().setOnAction(e -> {
+        // Connect Window btn set Action
+        quitConnectWindowClosedEvent(stage);
+
+        btnCreateEntEvent();
+    }
+
+    public void btnConnectionClicked(Stage stage)
+    {
+        manageApp.getAppWindowConnect().getBtnConnexion().setOnAction(e -> {
             //d.getAllEnterprises().containsKey(manageApp.getEnterpriseName().getSelectedValue())
-            String ipValue = manageApp.getIp().getLTFTextFieldValue();
-            String portValue = manageApp.getPort().getLTFTextFieldValue();
-            String enterpriseValue = manageApp.getEnterpriseName().getSelectedValue();
-            // we check if the ip, port given in paramters are valid
-            if (!ipValue.isEmpty() &&
-                    !portValue.isEmpty())
-            {
-                gnlSocket = new GeneralSocket(ipValue, portValue); // "192.168.0.5" // "61500"
-                gnlSocket.startServer();
-                try {
-                    gnlSocket.startClient();
-                    AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),
-                            String.format("connection at %s %s successful !", ipValue, portValue));
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-            else
-            {
+            String enterpriseValue = manageApp.getAppWindowConnect().getEnterpriseName().getSelectedValue();
+            String PasswordValue = manageApp.getAppWindowConnect().getPassword().getLTFTextFieldValue();
+            // we check if the ip, port given in parameters are valid
+            if (!PasswordValue.isEmpty() && PasswordValue.equals(dataSerialize.getAllEnterprises().get(enterpriseValue)
+                    .getEntpasswd()) &&
+                    !enterpriseValue.equals("choose your  enterprise")) {
+                // print the table Vie of the enterprise
+                WindowShowEnt.showEnterpriseContent(dataSerialize,
+                        dataSerialize.getAllEnterprises().get(enterpriseValue));
+                stage.close();
+                AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),
+                        "Connection succeeded");
+            } else {
                 AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),
                         "Try again with other values");
             }
         });
+    }
 
-        manageApp.getQuitBtn().setOnAction(e -> {
+
+    public void quitConnectWindowClosedEvent(Stage stage)
+    {
+        manageApp.getAppWindowConnect().getQuitBtn().setOnAction(e -> {
             System.out.println("Quit button pressed");
-            if (gnlSocket == null)
-            {
-                stage.close();
+            try {
+                dataSerialize.saveData();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
-            else {
-                gnlSocket.getClientSocket().clientSendMessage("bye");
-                try {
-                    gnlSocket.closeClient();
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
-                System.out.println("Closing sockets and exiting...from the App");
-                stage.close();
-            }
+            stage.close();
         });
+    }
+
+    public void reloadEnterpriseCombox()
+    {
+        ArrayList<String> allEEntNames = new ArrayList<String>();
+        allEEntNames.add("choose your enterprise");
+        // we add all enterprises here
+        allEEntNames.addAll(dataSerialize.getAllEnterprises().keySet());
+
+        // we clear the combobox
+        manageApp.getAppWindowConnect().getEnterpriseName().clearLCBComboBox();
+        //then we fill it with the new array
+        manageApp.getAppWindowConnect().getEnterpriseName().setLCBComboBox(allEEntNames.toArray(new String[0]));
+    }
+
+    public void btnCreateEntEvent() {
+        if (manageApp.getWindowCreateEnt().getAllBtns().getBtn2() != null)
+        {
+            manageApp.getWindowCreateEnt().getAllBtns().getBtn2().setOnAction(e -> {
+                String entName = manageApp.getWindowCreateEnt().getNewEnterpriseName().getLTFTextFieldValue();
+                String entpasswd = manageApp.getWindowCreateEnt().getNewPasswd().getLTFTextFieldValue();
+
+                System.out.println(entName + " " + entpasswd);
+
+                if (!dataSerialize.getAllEnterprises().containsKey(entName.toLowerCase())) {
+                    if (!entpasswd.isEmpty()) {
+                        try {
+                            dataSerialize.addNewEnterprise(entName, entpasswd);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+                        manageApp.getWindowCreateEnt().getNewEnterpriseName().setLTFTextFieldValue("");
+                        manageApp.getWindowCreateEnt().getNewPasswd().setLTFTextFieldValue("");
+                        System.out.println("creation of enterprise succeeded");
+                        Pointer.PrintAlert( "creation of enterprise",
+                                String.format("enterprise '%s' succeeded", entName));
+
+                        try {
+                            dataSerialize.saveData();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        reloadEnterpriseCombox();
+                    }
+                } else {
+                    AppWindowConnect.PrintAlert(String.format("Creation of the enterprise %s", entName),
+                            "Creation failed because an enterprise with this name already exists");
+                }
+            });
+        }
+
     }
 }
 
