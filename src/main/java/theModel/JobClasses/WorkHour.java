@@ -1,74 +1,78 @@
 package theModel.JobClasses;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
+import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.UUID;
 
 public class WorkHour implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String empID;
-    private LocalTime HourStart;
-    private LocalTime HourEnd;
+    private String hourStart;
+    private String hourEnd;
+    private String dateWork;
 
-    private transient StringProperty empPropertyId;
-    private transient StringProperty empStartHour;
-    private transient StringProperty empEndHour;
+    public String getDateWork() {
+        return dateWork;
+    }
 
+    public void setDateWork(String dateWork) {
+        this.dateWork = dateWork;
+    }
 
-    public WorkHour(String id, String start, String end)
+    public WorkHour(String id, String start, String end, LocalDate date)
     {
         this.empID = id;
-        this.HourStart = LocalTime.parse(start);
-        this.HourEnd = LocalTime.parse(end);
+        if(start.isEmpty())
+            this.hourStart = "";
+        else
+            this.hourStart = LocalTime.parse(start).toString();
 
-        this.empPropertyId = new SimpleStringProperty(empID);
-        this.empStartHour = new SimpleStringProperty(HourStart.toString());
-        this.empEndHour = new SimpleStringProperty(HourEnd.toString());
+        if(end.isEmpty())
+            this.hourEnd = "";
+        else
+            this.hourEnd = LocalTime.parse(end).toString();
+
+        this.dateWork = date.toString();
     }
 
-    public String empStartHour() {
-        return empStartHour.get();
-    }
-
-    public String getEmpEndHour() {
-        return empEndHour.get();
+    // Constructor used to print workHour on the tableView
+    public WorkHour(String id, String start, String end, String date)
+    {
+        this.empID = id;
+        this.hourStart = LocalTime.parse(start).toString();
+        this.hourEnd = LocalTime.parse(end).toString();
+        this.dateWork = date;
     }
 
     public String getEmpID() {
         return empID;
     }
 
-    public void setEmpID(UUID empID) {
-        this.empID = empID.toString();
-        this.empPropertyId.set(empID.toString());
+    public void setHourStart(String hourStart) {
+        this.hourStart = hourStart;
     }
 
-    public LocalTime getHourStart() {
-        return HourStart;
+    public void setHourEnd(String hourEnd) {
+        this.hourEnd = hourEnd;
     }
 
-    public void setHourStart(LocalTime hourStart) {
-        HourStart = hourStart;
-        this.empStartHour.set(hourStart.toString());
+    public String getHourStart() {
+        return hourStart;
     }
 
-    public LocalTime getHourEnd() {
-        return HourEnd;
+
+    public String getHourEnd() {
+        return hourEnd;
     }
 
-    public void setHourEnd(LocalTime hourEnd) {
-        HourEnd = hourEnd;
-        this.empEndHour.set(hourEnd.toString());
-    }
 
     @Override
     public String toString()
     {
-        return String.format("hour start %s hour end %s \n", HourStart.toString(), HourEnd.toString());
+        return String.format("dateWork : %s hour start %s hour end %s \n",dateWork, hourStart, hourEnd);
     }
 }

@@ -4,6 +4,7 @@ import theModel.JobClasses.Employee;
 import theModel.JobClasses.Enterprise;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.HashMap;
 
 public class DataSerialize {
@@ -59,6 +60,32 @@ public class DataSerialize {
             this.allEnterprises.put(name, new Enterprise(name, passwd));
             saveData();
         }
+    }
+
+    // to test the pointer workHour in the Apptest main...
+    public void addNewWorkHourForAnEmployee(String entName, String empId, String hourStart, String hourEnd)
+            throws IOException
+    {
+        this.allEnterprises.get(entName).addWorkHourPointerForEmployee(empId, hourStart, hourEnd);
+        saveData();
+    }
+
+    // to test the pointer workHour in the Apptest main...
+    public void addNewWorkHourForAnEmployee(String entName, String empId,
+                                            String hourStart, String hourEnd, LocalDate date)
+            throws IOException
+    {
+        this.allEnterprises.get(entName).addWorkHourPointerForEmployee(empId, hourStart, hourEnd, date);
+        saveData();
+    }
+
+    // to use when 'check in' on the Pointer
+    public void addNewWorkHourForAnEmployee(String entName, String empId,
+                                            String hour, LocalDate date)
+            throws IOException
+    {
+        this.allEnterprises.get(entName).addWorkHourPointerForEmployee(empId, hour, date);
+        saveData();
     }
 
     public void modifyEmpName(String ent, String uuid, String newName) throws IOException {

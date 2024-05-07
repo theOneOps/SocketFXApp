@@ -1,6 +1,7 @@
 package theModel.JobClasses;
 
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 
 public class Enterprise implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String Entname;
@@ -45,13 +47,15 @@ public class Enterprise implements Serializable {
         return employees;
     }
 
-    public void addEmployee(String empName, String empPrename, String HourStart, String HourEnd) {
+    public void addEmployee(String empName, String empPrename, String HourStart, String HourEnd)
+    {
         // add employee to enterprise
         Employee emp = new Employee(empName, empPrename, HourStart, HourEnd);
         this.getEmployees().put(emp.getUuid(), emp);
     }
 
-    public void addEmployee(Employee emp) {
+    public void addEmployee(Employee emp)
+    {
         // add employee to enterprise
         this.getEmployees().put(emp.getUuid(), emp);
     }
@@ -61,9 +65,10 @@ public class Enterprise implements Serializable {
         this.getEmployees().remove(emp.getUuid());
     }
 
-    public void addWorkHourPointerForEmployee(String empId, String HourStart, String HourEnd) {
+    public void addWorkHourPointerForEmployee(String empId, String HourStart, String HourEnd)
+    {
         // add work hour to enterprise
-        WorkHour workHour = new WorkHour(empId, HourStart, HourEnd);
+        WorkHour workHour = new WorkHour(empId, HourStart, HourEnd, LocalDate.now());
         LocalDate date = LocalDate.now();
         if (this.getWorkHours().containsKey(date)) {
             this.getWorkHours().get(date).add(workHour);
@@ -74,8 +79,62 @@ public class Enterprise implements Serializable {
         }
     }
 
+    public void addWorkHourPointerForEmployee(String empId, String HourStart, String HourEnd, LocalDate date)
+    {
+        // add work hour to enterprise
+        WorkHour workHour = new WorkHour(empId, HourStart, HourEnd, LocalDate.now());
+        if (this.getWorkHours().containsKey(date)) {
+            this.getWorkHours().get(date).add(workHour);
+        } else {
+            ArrayList<WorkHour> workHours = new ArrayList<>();
+            workHours.add(workHour);
+            this.getWorkHours().put(date, workHours);
+        }
+    }
 
-    public String getEntpasswd() {
+    public void addWorkHourPointerForEmployee(String empId, String Hour, LocalDate date)
+    {
+        // add work hour to enterprise
+        WorkHour workHour;
+        if (!this.getWorkHours().containsKey(date))
+        {
+            workHour = new WorkHour(empId, Hour, "", LocalDate.now());
+            ArrayList<WorkHour> workHours = new ArrayList<>();
+            workHours.add(workHour);
+            this.getWorkHours().put(date, workHours);
+        }
+        else
+        {
+            // verifier si l'employé a déjà fait validé son badge ce jour-là
+            // verifier s'il existe un workhour dont l'id est égale
+            // à empId passé en paramètre de la fonction
+            ArrayList<WorkHour> AllworkHours = this.workHours.get(date);
+            boolean validAlready = false;
+            for(WorkHour wk : AllworkHours)
+            {
+                if (wk.getEmpID().equals(empId))
+                {
+                    validAlready = true;
+                }
+                if (validAlready)
+                {
+                    wk.setHourEnd(Hour);
+                    break;
+                }
+            }
+            if (!validAlready)
+            {
+                workHour = new WorkHour(empId, Hour, "", LocalDate.now());
+                ArrayList<WorkHour> workHours = new ArrayList<>();
+                workHours.add(workHour);
+                this.getWorkHours().put(date, workHours);
+            }
+        }
+    }
+
+
+    public String getEntpasswd()
+    {
         return Entpasswd;
     }
 
@@ -90,7 +149,8 @@ public class Enterprise implements Serializable {
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return STR."entreprise : \{Entname} \{Entpasswd} employees \{employees} workhours \{ConvertHashMapToString()}";
     }
 }

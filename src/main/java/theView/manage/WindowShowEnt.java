@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -14,17 +15,23 @@ import javafx.stage.Stage;
 import theModel.DataSerialize;
 import theModel.JobClasses.Employee;
 import theModel.JobClasses.Enterprise;
+import theModel.JobClasses.WorkHour;
 import theView.pointer.Pointer;
 import theView.utils.LabeledIntel;
 import theView.utils.LabeledTextFieldHBox;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class WindowShowEnt {
 
-    private static ObservableList<Employee> data;
-    private static Pane content;
+    private static ObservableList<Employee> dataEmps;
+    private static ObservableList<WorkHour> dataPointers;
+    private static HBox contents;
+    private static TableView<Employee> table;
+    private static TableView<WorkHour> tablePointer;
 
     public static void showEnterpriseContent(DataSerialize d, Enterprise ent) {
 
@@ -36,25 +43,43 @@ public class WindowShowEnt {
         final Menu SeeEmp = new Menu("See all Employees");
         final Menu AllPointers =new Menu("All Pointers");
 
+
+        final RadioMenuItem seeEmps = new RadioMenuItem("See all employees");
+        final ToggleGroup toggleGroupOne = new ToggleGroup();
+        seeEmps.setToggleGroup(toggleGroupOne);
+
         final RadioMenuItem savePointers = new RadioMenuItem("All save pointers");
         final RadioMenuItem currentPointers = new RadioMenuItem("All current pointers");
+
+        final ToggleGroup toggleGroupTwo = new ToggleGroup();
+        savePointers.setToggleGroup(toggleGroupTwo);
+        currentPointers.setToggleGroup(toggleGroupTwo);
+
         AllPointers.getItems().addAll(savePointers, currentPointers);
+        SeeEmp.getItems().add(seeEmps);
         theMenu.getMenus().addAll(SeeEmp, AllPointers);
 
-        content = new Pane();
+        contents = new HBox();
 
-        SeeEmp.setOnAction(e->{
-            content.getChildren().clear();
-            content.getChildren().add(seeTableAllEmp(d, ent));
+        seeEmps.setOnAction(e->{
+            contents.getChildren().clear();
+            contents.getChildren().addAll(seeTableAllEmp(d, ent));
+        });
+
+
+        savePointers.setOnAction(e->{
+            contents.getChildren().clear();
+            contents.getChildren().add(seeTableAllPointers(ent, true));
+        });
+
+        currentPointers.setOnAction(e->{
+            contents.getChildren().clear();
+            contents.getChildren().add(seeTableAllPointers(ent, false));
         });
 
         VBox container = new VBox();
 
-        Pane detailsOnEmp = new Pane();
-
-        HBox contents = new HBox();
-
-        contents.getChildren().addAll(seeTableAllEmp(d, ent), detailsOnEmp);
+        contents.getChildren().add(seeTableAllEmp(d, ent));
         container.getChildren().addAll(theMenu, contents);
         container.setSpacing(5);
 
@@ -63,18 +88,44 @@ public class WindowShowEnt {
         stage.show();
     }
 
-    private static void loadData(Enterprise ent)
+    private static VBox seeTableAllPointers(Enterprise ent, boolean seeAllPointers)
     {
-        ArrayList<Employee> array = new ArrayList<>();
-        for (Employee emp : ent.getEmployees().values()) {
+        VBox EmpView = new VBox();
 
-            array.add(new Employee(emp.getUuid(), emp.getEmpName(), emp.getEmpPrename(),
-                    emp.getStartingHour(),
-                    emp.getEndingHour()
-            ));
-        }
-        data = FXCollections.observableArrayList(array);
+        // Créer une liste observable des employés
+        if (seeAllPointers)
+            loadDataAllPointers(ent);
+        else
+            loadDataDailyPointers(ent);
+
+        tablePointer = new TableView<>();
+        tablePointer.setEditable(true);
+
+        // Configuration des colonnes
+
+        TableColumn<WorkHour, String> dayOfWork = new TableColumn<>("Day Of work");
+        TableColumn<WorkHour, String> uuidColumn = new TableColumn<>("UUID");
+        TableColumn<WorkHour, String> empStartHour = new TableColumn<>("Starting Hour");
+        TableColumn<WorkHour, String> empEndHour = new TableColumn<>("Ending Hour");
+
+        dayOfWork.setCellValueFactory(new PropertyValueFactory<>("dateWork"));
+        uuidColumn.setCellValueFactory(new PropertyValueFactory<>("empID"));
+        empStartHour.setCellValueFactory(new PropertyValueFactory<>("hourStart"));
+        empEndHour.setCellValueFactory(new PropertyValueFactory<>("hourEnd"));
+
+        // Ajouter les colonnes au `TableView`
+        tablePointer.getColumns().addAll(dayOfWork, uuidColumn, empStartHour, empEndHour); // workingHour
+
+        tablePointer.setItems(dataPointers);
+
+        EmpView.getChildren().addAll(tablePointer);
+
+        EmpView.setSpacing(5);
+
+        return EmpView;
+
     }
+
 
     private static VBox seeTableAllEmp(DataSerialize d, Enterprise ent) {
 
@@ -82,9 +133,9 @@ public class WindowShowEnt {
 
         // Créer une liste observable des employés
 
-        loadData(ent);
+        loadDataEmp(ent);
 
-        TableView<Employee> table = new TableView<>();
+        table = new TableView<>();
         table.setEditable(true);
 
         // Configuration des colonnes
@@ -92,9 +143,7 @@ public class WindowShowEnt {
         TableColumn<Employee, String> nameColumn = new TableColumn<>("first name");
         TableColumn<Employee, String> prenameColumn = new TableColumn<>("Prename");
 
-
         uuidcolumn.setCellValueFactory(new PropertyValueFactory<>("uuid"));
-
 
         // Associer les colonnes aux propriétés correspondantes
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("empName"));
@@ -112,8 +161,6 @@ public class WindowShowEnt {
                 }
             }
         });
-
-
 
         prenameColumn.setCellValueFactory(new PropertyValueFactory<>("empPrename"));
         prenameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -136,34 +183,30 @@ public class WindowShowEnt {
 
         table.setMinWidth(380);
         // Ajouter les données dans la table
-        table.setItems(data);
+        table.setItems(dataEmps);
 
         Pane detailsEmp = new Pane();
 
         table.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // Vérification que le clic est un double clic
+            // to print details about an employee
+            if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
                 Employee selectedItem = table.getSelectionModel().getSelectedItem();
                 //System.out.println("Double clic sur : " + selectedItem);
-                // Faire ce que tu veux avec l'élément sélectionné
                 detailsEmp.getChildren().clear();
-                detailsEmp.getChildren().addAll(getDetailsOnEmp(selectedItem));
-            }
-        });
-
-        // Ajout de l'event handler pour le clic droit sur une ligne
-        // Remove an employee from the enterprise by a right click on the employee's record
-        table.setOnMouseClicked(event -> {
-            if (event.getButton().toString().equals("SECONDARY")) {
+                detailsEmp.getChildren().add(getDetailsOnEmp(selectedItem));
+            } else if (event.getButton() == MouseButton.SECONDARY) { // to remove an employee
                 Employee selectedItem = table.getSelectionModel().getSelectedItem();
-                System.out.println("Clic droit sur : " + selectedItem);
+                //System.out.println("Clic droit sur : " + selectedItem);
                 try {
                     d.removeEmployeeFromEnterprise(ent.getEntname(), selectedItem);
+                    dataEmps.remove(selectedItem);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                data.remove(selectedItem);
             }
         });
+
+
 
         HBox tableAndDetails = new HBox();
         tableAndDetails.setSpacing(10);
@@ -173,6 +216,50 @@ public class WindowShowEnt {
         EmpView.setSpacing(5);
         return EmpView;
 
+    }
+
+    private static void loadDataAllPointers(Enterprise ent)
+    {
+        ArrayList<WorkHour> array = new ArrayList<>();
+        Collection<ArrayList<WorkHour>> AllWorkHour = ent.getWorkHours().values();
+        for(ArrayList<WorkHour> CollectionWk : AllWorkHour)
+        {
+            for(WorkHour wk : CollectionWk)
+            {
+                array.add(new WorkHour(wk.getEmpID(), wk.getHourStart(), wk.getHourEnd(), wk.getDateWork()));
+            }
+        }
+
+        dataPointers = FXCollections.observableArrayList(array);
+    }
+
+    private static void loadDataDailyPointers(Enterprise ent)
+    {
+        ArrayList<WorkHour> array = new ArrayList<>();
+        Collection<ArrayList<WorkHour>> AllWorkHour = ent.getWorkHours().values();
+        for(ArrayList<WorkHour> CollectionWk : AllWorkHour)
+        {
+            for(WorkHour wk : CollectionWk)
+            {
+                if (wk.getDateWork().equals(LocalDate.now().toString()))
+                    array.add(new WorkHour(wk.getEmpID(), wk.getHourStart(), wk.getHourEnd(), wk.getDateWork()));
+            }
+        }
+
+        dataPointers = FXCollections.observableArrayList(array);
+    }
+
+    private static void loadDataEmp(Enterprise ent)
+    {
+        ArrayList<Employee> array = new ArrayList<>();
+        for (Employee emp : ent.getEmployees().values()) {
+
+            array.add(new Employee(emp.getUuid(), emp.getEmpName(), emp.getEmpPrename(),
+                    emp.getStartingHour(),
+                    emp.getEndingHour()
+            ));
+        }
+        dataEmps = FXCollections.observableArrayList(array);
     }
 
     private static HBox addEmp(Enterprise ent, DataSerialize d)
@@ -203,7 +290,7 @@ public class WindowShowEnt {
                     d.addNewEmployeeToEnterprise(ent.getEntname(), newEmp);
 
                     // updating the data of the tableView
-                    data.add(newEmp);
+                    dataEmps.add(newEmp);
 
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -213,8 +300,6 @@ public class WindowShowEnt {
                 prename.setLTFTextFieldValue("");
                 startHour.setLTFTextFieldValue("");
                 endHour.setLTFTextFieldValue("");
-
-                loadData(ent);
 
                 Pointer.PrintAlert("creation of new employee","employee added successfully !");
             }
@@ -226,8 +311,6 @@ public class WindowShowEnt {
         endHour.setDisableToFalse();
 
         contentAddEmp.getChildren().addAll(name, prename, startHour, endHour, send);
-
-
 
         contentAddEmp.setSpacing(2);
 
@@ -242,7 +325,7 @@ public class WindowShowEnt {
 
         LabeledIntel startHour = new LabeledIntel("Starting Hour", emp.getStartingHour());
         LabeledIntel endHour = new LabeledIntel("Ending Hour", emp.getEndingHour());
-        //LabeledIntel department = new LabeledIntel("Department", emp.getEndingHour());
+        //LabeledIntel department = new LabeledIntel("Department", emp.getDepartment());
 
         detailsIntel.getChildren().addAll(titleDetails, startHour, endHour);
 
