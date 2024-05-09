@@ -9,7 +9,6 @@ public class LabeledComboHBox extends HBox {
 
     private Label LCBLabel;
     private ComboBox<String> LCBComboBox;
-    private String currentValue;
 
 
     public LabeledComboHBox(String label, String[] items)
@@ -19,15 +18,12 @@ public class LabeledComboHBox extends HBox {
         LCBComboBox = new ComboBox<>();
         LCBComboBox.getItems().addAll(items);
 
-        LCBComboBox.setOnAction(e->{
-            currentValue = LCBComboBox.getSelectionModel().getSelectedItem();
-        });
-
 
         this.getChildren().addAll(LCBLabel, LCBComboBox);
         this.setAlignment(Pos.CENTER);
         this.setSpacing(10);
-        LCBComboBox.setValue(items[0]);
+        if (items.length != 0)
+            LCBComboBox.setValue(items[0]);
     }
 
     LabeledComboHBox(String label, String[] items, int spaceBetweenComponents)
@@ -37,7 +33,6 @@ public class LabeledComboHBox extends HBox {
         LCBComboBox = new ComboBox<>();
         LCBComboBox.getItems().addAll(items);
         LCBComboBox.setValue(items[0]);
-
 
 
         this.getChildren().addAll(LCBLabel, LCBComboBox);
@@ -64,10 +59,5 @@ public class LabeledComboHBox extends HBox {
 
     public void clearLCBComboBox() {
         this.LCBComboBox.getItems().clear();
-    }
-
-    public String getSelectedValue()
-    {
-        return currentValue;
     }
 }

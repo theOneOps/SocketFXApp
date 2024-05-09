@@ -1,7 +1,12 @@
 package theController;
 
 
+import ConfigCommons.ConfigPort;
+import Sockets.ServersSocket;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import theModel.DataSerialize;
 import theView.manage.AppManagement;
 import theView.manage.AppWindowConnect;
@@ -23,24 +28,28 @@ public class ManageController {
 
         reloadEnterpriseCombox();
 
-        manageApp.getAppWindowConnect().getCreateBtn().setOnAction(e->{
-            manageApp.getWindowCreateEnt().createEnterprise();
-        });
+        manageApp.getAppWindowConnect().getCreateBtn().setOnAction(e->
+                manageApp.getWindowCreateEnt().createEnterprise());
 
         // button connection
         btnConnectionClicked(stage);
 
-        // Connect Window btn set Action
+        // Method to handle the closure of the windowConnect's stage
         quitConnectWindowClosedEvent(stage);
 
+        // Method to handle an enterprise's creation
         btnCreateEntEvent();
+
+        // establish a connection with the clientSocket
+        connectToClient();
     }
 
     public void btnConnectionClicked(Stage stage)
     {
         manageApp.getAppWindowConnect().getBtnConnexion().setOnAction(e -> {
             //d.getAllEnterprises().containsKey(manageApp.getEnterpriseName().getSelectedValue())
-            String enterpriseValue = manageApp.getAppWindowConnect().getEnterpriseName().getSelectedValue();
+            String enterpriseValue = manageApp.getAppWindowConnect().getEnterpriseName().getLCBComboBox()
+                    .getSelectionModel().getSelectedItem();
             String PasswordValue = manageApp.getAppWindowConnect().getPassword().getLTFTextFieldValue();
             // we check if the ip, port given in parameters are valid
             if (!PasswordValue.isEmpty() && PasswordValue.equals(dataSerialize.getAllEnterprises().get(enterpriseValue)
@@ -75,7 +84,7 @@ public class ManageController {
 
     public void reloadEnterpriseCombox()
     {
-        ArrayList<String> allEEntNames = new ArrayList<String>();
+        ArrayList<String> allEEntNames = new ArrayList<>();
         allEEntNames.add("choose your enterprise");
         // we add all enterprises here
         allEEntNames.addAll(dataSerialize.getAllEnterprises().keySet());
@@ -93,7 +102,7 @@ public class ManageController {
                 String entName = manageApp.getWindowCreateEnt().getNewEnterpriseName().getLTFTextFieldValue();
                 String entpasswd = manageApp.getWindowCreateEnt().getNewPasswd().getLTFTextFieldValue();
 
-                System.out.println(entName + " " + entpasswd);
+                //System.out.println(entName + " " + entpasswd);
 
                 if (!dataSerialize.getAllEnterprises().containsKey(entName.toLowerCase())) {
                     if (!entpasswd.isEmpty()) {
@@ -105,6 +114,7 @@ public class ManageController {
 
                         manageApp.getWindowCreateEnt().getNewEnterpriseName().setLTFTextFieldValue("");
                         manageApp.getWindowCreateEnt().getNewPasswd().setLTFTextFieldValue("");
+
                         System.out.println("creation of enterprise succeeded");
                         Pointer.PrintAlert( "creation of enterprise",
                                 String.format("enterprise '%s' succeeded", entName));
@@ -123,6 +133,26 @@ public class ManageController {
             });
         }
 
+    }
+
+    public void connectToClient()
+    {
+        Timeline tm = new Timeline();
+        tm.getKeyFrames().add(new KeyFrame(Duration.ZERO, e -> {
+            int port = ConfigPort.loadPortConfiguration("config.properties");
+            if (port != Integer.MAX_VALUE)
+            {
+                ServersSocket serversSocket = new ServersSocket(String.valueOf(port));
+                serversSocket.start();
+            }
+            else
+            {
+                System.out.println("No client found yet to connect with");
+            }
+        }));
+        tm.getKeyFrames().add(new KeyFrame(Duration.seconds(10))); // update every second
+        tm.setCycleCount(Timeline.INDEFINITE); // repeat indefinitely
+        tm.play();
     }
 }
 

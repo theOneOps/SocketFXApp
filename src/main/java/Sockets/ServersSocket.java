@@ -25,7 +25,7 @@ public class ServersSocket extends Thread{
         // connect to server
         try {
             serverSocket = new ServerSocket(port);
-            serverSocket.setReuseAddress(true);
+//            serverSocket.setReuseAddress(true);
             System.out.println("Serveur en attente");
 
             clientSocket = serverSocket.accept();

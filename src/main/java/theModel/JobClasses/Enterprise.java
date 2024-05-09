@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Enterprise implements Serializable {
 
@@ -63,6 +64,27 @@ public class Enterprise implements Serializable {
     public void removeEmployee(Employee emp)
     {
         this.getEmployees().remove(emp.getUuid());
+    }
+
+    public ArrayList<String> getAllEmployeesName()
+    {
+        ArrayList<String> AllEmployeesName = new ArrayList<>();
+        ArrayList<String> defaultEntreprises = new ArrayList<>(List.of(new String[]{"Entreprise1", "Entreprise2"}));
+        if (defaultEntreprises.contains(getEntname())) {
+            AllEmployeesName.add("No employees");
+        }
+        else
+        {
+            if (employees.isEmpty())
+                AllEmployeesName.add("No employees");
+            else
+            {
+                for (String id : employees.keySet())
+                    AllEmployeesName.add(employees.get(id).getEmpName());
+            }
+        }
+
+        return AllEmployeesName;
     }
 
     public void addWorkHourPointerForEmployee(String empId, String HourStart, String HourEnd)

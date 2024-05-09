@@ -10,22 +10,23 @@ import java.util.HashMap;
 public class DataSerialize {
 
     private HashMap<String, Enterprise> allEnterprises = new HashMap<>();
+    private final String fileText = "data.json";
 
     public void saveData() throws IOException {
         // save all enterprises
-        FileOutputStream fileOut = new FileOutputStream("data.json");
+        FileOutputStream fileOut = new FileOutputStream(fileText);
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
         out.writeObject(this.allEnterprises);
-        System.out.println("Data saved to file data.json");
+        System.out.println(String.format("Data saved to file %s", fileText));
         out.close();
     }
 
     public void loadData() throws IOException, ClassNotFoundException {
         // load all enterprises
-        FileInputStream fileIn = new FileInputStream("data.json");
+        FileInputStream fileIn = new FileInputStream(fileText);
         ObjectInputStream in = new ObjectInputStream(fileIn);
         this.allEnterprises = (HashMap<String, Enterprise>) in.readObject();
-        System.out.println("Data loaded from file");
+        System.out.println(String.format("Data loaded from file %s", fileText));
         //System.out.println(this);
         in.close();
     }
@@ -62,7 +63,7 @@ public class DataSerialize {
         }
     }
 
-    // to test the pointer workHour in the Apptest main...
+    // to test the pointer workHour in the AppTest main...
     public void addNewWorkHourForAnEmployee(String entName, String empId, String hourStart, String hourEnd)
             throws IOException
     {
@@ -70,7 +71,7 @@ public class DataSerialize {
         saveData();
     }
 
-    // to test the pointer workHour in the Apptest main...
+    // to test the pointer workHour in the AppTest main...
     public void addNewWorkHourForAnEmployee(String entName, String empId,
                                             String hourStart, String hourEnd, LocalDate date)
             throws IOException

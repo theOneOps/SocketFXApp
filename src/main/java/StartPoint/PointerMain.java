@@ -7,6 +7,9 @@ import theController.PointerController;
 import theModel.DataSerialize;
 import theView.pointer.Pointer;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 public class PointerMain extends Application {
 
     public static void main(String[] args) {
@@ -14,17 +17,18 @@ public class PointerMain extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
         Pointer pointer = new Pointer(setOnAction -> {
             primaryStage.close();
         });
 
         DataSerialize dataSerialize = new DataSerialize();
         PointerController pointerController = new PointerController(pointer, dataSerialize);
-        Scene scene = new Scene(pointer, 400, 250); // create a scene with a specific width and height
+        Scene scene = new Scene(pointer, 400, 200); // create a scene with a specific width and height
         primaryStage.setTitle("Time tracker Emulator");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
     }
+
 }

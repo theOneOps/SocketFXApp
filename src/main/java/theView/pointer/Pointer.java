@@ -18,18 +18,19 @@ public class Pointer extends VBox {
 
     private ComponentDateHours DateHours;
     private LabeledComboHBox Connection;
-    private LabeledComboVBox EmployeesName;
+    private LabeledComboHBox Employees;
     private AllBtns checkInOut;
     private Button Quit;
 
     private LabeledTextFieldHBox port;
     private LabeledTextFieldHBox ip;
+
     public Pointer(EventHandler<ActionEvent> quit)
     {
         super();
         DateHours = new ComponentDateHours();
         Connection = new LabeledComboHBox("Connection", new String[]{"Enterprise1", "Enterprise2"});
-        EmployeesName = new LabeledComboVBox("Employees", new String[]{"Employee1", "Employee2", "Employee3"});
+        Employees = new LabeledComboHBox("Employees", new String[]{"Employee1", "Employee2", "Employee3"});
 
         HBox ipPort = new HBox();
         port = new LabeledTextFieldHBox("Port : ", "", 100);
@@ -39,6 +40,8 @@ public class Pointer extends VBox {
         Region spacerOne = new Region();
         HBox.setHgrow(spacerOne, Priority.ALWAYS);
         ipPort.getChildren().addAll(ip, spacerOne, port);
+        ip.setDisableToFalse();
+        port.setDisableToFalse();
 
         HBox buttons = new HBox();
         checkInOut = new AllBtns("Check In", "Check Out");
@@ -52,7 +55,7 @@ public class Pointer extends VBox {
         Region spacerThree = new Region();
         VBox.setVgrow(spacerThree, Priority.ALWAYS);
 
-        this.getChildren().addAll(DateHours, Connection,ipPort, EmployeesName,spacerThree, buttons);
+        this.getChildren().addAll(DateHours, Connection,ipPort, Employees,spacerThree, buttons);
 
         this.setPadding(new Insets(10));
         this.setSpacing(10);
@@ -66,8 +69,8 @@ public class Pointer extends VBox {
         return Connection;
     }
 
-    public LabeledComboVBox getEmployeesName() {
-        return EmployeesName;
+    public LabeledComboHBox getEmployees() {
+        return Employees;
     }
 
     public AllBtns getCheckInOut() {
