@@ -52,11 +52,12 @@ public class ServersSocket extends Thread{
             out.println("Hello, client");
         }
 
-        else if (message.equals("connexion"))
-            System.out.println("Connexion etablie");
-        else if (message.equals("bye"))
+//        else if (message.equals("connexion"))
+//            System.out.println("Connexion etablie");
+        else if (!message.equals("Hello, server!"))
         {
-            serverClose();
+
+            //serverClose();
         }
     }
 

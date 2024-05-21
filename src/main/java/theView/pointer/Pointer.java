@@ -11,7 +11,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import theView.utils.AllBtns;
 import theView.utils.LabeledComboHBox;
-import theView.utils.LabeledComboVBox;
 import theView.utils.LabeledTextFieldHBox;
 
 public class Pointer extends VBox {
@@ -44,9 +43,9 @@ public class Pointer extends VBox {
         port.setDisableToFalse();
 
         HBox buttons = new HBox();
-        checkInOut = new AllBtns("Check In", "Check Out");
+        checkInOut = new AllBtns("Connection", "Check In/Out");
         Quit = new Button("Quit");
-        Quit.setOnAction(quit);
+        //Quit.setOnAction(quit);
 
         Region spacerTwo = new Region();
         HBox.setHgrow(spacerTwo, Priority.ALWAYS);

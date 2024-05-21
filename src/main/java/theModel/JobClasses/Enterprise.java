@@ -3,7 +3,6 @@ package theModel.JobClasses;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +14,8 @@ public class Enterprise implements Serializable {
 
     private String Entname;
     private HashMap<String, Employee> employees = new HashMap<>();
-    private HashMap<LocalDate, ArrayList<WorkHour>> workHours = new HashMap<>();
     private String Entpasswd;
+    private String EntPort;
 
     public Enterprise()
     {}
@@ -30,18 +29,18 @@ public class Enterprise implements Serializable {
     }
 
     // to create new enterprise
-    public Enterprise(String name, String passwd)
+    public Enterprise(String name, String passwd, String port)
     {
-        this.Entname = name;
-        this.Entpasswd = passwd;
+        if (port.matches("\\d+"))
+        {
+            this.Entname = name;
+            this.Entpasswd = passwd;
+            this.EntPort = port;
+        }
     }
 
     public String getEntname() {
         return Entname;
-    }
-
-    public HashMap<LocalDate, ArrayList<WorkHour>> getWorkHours() {
-        return workHours;
     }
 
     public HashMap<String, Employee> getEmployees() {
@@ -51,7 +50,14 @@ public class Enterprise implements Serializable {
     public void addEmployee(String empName, String empPrename, String HourStart, String HourEnd)
     {
         // add employee to enterprise
-        Employee emp = new Employee(empName, empPrename, HourStart, HourEnd);
+        Employee emp = new Employee(empName, empPrename, HourStart, HourEnd, "");
+        this.getEmployees().put(emp.getUuid(), emp);
+    }
+
+    public void addEmployee(String empName, String empPrename, String HourStart, String HourEnd, String department)
+    {
+        // add employee to enterprise
+        Employee emp = new Employee(empName, empPrename, HourStart, HourEnd, department);
         this.getEmployees().put(emp.getUuid(), emp);
     }
 
@@ -69,110 +75,42 @@ public class Enterprise implements Serializable {
     public ArrayList<String> getAllEmployeesName()
     {
         ArrayList<String> AllEmployeesName = new ArrayList<>();
-        ArrayList<String> defaultEntreprises = new ArrayList<>(List.of(new String[]{"Entreprise1", "Entreprise2"}));
-        if (defaultEntreprises.contains(getEntname())) {
-            AllEmployeesName.add("No employees");
-        }
-        else
-        {
+        //ArrayList<String> defaultEntreprises = new ArrayList<>(List.of(new String[]{"Entreprise1", "Entreprise2"}));
+//        if (defaultEntreprises.contains(getEntname())) {
+//            AllEmployeesName.add("No employees");
+//        }
+//        else
+//        {
             if (employees.isEmpty())
                 AllEmployeesName.add("No employees");
             else
             {
                 for (String id : employees.keySet())
-                    AllEmployeesName.add(employees.get(id).getEmpName());
+                    AllEmployeesName.add(String.format("%s %s (%s) ", employees.get(id).getEmpName(),
+                            employees.get(id).getEmpPrename(), id));
             }
-        }
 
         return AllEmployeesName;
     }
-
-    public void addWorkHourPointerForEmployee(String empId, String HourStart, String HourEnd)
-    {
-        // add work hour to enterprise
-        WorkHour workHour = new WorkHour(empId, HourStart, HourEnd, LocalDate.now());
-        LocalDate date = LocalDate.now();
-        if (this.getWorkHours().containsKey(date)) {
-            this.getWorkHours().get(date).add(workHour);
-        } else {
-            ArrayList<WorkHour> workHours = new ArrayList<>();
-            workHours.add(workHour);
-            this.getWorkHours().put(date, workHours);
-        }
-    }
-
-    public void addWorkHourPointerForEmployee(String empId, String HourStart, String HourEnd, LocalDate date)
-    {
-        // add work hour to enterprise
-        WorkHour workHour = new WorkHour(empId, HourStart, HourEnd, LocalDate.now());
-        if (this.getWorkHours().containsKey(date)) {
-            this.getWorkHours().get(date).add(workHour);
-        } else {
-            ArrayList<WorkHour> workHours = new ArrayList<>();
-            workHours.add(workHour);
-            this.getWorkHours().put(date, workHours);
-        }
-    }
-
-    public void addWorkHourPointerForEmployee(String empId, String Hour, LocalDate date)
-    {
-        // add work hour to enterprise
-        WorkHour workHour;
-        if (!this.getWorkHours().containsKey(date))
-        {
-            workHour = new WorkHour(empId, Hour, "", LocalDate.now());
-            ArrayList<WorkHour> workHours = new ArrayList<>();
-            workHours.add(workHour);
-            this.getWorkHours().put(date, workHours);
-        }
-        else
-        {
-            // verifier si l'employé a déjà fait validé son badge ce jour-là
-            // verifier s'il existe un workhour dont l'id est égale
-            // à empId passé en paramètre de la fonction
-            ArrayList<WorkHour> AllworkHours = this.workHours.get(date);
-            boolean validAlready = false;
-            for(WorkHour wk : AllworkHours)
-            {
-                if (wk.getEmpID().equals(empId))
-                {
-                    validAlready = true;
-                }
-                if (validAlready)
-                {
-                    wk.setHourEnd(Hour);
-                    break;
-                }
-            }
-            if (!validAlready)
-            {
-                workHour = new WorkHour(empId, Hour, "", LocalDate.now());
-                ArrayList<WorkHour> workHours = new ArrayList<>();
-                workHours.add(workHour);
-                this.getWorkHours().put(date, workHours);
-            }
-        }
-    }
-
 
     public String getEntpasswd()
     {
         return Entpasswd;
     }
 
-    public String ConvertHashMapToString()
-    {
-        StringBuilder res = new StringBuilder();
-        for (LocalDate lt : workHours.keySet())
-        {
-            res.append(String.format("date : %s %s \n", lt.toString(), workHours.get(lt)));
-        }
-        return res.toString();
-    }
 
     @Override
     public String toString()
     {
-        return STR."entreprise : \{Entname} \{Entpasswd} employees \{employees} workhours \{ConvertHashMapToString()}";
+        return String.format("enterprise : %s | employees : %s ",
+                Entname, employees);
+    }
+
+    public String getEntPort() {
+        return EntPort;
+    }
+
+    public void setEntPort(String entPort) {
+        EntPort = entPort;
     }
 }

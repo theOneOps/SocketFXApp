@@ -4,13 +4,13 @@ import theModel.JobClasses.Employee;
 import theModel.JobClasses.Enterprise;
 
 import java.io.*;
-import java.time.LocalDate;
 import java.util.HashMap;
+
 
 public class DataSerialize {
 
     private HashMap<String, Enterprise> allEnterprises = new HashMap<>();
-    private final String fileText = "data.json";
+    private final String fileText = "data.ser";
 
     public void saveData() throws IOException {
         // save all enterprises
@@ -23,11 +23,15 @@ public class DataSerialize {
 
     public void loadData() throws IOException, ClassNotFoundException {
         // load all enterprises
+        File file = new File(fileText);
+        if (!file.exists()) {
+            System.out.printf("Le fichier  + %s +  n'existe pas.", fileText);
+            return;
+        }
         FileInputStream fileIn = new FileInputStream(fileText);
         ObjectInputStream in = new ObjectInputStream(fileIn);
         this.allEnterprises = (HashMap<String, Enterprise>) in.readObject();
         System.out.println(String.format("Data loaded from file %s", fileText));
-        //System.out.println(this);
         in.close();
     }
 
@@ -54,40 +58,40 @@ public class DataSerialize {
         saveData();
     }
 
-    public void addNewEnterprise(String name, String passwd) throws IOException {
+    public void addNewEnterprise(String name, String passwd, String port) throws IOException {
         // add new enterprise
         if (!this.allEnterprises.containsKey(name))
         {
-            this.allEnterprises.put(name, new Enterprise(name, passwd));
+            this.allEnterprises.put(name, new Enterprise(name, passwd, port));
             saveData();
         }
     }
 
-    // to test the pointer workHour in the AppTest main...
-    public void addNewWorkHourForAnEmployee(String entName, String empId, String hourStart, String hourEnd)
-            throws IOException
-    {
-        this.allEnterprises.get(entName).addWorkHourPointerForEmployee(empId, hourStart, hourEnd);
-        saveData();
-    }
+//    // to test the pointer workHour in the AppTest main...
+//    public void addNewWorkHourForAnEmployee(String entName, String empId, String hourStart, String hourEnd)
+//            throws IOException
+//    {
+//        this.allEnterprises.get(entName).addWorkHourPointerForEmployee(empId, hourStart, hourEnd);
+//        saveData();
+//    }
+//
+//    // to test the pointer workHour in the AppTest main...
+//    public void addNewWorkHourForAnEmployee(String entName, String empId,
+//                                            String hourStart, String hourEnd, LocalDate date)
+//            throws IOException
+//    {
+//        this.allEnterprises.get(entName).addWorkHourPointerForEmployee(empId, hourStart, hourEnd, date);
+//        saveData();
+//    }
 
-    // to test the pointer workHour in the AppTest main...
-    public void addNewWorkHourForAnEmployee(String entName, String empId,
-                                            String hourStart, String hourEnd, LocalDate date)
-            throws IOException
-    {
-        this.allEnterprises.get(entName).addWorkHourPointerForEmployee(empId, hourStart, hourEnd, date);
-        saveData();
-    }
-
-    // to use when 'check in' on the Pointer
-    public void addNewWorkHourForAnEmployee(String entName, String empId,
-                                            String hour, LocalDate date)
-            throws IOException
-    {
-        this.allEnterprises.get(entName).addWorkHourPointerForEmployee(empId, hour, date);
-        saveData();
-    }
+//    // to use when 'check in' on the Pointer
+//    public void addNewWorkHourForAnEmployee(String entName, String empId,
+//                                            String hour, LocalDate date)
+//            throws IOException
+//    {
+//        this.allEnterprises.get(entName).addWorkHourPointerForEmployee(empId, hour, date);
+//        saveData();
+//    }
 
     public void modifyEmpName(String ent, String uuid, String newName) throws IOException {
         this.allEnterprises.get(ent).getEmployees().get(uuid).setEmpName(newName);
@@ -96,6 +100,21 @@ public class DataSerialize {
 
     public void modifyEmpPrename(String ent, String uuid, String newPrename) throws IOException {
         this.allEnterprises.get(ent).getEmployees().get(uuid).setEmpPrename(newPrename);
+        saveData();
+    }
+
+    public void modifyEmpStartingHour(String ent, String uuid, String startingHour) throws IOException {
+        this.allEnterprises.get(ent).getEmployees().get(uuid).setStartingHour(startingHour);
+        saveData();
+    }
+
+    public void modifyEmpEndingHour(String ent, String uuid, String endingHour) throws IOException {
+        this.allEnterprises.get(ent).getEmployees().get(uuid).setEndingHour(endingHour);
+        saveData();
+    }
+
+    public void modifyEmpDepartement(String ent, String uuid, String endingHour) throws IOException {
+        this.allEnterprises.get(ent).getEmployees().get(uuid).setEndingHour(endingHour);
         saveData();
     }
 

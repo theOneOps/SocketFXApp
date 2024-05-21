@@ -20,6 +20,8 @@ public class WindowCreateEnt {
 
     private AllBtns allBtns;
 
+    private LabeledTextFieldHBox newPort;
+
     public WindowCreateEnt()
     {
         newEnterpriseName = new LabeledTextFieldHBox("Enterprise Name : ", "");
@@ -27,6 +29,8 @@ public class WindowCreateEnt {
         newEnterpriseName.setDisableToFalse();
         newPasswd.setDisableToFalse();
         allBtns = new AllBtns("Quit", "Create");
+        newPort = new LabeledTextFieldHBox("Port : ", "");
+        newPort.setDisableToFalse();
     }
 
     public void createEnterprise()
@@ -39,15 +43,13 @@ public class WindowCreateEnt {
 
             VBox containerCreateEnterprise = new VBox();
 
-            newEnterpriseName.setDisableToFalse();
-            newPasswd.setDisableToFalse();
-
             Region region = new Region();
             VBox.setVgrow(region, Priority.ALWAYS);
 
             allBtns.setBtn1Action(e -> stage.close());
 
-            containerCreateEnterprise.getChildren().addAll(newEnterpriseName,newPasswd, region, allBtns);
+            containerCreateEnterprise.getChildren().addAll(newEnterpriseName, newPasswd,
+                    newPort, region, allBtns);
             containerCreateEnterprise.setSpacing(10);
             containerCreateEnterprise.setAlignment(Pos.CENTER);
             containerCreateEnterprise.setPadding(new Insets(10));
@@ -69,5 +71,13 @@ public class WindowCreateEnt {
     public AllBtns getAllBtns()
     {
         return allBtns;
+    }
+
+    public LabeledTextFieldHBox getNewPort() {
+        return newPort;
+    }
+
+    public void setNewPort(LabeledTextFieldHBox newPort) {
+        this.newPort = newPort;
     }
 }

@@ -1,7 +1,7 @@
 package theController;
 
-import ConfigCommons.ConfigPort;
 import Sockets.ClientSocket;
+import javafx.stage.Stage;
 import theModel.DataSerialize;
 import theView.pointer.Pointer;
 
@@ -11,8 +11,9 @@ import java.util.ArrayList;
 public class PointerController {
     private Pointer pointer;
     private DataSerialize dataSerialize;
+    private ClientSocket clientSocket;
 
-    public PointerController(Pointer p, DataSerialize d) throws ClassNotFoundException, IOException {
+    public PointerController(Pointer p, DataSerialize d, Stage stage) throws ClassNotFoundException, IOException {
         pointer = p;
         dataSerialize = d;
 
@@ -21,6 +22,15 @@ public class PointerController {
         reloadEnterpriseCombox();
 
         pointer.getConnection().getLCBComboBox().setOnAction(e->reloadEmployeesCombox());
+
+        pointer.getQuit().setOnAction(e->
+        {
+            stage.close();
+            if (clientSocket.isAlive())
+            {
+                clientSocket.clientClose();
+            }
+        });
     }
 
     public void reloadEnterpriseCombox()
@@ -49,12 +59,12 @@ public class PointerController {
                 String port = pointer.getPort().getLTFTextFieldValue();
                 if (!ip.isEmpty() && !port.isEmpty())
                 {
-                    System.out.println("check in button clicked ! ");
+                    if (port.matches("\\d+"))
+                    {
+                        // todo : check in function
+                        System.out.println("check in button clicked ! ");
+                    }
 
-                    ConfigPort.savePortConfiguration("config.properties", Integer.parseInt(port));
-
-                    ClientSocket clientSocket = new ClientSocket(ip, port);
-                    clientSocket.start();
                 }
             }
         });
@@ -63,8 +73,6 @@ public class PointerController {
     public void reloadEmployeesCombox()
     {
         String entName = pointer.getConnection().getLCBComboBox().getSelectionModel().getSelectedItem();
-
-        //System.out.println("entreprise choisi " + entName);
 
         ArrayList<String> empData = new ArrayList<>();
         // we clear the combobox

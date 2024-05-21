@@ -39,8 +39,9 @@ public class ClientSocket extends Thread {
 
     public void processMessage(String message) {
         // Here you can implement logic based on the message content
-        if (message.equals("Hello, client"))
-        System.out.println("Processing message from the server: " + message);
+        if (message.equals("Hello, client")) {
+            System.out.println("Processing message from the server: " + message);
+        }
     }
 
     public void clientSendMessage(String message) {

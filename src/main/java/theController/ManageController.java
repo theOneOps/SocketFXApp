@@ -1,24 +1,21 @@
 package theController;
 
 
-import ConfigCommons.ConfigPort;
 import Sockets.ServersSocket;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import theModel.DataSerialize;
 import theView.manage.AppManagement;
 import theView.manage.AppWindowConnect;
 import theView.manage.WindowShowEnt;
 import theView.pointer.Pointer;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class ManageController {
     private AppManagement manageApp;
     private DataSerialize dataSerialize;
+    private ServersSocket serversSocket;
+
 
     public ManageController(AppManagement Appmanagement, DataSerialize d, Stage stage) throws IOException,
             ClassNotFoundException {
@@ -75,11 +72,15 @@ public class ManageController {
             System.out.println("Quit button pressed");
             try {
                 dataSerialize.saveData();
+                if (serversSocket.isAlive())
+                    serversSocket.serverClose();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
             stage.close();
         });
+
+
     }
 
     public void reloadEnterpriseCombox()
@@ -101,13 +102,13 @@ public class ManageController {
             manageApp.getWindowCreateEnt().getAllBtns().getBtn2().setOnAction(e -> {
                 String entName = manageApp.getWindowCreateEnt().getNewEnterpriseName().getLTFTextFieldValue();
                 String entpasswd = manageApp.getWindowCreateEnt().getNewPasswd().getLTFTextFieldValue();
+                String entPort = manageApp.getWindowCreateEnt().getNewPort().getLTFTextFieldValue();
 
-                //System.out.println(entName + " " + entpasswd);
 
                 if (!dataSerialize.getAllEnterprises().containsKey(entName.toLowerCase())) {
                     if (!entpasswd.isEmpty()) {
                         try {
-                            dataSerialize.addNewEnterprise(entName, entpasswd);
+                            dataSerialize.addNewEnterprise(entName, entpasswd, entPort);
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -137,22 +138,8 @@ public class ManageController {
 
     public void connectToClient()
     {
-        Timeline tm = new Timeline();
-        tm.getKeyFrames().add(new KeyFrame(Duration.ZERO, e -> {
-            int port = ConfigPort.loadPortConfiguration("config.properties");
-            if (port != Integer.MAX_VALUE)
-            {
-                ServersSocket serversSocket = new ServersSocket(String.valueOf(port));
-                serversSocket.start();
-            }
-            else
-            {
-                System.out.println("No client found yet to connect with");
-            }
-        }));
-        tm.getKeyFrames().add(new KeyFrame(Duration.seconds(10))); // update every second
-        tm.setCycleCount(Timeline.INDEFINITE); // repeat indefinitely
-        tm.play();
+
+        // Todo : ignore
     }
 }
 
