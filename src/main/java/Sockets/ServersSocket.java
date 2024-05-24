@@ -1,84 +1,120 @@
 package Sockets;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
+import theModel.DataSerialize;
+
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class ServersSocket extends Thread{
-    private int port;
-    private ServerSocket serverSocket;
-    private Socket clientSocket;
-    BufferedReader in;
-    PrintWriter out;
+public class ServersSocket implements Runnable {
+    private String serverPort;
+    private ArrayList<ConnectionHandler> connections;
+    private DataSerialize data;
+    private ServerSocket server;
+    private boolean isListening;
+    private ExecutorService pool;
 
-    public ServersSocket(String port)
+    public ServersSocket(DataSerialize d, String port)
     {
-        this.port = Integer.parseInt(port);
+        serverPort = port;
+        data = d;
+        connections = new ArrayList<>();
+        isListening = false;
     }
 
     @Override
-    public void run()
-    {
-        // connect to server
-        try {
-            serverSocket = new ServerSocket(port);
-//            serverSocket.setReuseAddress(true);
-            System.out.println("Serveur en attente");
+    public void run() {
+        try
+        {
+            server = new ServerSocket(Integer.parseInt(serverPort));
+            System.out.println("server en attente !");
+            pool = Executors.newCachedThreadPool();
+            while(!isListening)
+            {
+                Socket client = server.accept();
+                ObjectOutputStream objOut = new ObjectOutputStream(client.getOutputStream());
+                objOut.writeObject(data.getEnterpriseClassByPort(serverPort));
+                objOut.flush();  // Assurez-vous de vider le flux après l'écriture de l'objet
+                objOut.reset();  // Réinitialisez l'état du flux pour éviter les problèmes de cache d'objet
 
-            clientSocket = serverSocket.accept();
-            System.out.println("Client connecté");
-
-            in = new BufferedReader(new java.io.InputStreamReader(clientSocket.getInputStream()));
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-
-            String message;
-            while ((message = in.readLine()) != null) {
-                System.out.println(message);
-                processMessage(message);
+                ConnectionHandler ch = new ConnectionHandler(client);
+                connections.add(ch);
+                pool.execute(ch);
             }
 
-        } catch (Exception e) {
-            if (e instanceof SocketException)
-                System.out.println("socket closed");
-        }
-    }
-
-    public void processMessage(String message) {
-        if (message.equals("Hello, server!")) {
-            System.out.println("Message received from the client: " + message);
-            out.println("Hello, client");
-        }
-
-//        else if (message.equals("connexion"))
-//            System.out.println("Connexion etablie");
-        else if (!message.equals("Hello, server!"))
-        {
-
-            //serverClose();
-        }
-    }
-
-    public String serverReceiveMessage() {
-        try {
-            if (in != null)
-                return in.readLine();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return "";
-    }
-
-    public void serverClose() {
-        try {
-            if (in != null) in.close();
-            if (serverSocket != null) serverSocket.close();
-            if (clientSocket != null)  clientSocket.close();
-            System.out.println("Server closed");
         } catch (IOException e) {
-            System.out.println("Error closing server: " + e.getMessage());
+            // Ignore
+        }
+
+        finally {
+            try {
+                shutDown();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void shutDown() throws IOException {
+        if (!server.isClosed())
+        {
+            server.close();
+            pool.shutdown();
+            isListening = true;
+        }
+
+        for (ConnectionHandler ch : connections)
+        {
+            ch.shutConnectionDown();
+        }
+    }
+
+    class ConnectionHandler implements Runnable
+    {
+        private Socket client;
+        private BufferedReader in;
+        private PrintWriter out;
+
+
+        public ConnectionHandler(Socket client)
+        {
+            this.client = client;
+        }
+
+        @Override
+        public void run() {
+            try {
+                out = new PrintWriter(client.getOutputStream(), true);
+                in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                String message;
+
+                while((message = in.readLine())!= null)
+                {
+                    String[]messageSplit = message.split("\\|");
+                    if (messageSplit.length == 4)
+                    {
+                        data.addNewWorkHour(messageSplit[0], messageSplit[1],
+                                messageSplit[2], messageSplit[3]);
+                    }
+                }
+            }
+            catch(IOException e)
+            {
+                // todo : handle
+            }
+        }
+
+        public void shutConnectionDown() throws IOException {
+            if (!client.isClosed())
+            {
+                client.close();
+                out.close();
+                in.close();
+            }
         }
     }
 }
+

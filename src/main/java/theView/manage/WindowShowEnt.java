@@ -1,5 +1,6 @@
 package theView.manage;
 
+import Sockets.ServersSocket;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -33,12 +34,26 @@ public class WindowShowEnt {
     private static HBox contents;
     private static TableView<Employee> table;
     private static TableView<WorkHour> tablePointer;
+    private static Button quitWindow;
+    static Thread wserverThread;
+    private static ServersSocket wserversSocket;
 
-    public static void showEnterpriseContent(DataSerialize d, Enterprise ent) {
+
+    public static Button getQuitWindow() {
+        return quitWindow;
+    }
+
+    public static void showEnterpriseContent(DataSerialize d, Enterprise ent,Thread serverThread,
+                                             ServersSocket serversSocket) {
 
         // Configurer la scène et la table
         Stage stage = new Stage();
         stage.setTitle(String.format("Enterprise '%s' management", ent.getEntname()));
+        quitWindow = new Button("Quit window");
+
+        wserverThread = serverThread;
+        wserversSocket = serversSocket;
+        quitWindowShowEvent(stage);
 
         MenuBar theMenu = new MenuBar();
         final Menu SeeEmp = new Menu("See all Employees");
@@ -80,12 +95,26 @@ public class WindowShowEnt {
         VBox container = new VBox();
 
         contents.getChildren().add(seeTableAllEmp(d, ent));
-        container.getChildren().addAll(theMenu, contents);
+        container.getChildren().addAll(theMenu, contents, quitWindow);
         container.setSpacing(5);
 
         Scene scene = new Scene(container, 700, 500);
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static void quitWindowShowEvent(Stage stage)
+    {
+        quitWindow.setOnAction(e -> {
+            System.out.println("Quit button pressed");
+            try {
+                if (wserverThread.isAlive())
+                    wserversSocket.shutDown();
+                stage.close();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
     }
 
     private static VBox seeTableAllPointers(Enterprise ent, boolean seeAllPointers)
@@ -381,9 +410,6 @@ public class WindowShowEnt {
 
         Button addWorkHour = new Button("add workhour");
 
-
-
-
         VBox container = new VBox();
         container.getChildren().addAll(theMenu, empContents);
 
@@ -436,7 +462,8 @@ public class WindowShowEnt {
             if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
                 if(event.getButton() == MouseButton.SECONDARY)
                 {
-
+                    // todo : later
+                    System.out.println("emp = " + emp + ", allpointers = " + allpointers);
                 }
             }
         });

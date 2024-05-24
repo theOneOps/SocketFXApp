@@ -18,7 +18,7 @@ public class Pointer extends VBox {
     private ComponentDateHours DateHours;
     private LabeledComboHBox Connection;
     private LabeledComboHBox Employees;
-    private AllBtns checkInOut;
+    private AllBtns logincheckInOut;
     private Button Quit;
 
     private LabeledTextFieldHBox port;
@@ -28,8 +28,8 @@ public class Pointer extends VBox {
     {
         super();
         DateHours = new ComponentDateHours();
-        Connection = new LabeledComboHBox("Connection", new String[]{"Enterprise1", "Enterprise2"});
-        Employees = new LabeledComboHBox("Employees", new String[]{"Employee1", "Employee2", "Employee3"});
+        //Connection = new LabeledComboHBox("Connection", new String[]{"Enterprise1", "Enterprise2"});
+        Employees = new LabeledComboHBox("Employees", new String[]{"choose your name"});
 
         HBox ipPort = new HBox();
         port = new LabeledTextFieldHBox("Port : ", "", 100);
@@ -43,18 +43,17 @@ public class Pointer extends VBox {
         port.setDisableToFalse();
 
         HBox buttons = new HBox();
-        checkInOut = new AllBtns("Connection", "Check In/Out");
+        logincheckInOut = new AllBtns("Connection", "Check In/Out");
         Quit = new Button("Quit");
-        //Quit.setOnAction(quit);
 
         Region spacerTwo = new Region();
         HBox.setHgrow(spacerTwo, Priority.ALWAYS);
-        buttons.getChildren().addAll(Quit,spacerTwo, checkInOut);
+        buttons.getChildren().addAll(Quit,spacerTwo, logincheckInOut);
 
         Region spacerThree = new Region();
         VBox.setVgrow(spacerThree, Priority.ALWAYS);
 
-        this.getChildren().addAll(DateHours, Connection,ipPort, Employees,spacerThree, buttons);
+        this.getChildren().addAll(DateHours,ipPort, Employees,spacerThree, buttons);
 
         this.setPadding(new Insets(10));
         this.setSpacing(10);
@@ -72,8 +71,8 @@ public class Pointer extends VBox {
         return Employees;
     }
 
-    public AllBtns getCheckInOut() {
-        return checkInOut;
+    public AllBtns getLoginCheckInOut() {
+        return logincheckInOut;
     }
 
     public Button getQuit() {

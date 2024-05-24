@@ -4,6 +4,8 @@ import theModel.JobClasses.Employee;
 import theModel.JobClasses.Enterprise;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 
 
@@ -118,8 +120,32 @@ public class DataSerialize {
         saveData();
     }
 
+    public void addNewWorkHour(String entName, String empId,String dateDay
+                                ,  String hourStart) throws IOException {
+        this.allEnterprises.get(entName).getEmployees()
+                .get(empId).getWorkHour().addWorkHour(LocalDate.parse(dateDay), LocalTime.parse(hourStart));
+        saveData();
+    }
+
+    public Enterprise getEnterpriseClassByPort(String port)
+    {
+        Enterprise res = null;
+        for(Enterprise ent : this.allEnterprises.values())
+        {
+            if (ent.getEntPort().equals(port))
+                return ent;
+        }
+
+        return null;
+    }
+
     @Override
     public String toString() {
-        return "DataSerialize{" + "allEnterprises=" + allEnterprises + '}';
+        StringBuilder res = new StringBuilder(" allEnterprises from dataSerialize : \n");
+        for (String s : allEnterprises.keySet())
+        {
+            res.append(String.format("entName %s -> %s \n", s, allEnterprises.get(s)));
+        }
+        return res.toString();
     }
 }

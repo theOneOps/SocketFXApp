@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class ManageController {
     private AppManagement manageApp;
     private DataSerialize dataSerialize;
+    Thread serverThread;
     private ServersSocket serversSocket;
 
 
@@ -36,9 +37,6 @@ public class ManageController {
 
         // Method to handle an enterprise's creation
         btnCreateEntEvent();
-
-        // establish a connection with the clientSocket
-        connectToClient();
     }
 
     public void btnConnectionClicked(Stage stage)
@@ -52,12 +50,21 @@ public class ManageController {
             if (!PasswordValue.isEmpty() && PasswordValue.equals(dataSerialize.getAllEnterprises().get(enterpriseValue)
                     .getEntpasswd()) &&
                     !enterpriseValue.equals("choose your  enterprise")) {
+
+
+                serversSocket = new ServersSocket(dataSerialize,
+                        dataSerialize.getAllEnterprises().get(enterpriseValue).getEntPort());
+
+                serverThread = new Thread(serversSocket);
+                serverThread.start();
+
                 // print the table Vie of the enterprise
                 WindowShowEnt.showEnterpriseContent(dataSerialize,
-                        dataSerialize.getAllEnterprises().get(enterpriseValue));
+                        dataSerialize.getAllEnterprises().get(enterpriseValue), serverThread, serversSocket);
                 stage.close();
                 AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),
                         "Connection succeeded");
+
             } else {
                 AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),
                         "Try again with other values");
@@ -72,15 +79,12 @@ public class ManageController {
             System.out.println("Quit button pressed");
             try {
                 dataSerialize.saveData();
-                if (serversSocket.isAlive())
-                    serversSocket.serverClose();
+                if (serverThread.isAlive() && serversSocket != null)
+                    serversSocket.shutDown();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-            stage.close();
         });
-
-
     }
 
     public void reloadEnterpriseCombox()
@@ -115,6 +119,7 @@ public class ManageController {
 
                         manageApp.getWindowCreateEnt().getNewEnterpriseName().setLTFTextFieldValue("");
                         manageApp.getWindowCreateEnt().getNewPasswd().setLTFTextFieldValue("");
+                        manageApp.getWindowCreateEnt().getNewPort().setLTFTextFieldValue("");
 
                         System.out.println("creation of enterprise succeeded");
                         Pointer.PrintAlert( "creation of enterprise",
@@ -134,12 +139,6 @@ public class ManageController {
             });
         }
 
-    }
-
-    public void connectToClient()
-    {
-
-        // Todo : ignore
     }
 }
 

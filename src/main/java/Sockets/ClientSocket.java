@@ -1,46 +1,61 @@
 package Sockets;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import theModel.JobClasses.Enterprise;
+import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.CountDownLatch;
 
-public class ClientSocket extends Thread {
+public class ClientSocket implements Runnable {
     private String ip;
     private int port;
     private Socket clientSocket;
     private BufferedReader in;
     private PrintWriter out;
+    private Enterprise currentEnt = null;
+    private CountDownLatch latch;
 
-    public ClientSocket(String ip, String port) {
+    public ClientSocket(String ip, String port, CountDownLatch ilatch) {
         this.ip = ip;
         this.port = Integer.parseInt(port);
+        this.latch = ilatch;
     }
 
     @Override
     public void run() {
         try {
             clientSocket = new Socket(ip, port);
+            System.out.println("client en attente !");
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             out = new PrintWriter(clientSocket.getOutputStream(), true);
+            ObjectInputStream input = new ObjectInputStream(clientSocket.getInputStream());
 
-            out.println("Hello, server!");
-            String message;
-            while ((message = in.readLine()) != null) {
-                processMessage(message);
-            }
+//            String message;
+//            while ((message = in.readLine()) != null) {
+//                processMessage(message);
+//                currentEnt = (Enterprise) input.readObject();
+//            }
+            // Lire l'objet Enterprise dès la connexion
+            currentEnt = (Enterprise) input.readObject();
+            System.out.println("Received Enterprise object: " + currentEnt);
+
+            // Signaler que l'objet a été lu
+            latch.countDown();
+
         } catch (IOException e) {
-            System.out.println("Server not found or not responding from THE CLIENT: " + e.getMessage());
-        } finally {
-            clientClose();
+            System.out.printf("Server not found or not responding from THE CLIENT: %s", e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public void processMessage(String message) {
         // Here you can implement logic based on the message content
         if (message.equals("Hello, client")) {
-            System.out.println("Processing message from the server: " + message);
+            System.out.printf("Processing message from the server: %s%n",message);
+        }
+        else
+        {
+            System.out.printf("Processing other message from the server: %s%n",message);
         }
     }
 
@@ -58,7 +73,15 @@ public class ClientSocket extends Thread {
             if (clientSocket != null) clientSocket.close();
             System.out.println("Client closed");
         } catch (IOException e) {
-            System.out.println("Error closing client: " + e.getMessage());
+            System.out.printf("Error closing client: %s", e.getMessage());
         }
+    }
+
+    public Enterprise getCorrectEnterprise()
+    {
+        if (currentEnt != null)
+            return currentEnt;
+
+        return null;
     }
 }
