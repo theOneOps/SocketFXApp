@@ -16,7 +16,7 @@ public class Employee implements Serializable {
     private String emDep = "";
     private String startingHour;
     private String endingHour;
-    private WorkHour workHour;
+    private WorkHour workHour = new WorkHour();
 
     public Employee(String name, String prename, String hourStart, String hourEnd, String department)
     {
@@ -36,6 +36,18 @@ public class Employee implements Serializable {
         this.startingHour = LocalTime.parse(hourStart).toString();
         this.endingHour = LocalTime.parse(hourEnd).toString();
         this.emDep = department;
+    }
+
+    public Employee(String uuid, String name, String prename, String hourStart,
+                    String hourEnd, String department, WorkHour wh)
+    {
+        this.uuid = uuid;
+        this.empName = name;
+        this.empPrename = prename;
+        this.startingHour = LocalTime.parse(hourStart).toString();
+        this.endingHour = LocalTime.parse(hourEnd).toString();
+        this.emDep = department;
+        this.workHour = wh;
     }
 
     public void setEmpName(String empName) {
@@ -94,7 +106,7 @@ public class Employee implements Serializable {
     @Override
     public String toString()
     {
-        return String.format("name : %s prename : %s \n", empName, empPrename);
+        return String.format("name : %s prename : %s workhour : %s \n", empName, empPrename, workHour);
     }
 
 }

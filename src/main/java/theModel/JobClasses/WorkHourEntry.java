@@ -2,28 +2,27 @@ package theModel.JobClasses;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 
 public class WorkHourEntry {
-    private LocalDate date;
-    private LocalTime time;
+    private String date;
+    private String time;
 
     public WorkHourEntry(LocalDate date, LocalTime time) {
-        this.date = date;
-        this.time = time;
+        this.date = date.toString();
+        this.time = time.toString();
     }
 
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
-    public LocalTime getTime() {
+    public String getTime() {
         return time;
     }
 
     @Override
     public String toString() {
-        return String.format("date -> %s | time -> %s \n", date.toString(), time.toString());
+        return String.format("date -> %s | time -> %s \n", date, time);
     }
 }

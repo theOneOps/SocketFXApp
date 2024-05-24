@@ -127,6 +127,23 @@ public class DataSerialize {
         saveData();
     }
 
+    public void modifyWorkHour(String entName, String empId,String dateDay
+            ,  String hourStart) throws IOException
+    {
+//        this.allEnterprises.get(entName).getEmployees()
+//                .get(empId).getWorkHour().addWorkHour(LocalDate.parse(dateDay), LocalTime.parse(hourStart));
+        saveData();
+    }
+
+
+    // todo : add to one of the fonctionbality of the appManageView (for the employees' pointer view)
+    public void removeWorkHour(String entName, String empId, String date, String hour) throws IOException
+    {
+        this.allEnterprises.get(entName).getEmployees()
+                .get(empId).getWorkHour().removeLocalTime(date, hour);
+        saveData();
+    }
+
     public Enterprise getEnterpriseClassByPort(String port)
     {
         Enterprise res = null;

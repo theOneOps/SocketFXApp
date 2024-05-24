@@ -1,13 +1,11 @@
 package theController;
 
 import Sockets.ClientSocket;
-import Sockets.ServersSocket;
 import javafx.stage.Stage;
 import theModel.DataSerialize;
 import theModel.JobClasses.Enterprise;
 import theView.pointer.Pointer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
@@ -49,19 +47,22 @@ public class PointerController {
                     // todo : check in function
                     System.out.println("login button clicked ! ");
                     CountDownLatch latch = new CountDownLatch(1);
+                    System.out.println("okkk");
                     clientSocket = new ClientSocket(ip, port, latch);
+                    System.out.println("okkk");
+
 
                     clientThread = new Thread(clientSocket);
                     clientThread.start();
-
-                    System.out.println("client pas ecore termine");
-
+                    System.out.println("okkk");
                     try
                     {
                         latch.await();
+                        System.out.println("okkk");
                     }catch (InterruptedException ex) {
                         throw new RuntimeException(ex);
                     }
+                    System.out.println("okkk");
 
                     if (clientSocket.getCorrectEnterprise() != null)
                     {
@@ -71,6 +72,10 @@ public class PointerController {
                             System.out.println("ent still null");
                         else
                             reloadEmployeesCombox();
+                    }
+                    else
+                    {
+                        clientSocket.clientClose();
                     }
 
                 }

@@ -35,6 +35,7 @@ public class ServersSocket implements Runnable {
             while(!isListening)
             {
                 Socket client = server.accept();
+                System.out.println("client connecté");
                 ObjectOutputStream objOut = new ObjectOutputStream(client.getOutputStream());
                 objOut.writeObject(data.getEnterpriseClassByPort(serverPort));
                 objOut.flush();  // Assurez-vous de vider le flux après l'écriture de l'objet

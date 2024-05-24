@@ -11,11 +11,11 @@ public class WorkHour implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    HashMap<LocalDate, ArrayList<LocalTime>> pointing = new HashMap<LocalDate, ArrayList<LocalTime>>();
+    HashMap<LocalDate, ArrayList<LocalTime>> pointing;
 
     public WorkHour()
     {
-
+        pointing = new HashMap<>();
     }
 
 
@@ -36,11 +36,43 @@ public class WorkHour implements Serializable {
         return pointing;
     }
 
+    public void changeLocalTime(String date, String olderHour, String newHour)
+    {
+        LocalDate d = LocalDate.parse(date);
+        for(int i = 0; i < pointing.get(d).toArray().length;i++)
+        {
+            if (pointing.get(d).get(i).equals(LocalTime.parse(olderHour)))
+            {
+                pointing.get(d).set(i, LocalTime.parse(newHour));
+                break;
+            }
+        }
+    }
+
+    public void removeLocalTime(String date, String Hour)
+    {
+
+        LocalDate d = LocalDate.parse(date);
+        pointing.get(d).remove(LocalTime.parse(Hour));
+    }
+
     public void setPointing(HashMap<LocalDate, ArrayList<LocalTime>> pointing) {
         this.pointing = pointing;
     }
 
-    public ArrayList<LocalTime> getWorkHour(LocalDate d){ return pointing.get(d);}
+    // todo : add for the employees view on the appManageView
+    public void modifyPointing(String olderDate,String newDate, String olderHour, String newHour)
+    {
+        if (olderDate.equals(newDate))
+        {
+            changeLocalTime(olderDate, olderHour, newHour);
+        }
+        else
+        {
+            addWorkHour(LocalDate.parse(newDate), LocalTime.parse(newHour));
+            removeLocalTime(olderDate, olderHour);
+        }
+    }
 
     @Override
     public String toString()

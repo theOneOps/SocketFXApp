@@ -24,7 +24,13 @@ public class ClientSocket implements Runnable {
     public void run() {
         try {
             clientSocket = new Socket(ip, port);
-            System.out.println("client en attente !");
+            if (!clientSocket.isConnected())
+            {
+                latch.countDown();
+                clientClose();
+                System.out.println("Try another adress IP");
+                return;
+            }
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             ObjectInputStream input = new ObjectInputStream(clientSocket.getInputStream());
@@ -36,11 +42,15 @@ public class ClientSocket implements Runnable {
 //            }
             // Lire l'objet Enterprise dès la connexion
             currentEnt = (Enterprise) input.readObject();
-            System.out.println("Received Enterprise object: " + currentEnt);
-
-            // Signaler que l'objet a été lu
             latch.countDown();
 
+
+            if (currentEnt != null)
+            {
+                System.out.println("Received Enterprise object: " + currentEnt);
+            }
+
+            // Signaler que l'objet a été lu
         } catch (IOException e) {
             System.out.printf("Server not found or not responding from THE CLIENT: %s", e.getMessage());
         } catch (ClassNotFoundException e) {
