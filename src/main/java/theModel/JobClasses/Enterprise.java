@@ -1,6 +1,4 @@
 package theModel.JobClasses;
-
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -52,7 +50,8 @@ public class Enterprise implements Serializable {
         this.getEmployees().put(emp.getUuid(), emp);
     }
 
-    public void addEmployee(String empName, String empPrename, String HourStart, String HourEnd, String department)
+    public void addEmployee(String empName, String empPrename, String HourStart,
+                            String HourEnd, String department)
     {
         // add employee to enterprise
         Employee emp = new Employee(empName, empPrename, HourStart, HourEnd, department);

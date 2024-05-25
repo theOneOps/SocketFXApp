@@ -1,5 +1,4 @@
 package theModel.JobClasses;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -36,22 +35,38 @@ public class WorkHour implements Serializable {
         return pointing;
     }
 
+    // todo : to add to the fonctionnality of modify workhour of an employee
     public void changeLocalTime(String date, String olderHour, String newHour)
     {
         LocalDate d = LocalDate.parse(date);
-        for(int i = 0; i < pointing.get(d).toArray().length;i++)
+        addWorkHour(d, LocalTime.parse(newHour));
+
+        if (pointing.containsKey(d))
         {
-            if (pointing.get(d).get(i).equals(LocalTime.parse(olderHour)))
-            {
-                pointing.get(d).set(i, LocalTime.parse(newHour));
-                break;
-            }
+            int idx = pointing.get(d).indexOf(LocalTime.parse(olderHour));
+            if (idx != -1)
+                pointing.get(d).remove(LocalTime.parse(olderHour));
         }
     }
 
+    // todo : to add to the fonctionnality of modify date of an employee's workhour
+    public void changeDateWorkHour(String olderDate, String newDate, String hour)
+    {
+        addWorkHour(LocalDate.parse(newDate), LocalTime.parse(hour));
+
+        LocalDate olderDateLt = LocalDate.parse(olderDate);
+
+        if (pointing.containsKey(olderDateLt))
+        {
+            int idx = pointing.get(olderDateLt).indexOf(LocalTime.parse(hour));
+            if (idx != -1)
+                pointing.get(olderDateLt).remove(LocalTime.parse(hour));
+        }
+    }
+
+
     public void removeLocalTime(String date, String Hour)
     {
-
         LocalDate d = LocalDate.parse(date);
         pointing.get(d).remove(LocalTime.parse(Hour));
     }
@@ -60,19 +75,6 @@ public class WorkHour implements Serializable {
         this.pointing = pointing;
     }
 
-    // todo : add for the employees view on the appManageView
-    public void modifyPointing(String olderDate,String newDate, String olderHour, String newHour)
-    {
-        if (olderDate.equals(newDate))
-        {
-            changeLocalTime(olderDate, olderHour, newHour);
-        }
-        else
-        {
-            addWorkHour(LocalDate.parse(newDate), LocalTime.parse(newHour));
-            removeLocalTime(olderDate, olderHour);
-        }
-    }
 
     @Override
     public String toString()

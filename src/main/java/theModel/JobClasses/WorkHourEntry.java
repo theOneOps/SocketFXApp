@@ -8,6 +8,14 @@ public class WorkHourEntry {
     private String date;
     private String time;
 
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
     public WorkHourEntry(LocalDate date, LocalTime time) {
         this.date = date.toString();
         this.time = time.toString();

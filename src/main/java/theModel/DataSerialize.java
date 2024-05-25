@@ -2,7 +2,6 @@ package theModel;
 
 import theModel.JobClasses.Employee;
 import theModel.JobClasses.Enterprise;
-
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,7 +18,7 @@ public class DataSerialize {
         FileOutputStream fileOut = new FileOutputStream(fileText);
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
         out.writeObject(this.allEnterprises);
-        System.out.println(String.format("Data saved to file %s", fileText));
+        System.out.printf(String.format("Data saved to file %s \n", fileText));
         out.close();
     }
 
@@ -27,13 +26,13 @@ public class DataSerialize {
         // load all enterprises
         File file = new File(fileText);
         if (!file.exists()) {
-            System.out.printf("Le fichier  + %s +  n'existe pas.", fileText);
+            System.out.printf("Le fichier  + %s +  n'existe pas. \n", fileText);
             return;
         }
         FileInputStream fileIn = new FileInputStream(fileText);
         ObjectInputStream in = new ObjectInputStream(fileIn);
         this.allEnterprises = (HashMap<String, Enterprise>) in.readObject();
-        System.out.println(String.format("Data loaded from file %s", fileText));
+        System.out.printf(String.format("Data loaded from file %s \n", fileText));
         in.close();
     }
 
@@ -69,32 +68,6 @@ public class DataSerialize {
         }
     }
 
-//    // to test the pointer workHour in the AppTest main...
-//    public void addNewWorkHourForAnEmployee(String entName, String empId, String hourStart, String hourEnd)
-//            throws IOException
-//    {
-//        this.allEnterprises.get(entName).addWorkHourPointerForEmployee(empId, hourStart, hourEnd);
-//        saveData();
-//    }
-//
-//    // to test the pointer workHour in the AppTest main...
-//    public void addNewWorkHourForAnEmployee(String entName, String empId,
-//                                            String hourStart, String hourEnd, LocalDate date)
-//            throws IOException
-//    {
-//        this.allEnterprises.get(entName).addWorkHourPointerForEmployee(empId, hourStart, hourEnd, date);
-//        saveData();
-//    }
-
-//    // to use when 'check in' on the Pointer
-//    public void addNewWorkHourForAnEmployee(String entName, String empId,
-//                                            String hour, LocalDate date)
-//            throws IOException
-//    {
-//        this.allEnterprises.get(entName).addWorkHourPointerForEmployee(empId, hour, date);
-//        saveData();
-//    }
-
     public void modifyEmpName(String ent, String uuid, String newName) throws IOException {
         this.allEnterprises.get(ent).getEmployees().get(uuid).setEmpName(newName);
         saveData();
@@ -116,27 +89,39 @@ public class DataSerialize {
     }
 
     public void modifyEmpDepartement(String ent, String uuid, String endingHour) throws IOException {
-        this.allEnterprises.get(ent).getEmployees().get(uuid).setEndingHour(endingHour);
+        this.allEnterprises.get(ent).getEmployees().get(uuid).setEmDep(endingHour);
         saveData();
     }
 
     public void addNewWorkHour(String entName, String empId,String dateDay
-                                ,  String hourStart) throws IOException {
+                                ,  String hourStart) throws IOException
+    {
         this.allEnterprises.get(entName).getEmployees()
                 .get(empId).getWorkHour().addWorkHour(LocalDate.parse(dateDay), LocalTime.parse(hourStart));
         saveData();
     }
 
-    public void modifyWorkHour(String entName, String empId,String dateDay
-            ,  String hourStart) throws IOException
+    // todo : test this function which allows to modify the time of a workhour for an employee
+    public void modifyTimeWorkHour(String entName, String empId, String dateDay,
+                                   String olderHour, String newHour) throws IOException
     {
-//        this.allEnterprises.get(entName).getEmployees()
-//                .get(empId).getWorkHour().addWorkHour(LocalDate.parse(dateDay), LocalTime.parse(hourStart));
+        this.allEnterprises.get(entName).getEmployees().get(empId)
+                .getWorkHour().changeLocalTime(dateDay, olderHour, newHour);
+
         saveData();
     }
 
+    // todo : test this function which allows to modify the date of a workhour for an employee
+    public void modifyDateWorkHour(String entName, String empId, String olderDate,
+                                   String newDate,String newHour)throws IOException
+    {
+        this.allEnterprises.get(entName).getEmployees().get(empId)
+                .getWorkHour().changeDateWorkHour(olderDate, newDate, newHour);
 
-    // todo : add to one of the fonctionbality of the appManageView (for the employees' pointer view)
+        saveData();
+    }
+
+    // todo : add to one of the fonctionnality of the appManageView (for the employees' pointer view)
     public void removeWorkHour(String entName, String empId, String date, String hour) throws IOException
     {
         this.allEnterprises.get(entName).getEmployees()
