@@ -35,15 +35,10 @@ public class ClientSocket implements Runnable {
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             ObjectInputStream input = new ObjectInputStream(clientSocket.getInputStream());
 
-//            String message;
-//            while ((message = in.readLine()) != null) {
-//                processMessage(message);
-//                currentEnt = (Enterprise) input.readObject();
-//            }
+
             // Lire l'objet Enterprise dès la connexion
             currentEnt = (Enterprise) input.readObject();
             latch.countDown();
-
 
             if (currentEnt != null)
             {

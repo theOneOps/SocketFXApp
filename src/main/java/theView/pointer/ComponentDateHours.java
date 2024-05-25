@@ -20,6 +20,8 @@ public class ComponentDateHours extends HBox {
     private Label roundHours;
     private LocalTime time;
 
+
+
     ComponentDateHours() {
         super();
         date = new Label("Date : " + LocalDate.now());
@@ -49,8 +51,12 @@ public class ComponentDateHours extends HBox {
 
     }
 
+    public String getRoundHours() {
+        return roundHours.getText();
+    }
 
-    private String roundTime() {
+
+    public String roundTime() {
         int minutes = time.getMinute();
         int modMinutes = minutes % 15;
         int minutesToAdd = (modMinutes <= 7) ? -modMinutes : (15 - modMinutes);

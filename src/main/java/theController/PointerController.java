@@ -6,6 +6,8 @@ import theModel.DataSerialize;
 import theModel.JobClasses.Enterprise;
 import theView.pointer.Pointer;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
@@ -83,6 +85,23 @@ public class PointerController {
             }
 //            }
         });
+
+        pointer.getLoginCheckInOut().getBtn2().setOnAction(e->{
+            StringBuilder res = new StringBuilder(String.format("%s", ent.getEntname()));
+            int startIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf('(');
+            int endIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf(')');
+
+            // Extraire le texte entre les parenthèses
+            if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
+                String result = pointer.getEmployees().getLCBComboBox().getValue().substring(startIndex + 1, endIndex);
+                res.append(String.format("|%s", result));
+            }
+
+            res.append(String.format("|%s|%s", LocalDate.now(), pointer.getDateHours().roundTime()));
+            //System.out.println(res);
+            clientSocket.clientSendMessage(res.toString());
+        });
+
     }
 
 //    public void reloadEnterpriseCombox()
