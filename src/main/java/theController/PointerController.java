@@ -49,22 +49,17 @@ public class PointerController {
                     // todo : check in function
                     System.out.println("login button clicked ! ");
                     CountDownLatch latch = new CountDownLatch(1);
-                    System.out.println("okkk");
                     clientSocket = new ClientSocket(ip, port, latch);
-                    System.out.println("okkk");
 
 
                     clientThread = new Thread(clientSocket);
                     clientThread.start();
-                    System.out.println("okkk");
                     try
                     {
                         latch.await();
-                        System.out.println("okkk");
                     }catch (InterruptedException ex) {
                         throw new RuntimeException(ex);
                     }
-                    System.out.println("okkk");
 
                     if (clientSocket.getCorrectEnterprise() != null)
                     {
@@ -91,7 +86,7 @@ public class PointerController {
             int startIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf('(');
             int endIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf(')');
 
-            // Extraire le texte entre les parenthèses
+            // we extract the uuid from the parenthesis
             if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
                 String result = pointer.getEmployees().getLCBComboBox().getValue().substring(startIndex + 1, endIndex);
                 res.append(String.format("|%s", result));

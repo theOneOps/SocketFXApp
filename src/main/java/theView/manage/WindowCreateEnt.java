@@ -21,6 +21,8 @@ public class WindowCreateEnt {
 
     private LabeledTextFieldHBox newPort;
 
+    private Boolean openViewCreateEnt = false;
+
     public WindowCreateEnt()
     {
         newEnterpriseName = new LabeledTextFieldHBox("Enterprise Name : ", "");
@@ -34,6 +36,8 @@ public class WindowCreateEnt {
 
     public void createEnterprise()
     {
+        if (!openViewCreateEnt)
+        {
             Stage stage = new Stage();
 
             stage.setTitle("Create Enterprise");
@@ -45,7 +49,11 @@ public class WindowCreateEnt {
             Region region = new Region();
             VBox.setVgrow(region, Priority.ALWAYS);
 
-            allBtns.setBtn1Action(e -> stage.close());
+
+            allBtns.setBtn1Action(e -> {
+                openViewCreateEnt = false;
+                stage.close();
+            });
 
             containerCreateEnterprise.getChildren().addAll(newEnterpriseName, newPasswd,
                     newPort, region, allBtns);
@@ -57,6 +65,13 @@ public class WindowCreateEnt {
             stage.setScene(scene);
 
             stage.show();
+
+            stage.setOnCloseRequest(e->{
+                openViewCreateEnt = false;
+            });
+
+            openViewCreateEnt = true;
+        }
     }
 
     public LabeledTextFieldHBox getNewEnterpriseName() {

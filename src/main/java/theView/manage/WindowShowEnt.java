@@ -38,71 +38,107 @@ public class WindowShowEnt {
     private static Button quitWindow;
     static Thread wserverThread;
     private static ServersSocket wserversSocket;
+    private static Boolean[] openViewCheckInPointers = {false, false};
+    private static AppWindowConnect connectEnt;
+    private static Button welcomeWindowBtn;
 
 
-    public static Button getQuitWindow() {
-        return quitWindow;
-    }
-
-    public static void showEnterpriseContent(DataSerialize d, Enterprise ent,Thread serverThread,
+    public static void showEnterpriseContent(AppWindowConnect createEntClass, DataSerialize d, Enterprise ent,Thread serverThread,
                                              ServersSocket serversSocket)
     {
+        if (!openViewCheckInPointers[0])
+        {
+            // Configurer la scène et la table
+            Stage stage = new Stage();
 
-        // Configurer la scène et la table
-        Stage stage = new Stage();
-        stage.setTitle(String.format("Enterprise '%s' management", ent.getEntname()));
-        quitWindow = new Button("Quit window");
+            connectEnt = createEntClass;
 
-        wserverThread = serverThread;
-        wserversSocket = serversSocket;
-        quitWindowShowEvent(stage);
+            stage.setOnCloseRequest(e->{
+                if (wserverThread.isAlive()) {
+                    try {
+                        wserversSocket.shutDown();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+                openViewCheckInPointers[0] = false;
+            });
+            stage.setTitle(String.format("Enterprise '%s' management", ent.getEntname()));
+            quitWindow = new Button("Quit window");
 
-        MenuBar theMenu = new MenuBar();
-        final Menu SeeEmp = new Menu("See all Employees");
-        final Menu AllPointers =new Menu("All Pointers");
+            welcomeWindowBtn = new Button("welcome window");
 
-        final RadioMenuItem seeEmps = new RadioMenuItem("See all employees");
-        final ToggleGroup toggleGroupOne = new ToggleGroup();
-        seeEmps.setToggleGroup(toggleGroupOne);
+            welcomeWindowBtn.setOnAction(e->{
+                try {
+                    if (wserverThread.isAlive())
+                        wserversSocket.shutDown();
+                    connectEnt.connectToEnterprise();
+                    stage.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                openViewCheckInPointers[0] = false;
+            });
 
-        final RadioMenuItem savePointers = new RadioMenuItem("All save pointers");
-        final RadioMenuItem currentPointers = new RadioMenuItem("All current pointers");
+            wserverThread = serverThread;
+            wserversSocket = serversSocket;
+            quitWindowShowEvent(stage);
 
-        final ToggleGroup toggleGroupTwo = new ToggleGroup();
-        savePointers.setToggleGroup(toggleGroupTwo);
-        currentPointers.setToggleGroup(toggleGroupTwo);
+            MenuBar theMenu = new MenuBar();
+            final Menu SeeEmp = new Menu("See all Employees");
+            final Menu AllPointers =new Menu("All Pointers");
 
-        AllPointers.getItems().addAll(savePointers, currentPointers);
-        SeeEmp.getItems().add(seeEmps);
-        theMenu.getMenus().addAll(SeeEmp, AllPointers);
+            final RadioMenuItem seeEmps = new RadioMenuItem("See all employees");
+            final ToggleGroup toggleGroupOne = new ToggleGroup();
+            seeEmps.setToggleGroup(toggleGroupOne);
 
-        contents = new HBox();
+            final RadioMenuItem savePointers = new RadioMenuItem("All save pointers");
+            final RadioMenuItem currentPointers = new RadioMenuItem("All current pointers");
 
-        seeEmps.setOnAction(e->{
-            contents.getChildren().clear();
-            contents.getChildren().addAll(seeTableAllEmp(d, ent));
-        });
+            final ToggleGroup toggleGroupTwo = new ToggleGroup();
+            savePointers.setToggleGroup(toggleGroupTwo);
+            currentPointers.setToggleGroup(toggleGroupTwo);
+
+            AllPointers.getItems().addAll(savePointers, currentPointers);
+            SeeEmp.getItems().add(seeEmps);
+            theMenu.getMenus().addAll(SeeEmp, AllPointers);
+
+            contents = new HBox();
+
+            seeEmps.setOnAction(e->{
+                contents.getChildren().clear();
+                contents.getChildren().addAll(seeTableAllEmp(d, ent));
+            });
 
 
-        savePointers.setOnAction(e->{
-            contents.getChildren().clear();
-            contents.getChildren().add(seeTableAllPointers(ent, true));
-        });
+            savePointers.setOnAction(e->{
+                contents.getChildren().clear();
+                contents.getChildren().add(seeTableAllPointers(ent, true));
+            });
 
-        currentPointers.setOnAction(e->{
-            contents.getChildren().clear();
-            contents.getChildren().add(seeTableAllPointers(ent, false));
-        });
+            currentPointers.setOnAction(e->{
+                contents.getChildren().clear();
+                contents.getChildren().add(seeTableAllPointers(ent, false));
+            });
 
-        VBox container = new VBox();
+            VBox container = new VBox();
 
-        contents.getChildren().add(seeTableAllEmp(d, ent));
-        container.getChildren().addAll(theMenu, contents, quitWindow);
-        container.setSpacing(5);
+            HBox btnslayer = new HBox();
 
-        Scene scene = new Scene(container, 700, 500);
-        stage.setScene(scene);
-        stage.show();
+            btnslayer.getChildren().addAll(quitWindow, welcomeWindowBtn);
+
+            btnslayer.setSpacing(10);
+
+            contents.getChildren().add(seeTableAllEmp(d, ent));
+            container.getChildren().addAll(theMenu, contents, btnslayer);
+            container.setSpacing(5);
+
+            Scene scene = new Scene(container, 700, 500);
+            stage.setScene(scene);
+            stage.show();
+
+            openViewCheckInPointers[0] = true;
+        }
     }
 
     public static void quitWindowShowEvent(Stage stage)
@@ -116,6 +152,7 @@ public class WindowShowEnt {
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
+            openViewCheckInPointers[0] = false;
         });
     }
 
@@ -395,48 +432,59 @@ public class WindowShowEnt {
 
     private static void seeEmployeePointers(String entName ,DataSerialize d, Employee emp)
     {
-        Stage stage = new Stage();
-        stage.setTitle(String.format("Employee (%s %s) pointers management", emp.getEmpName(),
-                emp.getEmpPrename()));
-
-        MenuBar theMenu = new MenuBar();
-        Menu SeeEmpDailyPointers = new Menu("See daily Pointers");
-        Menu AllEmpPointers = new Menu("See all Pointers");
-
-
-        MenuItem seeDaily = new MenuItem("See daily Pointers");
-        MenuItem seeAll = new MenuItem("See all Pointers");
-
-        SeeEmpDailyPointers.getItems().add(seeDaily);
-        AllEmpPointers.getItems().add(seeAll);
-        theMenu.getMenus().addAll(SeeEmpDailyPointers,AllEmpPointers);
-
-
-        VBox empContents = new VBox();
-        empContents.getChildren().addAll(getEmployeePointers(entName,d,emp, false));
-        // menu click
-        seeDaily.setOnAction(event ->
+        if (!openViewCheckInPointers[1])
         {
-            empContents.getChildren().clear();
+            Stage stage = new Stage();
+            stage.setTitle(String.format("Employee (%s %s) pointers management", emp.getEmpName(),
+                    emp.getEmpPrename()));
+
+            MenuBar theMenu = new MenuBar();
+            Menu SeeEmpDailyPointers = new Menu("See daily Pointers");
+            Menu AllEmpPointers = new Menu("See all Pointers");
+
+
+            MenuItem seeDaily = new MenuItem("See daily Pointers");
+            MenuItem seeAll = new MenuItem("See all Pointers");
+
+            SeeEmpDailyPointers.getItems().add(seeDaily);
+            AllEmpPointers.getItems().add(seeAll);
+            theMenu.getMenus().addAll(SeeEmpDailyPointers,AllEmpPointers);
+
+
+            VBox empContents = new VBox();
             empContents.getChildren().addAll(getEmployeePointers(entName,d,emp, false));
-        });
+            // menu click
+            seeDaily.setOnAction(event ->
+            {
+                empContents.getChildren().clear();
+                empContents.getChildren().addAll(getEmployeePointers(entName,d,emp, false));
+            });
 
-        seeAll.setOnAction(event ->
-        {
-            empContents.getChildren().clear();
-            empContents.getChildren().addAll(getEmployeePointers(entName,d,emp, true));
-        });
+            seeAll.setOnAction(event ->
+            {
+                empContents.getChildren().clear();
+                empContents.getChildren().addAll(getEmployeePointers(entName,d,emp, true));
+            });
 
-        Button quitWindow = new Button("Quit");
-        quitWindow.setOnAction(e->stage.close());
+            Button quitWindow = new Button("Quit");
+            quitWindow.setOnAction(e->{
+                openViewCheckInPointers[1] = false;
+                stage.close();
+            });
 
-        VBox container = new VBox();
-        container.setSpacing(10);
-        container.getChildren().addAll(theMenu, empContents, quitWindow);
+            VBox container = new VBox();
+            container.setSpacing(10);
+            container.getChildren().addAll(theMenu, empContents, quitWindow);
 
-        Scene scene = new Scene(container, 350, 250);
-        stage.setScene(scene);
-        stage.show();
+            Scene scene = new Scene(container, 350, 250);
+            stage.setScene(scene);
+            stage.show();
+
+            stage.setOnCloseRequest(e-> openViewCheckInPointers[1] = false);
+
+            openViewCheckInPointers[1] = true;
+        }
+
 
     }
 
@@ -591,7 +639,6 @@ public class WindowShowEnt {
             return false;
         }
     }
-
 }
 
 

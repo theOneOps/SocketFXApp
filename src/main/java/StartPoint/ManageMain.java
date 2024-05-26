@@ -18,16 +18,8 @@ public class ManageMain extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException, ClassNotFoundException, InterruptedException {
         AppManagement manageApp = new AppManagement();
-        Scene scene = new Scene(manageApp.getAppWindowConnect(), 300, 200);
-
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Manage App");
 
         DataSerialize dataSerialize = new DataSerialize();
-        ManageController manageController = new ManageController(manageApp, dataSerialize, primaryStage);
-
-        primaryStage.setResizable(false);
-
-        primaryStage.show();
+        ManageController manageController = new ManageController(manageApp, dataSerialize);
     }
 }

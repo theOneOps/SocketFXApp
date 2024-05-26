@@ -1,8 +1,6 @@
 package theController;
 
-
 import Sockets.ServersSocket;
-import javafx.stage.Stage;
 import theModel.DataSerialize;
 import theView.manage.AppManagement;
 import theView.manage.AppWindowConnect;
@@ -14,15 +12,17 @@ import java.util.ArrayList;
 public class ManageController {
     private AppManagement manageApp;
     private DataSerialize dataSerialize;
-    Thread serverThread;
+    private Thread serverThread;
     private ServersSocket serversSocket;
 
 
-    public ManageController(AppManagement Appmanagement, DataSerialize d, Stage stage) throws IOException,
+    public ManageController(AppManagement Appmanagement, DataSerialize d) throws IOException,
             ClassNotFoundException {
         this.manageApp = Appmanagement;
         this.dataSerialize = d;
         dataSerialize.loadData();
+
+        manageApp.getAppWindowConnect().connectToEnterprise();
 
         reloadEnterpriseCombox();
 
@@ -30,57 +30,89 @@ public class ManageController {
                 manageApp.getWindowCreateEnt().createEnterprise());
 
         // button connection
-        btnConnectionClicked(stage);
+        btnConnectionClicked();
 
         // Method to handle the closure of the windowConnect's stage
-        quitConnectWindowClosedEvent(stage);
+        quitConnectWindowClosedEvent();
 
         // Method to handle an enterprise's creation
         btnCreateEntEvent();
+
+        manageApp.getAppWindowConnect().getStage().setOnCloseRequest(e->{
+            try {
+                dataSerialize.saveData();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            if (serverThread != null)
+            {
+                if (serverThread.isAlive() && serversSocket != null) {
+                    try {
+                        serversSocket.shutDown();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        });
+
     }
 
-    public void btnConnectionClicked(Stage stage)
+    public void btnConnectionClicked()
     {
         manageApp.getAppWindowConnect().getBtnConnexion().setOnAction(e -> {
-            //d.getAllEnterprises().containsKey(manageApp.getEnterpriseName().getSelectedValue())
             String enterpriseValue = manageApp.getAppWindowConnect().getEnterpriseName().getLCBComboBox()
                     .getSelectionModel().getSelectedItem();
             String PasswordValue = manageApp.getAppWindowConnect().getPassword().getLTFTextFieldValue();
-            // we check if the ip, port given in parameters are valid
-            if (!PasswordValue.isEmpty() && PasswordValue.equals(dataSerialize.getAllEnterprises().get(enterpriseValue)
-                    .getEntpasswd()) &&
-                    !enterpriseValue.equals("choose your  enterprise")) {
+
+            if (dataSerialize.getAllEnterprises().containsKey(enterpriseValue))
+            {
+                if (!PasswordValue.isEmpty() && PasswordValue.equals(dataSerialize.getAllEnterprises().get(enterpriseValue)
+                        .getEntpasswd())) {
 
 
-                serversSocket = new ServersSocket(dataSerialize,
-                        dataSerialize.getAllEnterprises().get(enterpriseValue).getEntPort());
+                    serversSocket = new ServersSocket(dataSerialize,
+                            dataSerialize.getAllEnterprises().get(enterpriseValue).getEntPort());
 
-                serverThread = new Thread(serversSocket);
-                serverThread.start();
+                    serverThread = new Thread(serversSocket);
+                    serverThread.start();
 
-                // print the table Vie of the enterprise
-                WindowShowEnt.showEnterpriseContent(dataSerialize,
-                        dataSerialize.getAllEnterprises().get(enterpriseValue), serverThread, serversSocket);
-                stage.close();
-                AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),
-                        "Connection succeeded");
+                    // print the table Vie of the enterprise
+                    WindowShowEnt.showEnterpriseContent(manageApp.getAppWindowConnect(),dataSerialize,
+                            dataSerialize.getAllEnterprises().get(enterpriseValue), serverThread, serversSocket);
 
-            } else {
-                AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),
-                        "Try again with other values");
+
+                    manageApp.getAppWindowConnect().getStage().close();
+                    manageApp.getAppWindowConnect().setOpenViewToFalse();
+
+                    AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),
+                            "Connection succeeded");
+
+                } else {
+                    AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),
+                            "Try again with other password");
+                }
             }
+            else
+                AppWindowConnect.PrintAlert(String.format("Connection to an enterprise '%s'", enterpriseValue),
+                        "that enterprise doesn't exist");
         });
     }
 
 
-    public void quitConnectWindowClosedEvent(Stage stage)
+    public void quitConnectWindowClosedEvent()
     {
         manageApp.getAppWindowConnect().getQuitBtn().setOnAction(e -> {
             System.out.println("Quit button pressed");
             try {
                 dataSerialize.saveData();
-                if (serverThread.isAlive() && serversSocket != null)
-                    serversSocket.shutDown();
+                if (serverThread != null)
+                {
+                    if (serverThread.isAlive() && serversSocket != null)
+                        serversSocket.shutDown();
+                }
+                manageApp.getAppWindowConnect().getStage().close();
+                manageApp.getAppWindowConnect().setOpenViewToFalse();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
