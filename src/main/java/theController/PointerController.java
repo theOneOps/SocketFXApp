@@ -69,6 +69,7 @@ public class PointerController {
 
         pointer.getLoginCheckInOut().getBtn1().setOnAction(e->{
 
+
 //            String entName = pointer.getConnection().getLCBComboBox().getSelectionModel().getSelectedItem();
 //            String empName = pointer.getEmployees().getLCBComboBox().getSelectionModel().getSelectedItem();
 
