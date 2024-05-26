@@ -38,8 +38,8 @@ public class ServersSocket implements Runnable {
                 System.out.println("client connecté");
                 ObjectOutputStream objOut = new ObjectOutputStream(client.getOutputStream());
                 objOut.writeObject(data.getEnterpriseClassByPort(serverPort));
-                objOut.flush();  // Assurez-vous de vider le flux après l'écriture de l'objet
-                objOut.reset();  // Réinitialisez l'état du flux pour éviter les problèmes de cache d'objet
+                objOut.flush();
+                objOut.reset();
 
                 ConnectionHandler ch = new ConnectionHandler(client);
                 connections.add(ch);
@@ -94,11 +94,19 @@ public class ServersSocket implements Runnable {
 
                 while((message = in.readLine())!= null)
                 {
-                    String[]messageSplit = message.split("\\|");
-                    if (messageSplit.length == 4)
+                    if (message.equals("ping"))
                     {
-                        data.addNewWorkHour(messageSplit[0], messageSplit[1],
-                                messageSplit[2], messageSplit[3]);
+                        out.println("here");
+                        System.out.println("receive ping from clientSocket !");
+                    }
+                    else
+                    {
+                        String[]messageSplit = message.split("\\|");
+                        if (messageSplit.length == 4)
+                        {
+                            data.addNewWorkHour(messageSplit[0], messageSplit[1],
+                                    messageSplit[2], messageSplit[3]);
+                        }
                     }
                 }
             }

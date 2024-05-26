@@ -2,10 +2,12 @@ package theController;
 
 import Sockets.ClientSocket;
 import javafx.stage.Stage;
+import theModel.DataNotSendSerialized;
 import theModel.DataSerialize;
 import theModel.JobClasses.Enterprise;
 import theView.pointer.Pointer;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -16,10 +18,14 @@ public class PointerController {
     private ClientSocket clientSocket;
     private Thread clientThread;
     private Enterprise ent;
+    private ArrayList<String> workhours = new ArrayList<>();
+    private DataNotSendSerialized dataNotSendSerialized;
 
     public PointerController(Pointer p, DataSerialize d, Stage stage) {
         pointer = p;
         ent = null;
+        dataNotSendSerialized = new DataNotSendSerialized();
+
 
         pointer.getQuit().setOnAction(e->
         {
@@ -28,7 +34,35 @@ public class PointerController {
             {
                 if (clientThread.isAlive() && clientSocket != null)
                 {
+                    clientSocket.setRunningThreadPingToFalse();
                     clientSocket.clientClose();
+                }
+                if (!workhours.isEmpty())
+                {
+                    try {
+                        dataNotSendSerialized.saveData(workhours);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        });
+
+        stage.setOnCloseRequest(e->{
+            if (clientThread != null)
+            {
+                if (clientThread.isAlive() && clientSocket != null)
+                {
+                    clientSocket.setRunningThreadPingToFalse();
+                    clientSocket.clientClose();
+                }
+                if (!workhours.isEmpty())
+                {
+                    try {
+                        dataNotSendSerialized.saveData(workhours);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
         });
@@ -51,7 +85,6 @@ public class PointerController {
                     CountDownLatch latch = new CountDownLatch(1);
                     clientSocket = new ClientSocket(ip, port, latch);
 
-
                     clientThread = new Thread(clientSocket);
                     clientThread.start();
                     try
@@ -68,13 +101,30 @@ public class PointerController {
                         if (ent == null)
                             System.out.println("ent still null");
                         else
+                        {
                             reloadEmployeesCombox();
+                            try {
+                                workhours = dataNotSendSerialized.loadData();
+                            } catch (IOException | ClassNotFoundException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            if (!workhours.isEmpty())
+                            {
+                                for (String res : workhours)
+                                    clientSocket.clientSendMessage(res);
+
+                                try {
+                                    dataNotSendSerialized.saveData(new ArrayList<>());
+                                } catch (IOException ex) {
+                                    throw new RuntimeException(ex);
+                                }
+                            }
+                        }
                     }
                     else
                     {
                         clientSocket.clientClose();
                     }
-
                 }
 
             }
@@ -82,19 +132,32 @@ public class PointerController {
         });
 
         pointer.getLoginCheckInOut().getBtn2().setOnAction(e->{
-            StringBuilder res = new StringBuilder(String.format("%s", ent.getEntname()));
-            int startIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf('(');
-            int endIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf(')');
 
-            // we extract the uuid from the parenthesis
-            if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
-                String result = pointer.getEmployees().getLCBComboBox().getValue().substring(startIndex + 1, endIndex);
-                res.append(String.format("|%s", result));
+            if (!pointer.getEmployees().getLCBComboBox().getValue().equals("choose your name"))
+            {
+                StringBuilder res = new StringBuilder(String.format("%s", ent.getEntname()));
+                int startIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf('(');
+                int endIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf(')');
+
+                // we extract the uuid from the parenthesis
+                if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
+                    String result = pointer.getEmployees().getLCBComboBox().getValue().substring(startIndex + 1,
+                            endIndex);
+                    res.append(String.format("|%s", result));
+                }
+
+                res.append(String.format("|%s|%s", LocalDate.now(), pointer.getDateHours().roundTime()));
+
+                // when server is connected !
+                if(clientSocket.getServermessage().equals("here"))
+                    clientSocket.clientSendMessage(res.toString());
+                else
+                {
+                    // when server is not connected anymore !
+                    System.out.println("server not connected anymore !");
+                    workhours.add(res.toString());
+                }
             }
-
-            res.append(String.format("|%s|%s", LocalDate.now(), pointer.getDateHours().roundTime()));
-            //System.out.println(res);
-            clientSocket.clientSendMessage(res.toString());
         });
 
     }

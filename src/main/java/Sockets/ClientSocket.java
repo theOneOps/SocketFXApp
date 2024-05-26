@@ -13,6 +13,8 @@ public class ClientSocket implements Runnable {
     private PrintWriter out;
     private Enterprise currentEnt = null;
     private CountDownLatch latch;
+    private Thread pings;
+    private volatile boolean runningThreadPing = true;
 
     public ClientSocket(String ip, String port, CountDownLatch ilatch) {
         this.ip = ip;
@@ -36,16 +38,13 @@ public class ClientSocket implements Runnable {
             ObjectInputStream input = new ObjectInputStream(clientSocket.getInputStream());
 
 
-            // Lire l'objet Enterprise dès la connexion
+            // We read the enterprise object just after the connection
             currentEnt = (Enterprise) input.readObject();
             latch.countDown();
 
-            if (currentEnt != null)
-            {
-                System.out.println("Received Enterprise object: " + currentEnt);
-            }
+            pings = new Thread(this::pingServer);
+            pings.start();
 
-            // Signaler que l'objet a été lu
         } catch (IOException e) {
             System.out.printf("Server not found or not responding from THE CLIENT: %s", e.getMessage());
         } catch (ClassNotFoundException e) {
@@ -53,21 +52,48 @@ public class ClientSocket implements Runnable {
         }
     }
 
-    public void processMessage(String message) {
-        // Here you can implement logic based on the message content
-        if (message.equals("Hello, client")) {
-            System.out.printf("Processing message from the server: %s%n",message);
-        }
-        else
-        {
-            System.out.printf("Processing other message from the server: %s%n",message);
-        }
-    }
+//    public void processMessage(String message) {
+//        // Here you can implement logic based on the message content
+//        if (message.equals("Hello, client")) {
+//            System.out.printf("Processing message from the server: %s%n",message);
+//        }
+//        else
+//        {
+//            System.out.printf("Processing other message from the server: %s%n",message);
+//        }
+//    }
 
     public void clientSendMessage(String message) {
         if (out != null) {
             System.out.println("out defines well ");
             out.println(message);
+        }
+    }
+
+    private void pingServer() {
+        while (runningThreadPing)
+        {
+            try {
+                out.println("ping");
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public void setRunningThreadPingToFalse() {
+        this.runningThreadPing = false;
+    }
+
+    public String getServermessage() {
+        try
+        {
+            return in.readLine();
+        }catch (IOException e)
+        {
+            //to ignore
+            return "";
         }
     }
 

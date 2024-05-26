@@ -16,7 +16,6 @@ import theView.utils.LabeledTextFieldHBox;
 public class Pointer extends VBox {
 
     private ComponentDateHours DateHours;
-    private LabeledComboHBox Connection;
     private LabeledComboHBox Employees;
     private AllBtns logincheckInOut;
     private Button Quit;
@@ -28,7 +27,6 @@ public class Pointer extends VBox {
     {
         super();
         DateHours = new ComponentDateHours();
-        //Connection = new LabeledComboHBox("Connection", new String[]{"Enterprise1", "Enterprise2"});
         Employees = new LabeledComboHBox("Employees", new String[]{"choose your name"});
 
         HBox ipPort = new HBox();
@@ -61,10 +59,6 @@ public class Pointer extends VBox {
 
     public ComponentDateHours getDateHours() {
         return DateHours;
-    }
-
-    public LabeledComboHBox getConnection() {
-        return Connection;
     }
 
     public LabeledComboHBox getEmployees() {
