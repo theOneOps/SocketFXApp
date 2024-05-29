@@ -30,16 +30,15 @@ public class ServersSocket implements Runnable {
         try
         {
             server = new ServerSocket(Integer.parseInt(serverPort));
-            System.out.println("server en attente !");
+//            System.out.println("server en attente !");
             pool = Executors.newCachedThreadPool();
             while(!isListening)
             {
                 Socket client = server.accept();
-                System.out.println("client connecté");
+//                System.out.println("client connecté");
                 ObjectOutputStream objOut = new ObjectOutputStream(client.getOutputStream());
                 objOut.writeObject(data.getEnterpriseClassByPort(serverPort));
                 objOut.flush();
-                objOut.reset();
 
                 ConnectionHandler ch = new ConnectionHandler(client);
                 connections.add(ch);
@@ -96,8 +95,9 @@ public class ServersSocket implements Runnable {
                 {
                     if (message.equals("ping"))
                     {
+                        out.flush();
                         out.println("here");
-                        System.out.println("receive ping from clientSocket !");
+//                        System.out.println("receive ping from clientSocket !");
                     }
                     else
                     {
@@ -107,6 +107,8 @@ public class ServersSocket implements Runnable {
                             data.addNewWorkHour(messageSplit[0], messageSplit[1],
                                     messageSplit[2], messageSplit[3]);
                         }
+
+                        System.out.printf("receive something else from client ! -> %s", message);
                     }
                 }
             }

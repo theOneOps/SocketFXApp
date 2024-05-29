@@ -1,7 +1,5 @@
 package theModel.JobClasses;
 
-import javafx.beans.property.SimpleStringProperty;
-
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.UUID;
