@@ -63,8 +63,8 @@ public class ComponentDateHours extends HBox {
 
         LocalTime roundedTime = time.plusMinutes(minutesToAdd);
         String res;
-        if (roundedTime.getHour() == 0)
-            res = "00";
+        if (roundedTime.getHour() <= 9)
+            res = String.format("0%s", roundedTime.getHour());
         else
             res = String.valueOf(roundedTime.getHour());
         return String.format("%s:%02d", res, roundedTime.getMinute());

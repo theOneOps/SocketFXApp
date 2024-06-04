@@ -43,7 +43,8 @@ public class WindowShowEnt {
     private static Button welcomeWindowBtn;
 
 
-    public static void showEnterpriseContent(AppWindowConnect createEntClass, DataSerialize d, Enterprise ent,Thread serverThread,
+    public static void showEnterpriseContent(AppWindowConnect createEntClass, DataSerialize d,
+                                             Enterprise ent,Thread serverThread,
                                              ServersSocket serversSocket)
     {
         if (!openViewCheckInPointers[0])

@@ -5,6 +5,7 @@ import theModel.JobClasses.Enterprise;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -39,6 +40,8 @@ public class DataSerialize {
     public HashMap<String, Enterprise> getAllEnterprises() {
         return this.allEnterprises;
     }
+
+    public Enterprise getEntByName(String entName){return allEnterprises.get(entName);}
 
     public void addNewEmployeeToEnterprise(String entName, String empName, String empPrename,
                                            String HourStart, String HourEnd) throws IOException {
@@ -139,6 +142,26 @@ public class DataSerialize {
         }
 
         return null;
+    }
+
+    public void changeEntPassword(String entName, String newPassword)throws IOException
+    {
+        allEnterprises.get(entName).setEntpasswd(newPassword);
+        saveData();
+    }
+
+    public void changeEntPort(String entName, String newPort) throws IOException
+    {
+        allEnterprises.get(entName).setEntPort(newPort);
+        saveData();
+    }
+
+    public void changeEntName(String oldName, String newName) throws IOException
+    {
+        allEnterprises.get(oldName).setEntname(newName);
+        allEnterprises.put(newName, allEnterprises.get(oldName));
+        allEnterprises.remove(oldName);
+        saveData();
     }
 
     @Override

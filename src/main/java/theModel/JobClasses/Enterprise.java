@@ -16,13 +16,7 @@ public class Enterprise implements Serializable {
     public Enterprise()
     {}
 
-    public void setEntname(String entname) {
-        Entname = entname;
-    }
 
-    public void setEntpasswd(String entpasswd) {
-        Entpasswd = entpasswd;
-    }
 
     // to create new enterprise
     public Enterprise(String name, String passwd, String port)
@@ -109,5 +103,13 @@ public class Enterprise implements Serializable {
 
     public void setEntPort(String entPort) {
         EntPort = entPort;
+    }
+
+    public void setEntname(String entname) {
+        Entname = entname;
+    }
+
+    public void setEntpasswd(String entpasswd) {
+        Entpasswd = entpasswd;
     }
 }

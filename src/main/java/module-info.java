@@ -13,7 +13,6 @@ module com.example.project {
     exports theView.utils;
 
 
-    opens theModel to javafx.fxml;
     exports theModel;
     opens theModel.JobClasses to javafx.base;
     exports theModel.JobClasses;
@@ -24,4 +23,5 @@ module com.example.project {
 
     opens StartPoint to javafx.fxml;
     exports StartPoint;
+    opens theModel to javafx.base, javafx.fxml;
 }

@@ -5,12 +5,17 @@ public class AppManagement {
     private AppWindowConnect appWindowConnect;
     private WindowCreateEnt windowCreateEnt;
     private WindowShowEnt windowShowEnt;
+    private WindowConfigEnterprise windowConfigEnterprise;
 
     public AppManagement()
     {
         appWindowConnect = new AppWindowConnect();
         windowCreateEnt = new WindowCreateEnt();
-        windowCreateEnt = new WindowCreateEnt();
+        windowConfigEnterprise = new WindowConfigEnterprise();
+    }
+
+    public WindowConfigEnterprise getWindowConfigEnterprise() {
+        return windowConfigEnterprise;
     }
 
     public AppWindowConnect getAppWindowConnect() {

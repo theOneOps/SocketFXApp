@@ -10,6 +10,7 @@ import javafx.scene.layout.Region;
 public class AllBtns extends HBox {
     private Button btn1;
     private Button btn2;
+    private Button btn3;
 
 
     public AllBtns(String btn1Text, String btn2Text) {
@@ -22,6 +23,20 @@ public class AllBtns extends HBox {
         this.setSpacing(10);
 
         this.getChildren().addAll(btn1,spacer, btn2);
+
+    }
+
+    public AllBtns(String btn1Text, String btn2Text, String btn3Text) {
+        super();
+        btn1 = new Button(btn1Text);
+        btn2 = new Button(btn2Text);
+        btn3 = new Button(btn3Text);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        this.setSpacing(10);
+
+        this.getChildren().addAll(btn1,spacer, btn2, btn3);
 
     }
 
@@ -42,4 +57,6 @@ public class AllBtns extends HBox {
     public Button getBtn2() {
         return btn2;
     }
+
+    public Button getBtn3() {return btn3;}
 }

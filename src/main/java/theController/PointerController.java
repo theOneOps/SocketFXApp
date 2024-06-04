@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 import theModel.DataNotSendSerialized;
 import theModel.DataSerialize;
 import theModel.JobClasses.Enterprise;
+import theModel.ParameterSerialize;
 import theView.manage.AppWindowConnect;
 import theView.pointer.Pointer;
 import java.io.IOException;
@@ -14,22 +15,40 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class PointerController {
-    private Pointer pointer;
+    private final Pointer pointer;
     private ClientSocket clientSocket;
     private Thread clientThread;
     private Enterprise ent;
     private ArrayList<String> workhours = new ArrayList<>();
-    private DataNotSendSerialized dataNotSendSerialized;
+    private final DataNotSendSerialized dataNotSendSerialized;
+    private final ParameterSerialize parameterSerialize;
 
-    public PointerController(Pointer p, DataSerialize d, Stage stage) {
+    public PointerController(Pointer p, DataSerialize d, Stage stage) throws ClassNotFoundException, IOException {
         pointer = p;
         ent = null;
         dataNotSendSerialized = new DataNotSendSerialized();
+        parameterSerialize = new ParameterSerialize();
+
+        ArrayList<String> parametersConnection= parameterSerialize.loadData();
+
+        if (parametersConnection.size() == 2)
+        {
+            pointer.getIp().setLTFTextFieldValue(parametersConnection.getFirst());
+            pointer.getPort().setLTFTextFieldValue(parametersConnection.get(1));
+        }
 
 
         pointer.getQuit().setOnAction(e->
         {
             stage.close();
+
+            // save the new parameters of configuration (connection the appManager)
+            try {
+                parameterSerialize.saveData(parametersConnection);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
             if (clientThread != null)
             {
                 if (clientThread.isAlive())
@@ -38,8 +57,11 @@ public class PointerController {
                     {
                         clientSocket.setRunningThreadPingToFalse();
                         clientSocket.clientClose();
+
+
                     }
                     clientThread.interrupt();
+
                 }
                 if (!workhours.isEmpty())
                 {
@@ -53,6 +75,14 @@ public class PointerController {
         });
 
         stage.setOnCloseRequest(e->{
+
+            // save the new parameters of configuration (connection the appManager)
+            try {
+                parameterSerialize.saveData(parametersConnection);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
             if (clientThread != null)
             {
                 if (clientThread.isAlive())
@@ -61,6 +91,7 @@ public class PointerController {
                     {
                         clientSocket.setRunningThreadPingToFalse();
                         clientSocket.clientClose();
+
                     }
                     clientThread.interrupt();
                 }
@@ -113,6 +144,18 @@ public class PointerController {
                             System.out.println("ent still null");
                         else
                         {
+                            // update the new parameters of connection (to the appManager)
+                            if (!parametersConnection.isEmpty())
+                            {
+                                parametersConnection.set(0, ip);
+                                parametersConnection.set(1, port);
+                            }
+                            else
+                            {
+                                parametersConnection.add(ip);
+                                parametersConnection.add(port);
+                            }
+
                             reloadEmployeesCombox();
                             try {
                                 if (workhours.isEmpty())

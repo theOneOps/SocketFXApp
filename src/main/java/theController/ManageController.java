@@ -1,6 +1,7 @@
 package theController;
 
 import Sockets.ServersSocket;
+import theModel.DataNotSendSerialized;
 import theModel.DataSerialize;
 import theView.manage.AppManagement;
 import theView.manage.AppWindowConnect;
@@ -29,6 +30,10 @@ public class ManageController {
         manageApp.getAppWindowConnect().getCreateBtn().setOnAction(e->
                 manageApp.getWindowCreateEnt().createEnterprise());
 
+
+        // button config entrpise paramters
+        btnConfigParametersOfEnt();
+
         // button connection
         btnConnectionClicked();
 
@@ -54,6 +59,94 @@ public class ManageController {
                     }
                 }
             }
+        });
+
+    }
+
+    private void btnConfigParametersOfEnt() {
+        manageApp.getAppWindowConnect().getConfigBtn().setOnAction(e -> {
+            String enterpriseValue = manageApp.getAppWindowConnect().getEnterpriseName().getLCBComboBox()
+                    .getSelectionModel().getSelectedItem();
+            String PasswordValue = manageApp.getAppWindowConnect().getPassword().getLTFTextFieldValue();
+
+            if (dataSerialize.getAllEnterprises().containsKey(enterpriseValue))
+            {
+                if (!PasswordValue.isEmpty() && PasswordValue.equals(dataSerialize.getAllEnterprises().get(enterpriseValue)
+                        .getEntpasswd())) {
+
+                    manageApp.getWindowConfigEnterprise().configEnterprise(dataSerialize.getEntByName(enterpriseValue));
+
+                    // todo :  update the port of the enterprise
+                    //manageApp.getWindowConfigEnterprise().
+                    manageApp.getWindowConfigEnterprise().getSaveConfigBtn().setOnAction(event->{
+                        try {
+                            String newEntName = manageApp.getWindowConfigEnterprise().getNewEnterpriseName().getLTFTextFieldValue();
+                            if (newEntName.equals(enterpriseValue) || (!dataSerialize.getAllEnterprises().containsKey(newEntName)))
+                            {
+                                String newEntPassword = manageApp.getWindowConfigEnterprise().getNewPasswd().getLTFTextFieldValue();
+
+                                if (!newEntPassword.isEmpty())
+                                {
+                                    String newEntPort = manageApp.getWindowConfigEnterprise().getNewPort().getLTFTextFieldValue();
+
+                                    if (newEntPort.matches("[+-]?\\d*(\\.\\d+)?"))
+                                    {
+                                        // change the enterprise's name if needed it !
+                                        if (!enterpriseValue.equals(newEntName))
+                                            dataSerialize.changeEntName(enterpriseValue,
+                                                    newEntName);
+
+                                        // change the enterprise's password
+                                        dataSerialize.changeEntPassword(newEntName,
+                                                newEntPassword);
+
+                                        // change the enterprise's port's to connect with
+                                        dataSerialize.changeEntPort(newEntName, newEntPort);
+
+                                        // update of the workhours not sended before...
+                                        DataNotSendSerialized dataNotSerialized = new DataNotSendSerialized();
+
+                                        ArrayList<String> allCheckInNotSerials = dataNotSerialized.loadData();
+
+                                        for (int i = 0; i < allCheckInNotSerials.size();i++)
+                                        {
+                                            String[] allStrs = allCheckInNotSerials.get(i).split("\\|");
+                                            if (allStrs[0].equals(enterpriseValue))
+                                                allStrs[0] = newEntName;
+                                            allCheckInNotSerials.set(i, String.join("|", allStrs));
+                                        }
+                                        // update workhours 'enterprise
+                                        dataNotSerialized.saveData(allCheckInNotSerials);
+
+                                        // we reload the enterprises' values names
+                                        reloadEnterpriseCombox();
+
+
+                                        AppWindowConnect.PrintAlert("change of configuration ",
+                                                "Update successfully done !");
+
+                                    }
+                                    else
+                                        AppWindowConnect.PrintAlert("Change of the enterprise Port",
+                                                "port should be only a numeric value !");
+                                }
+                                else
+                                    AppWindowConnect.PrintAlert("Change of the enterprise password",
+                                            "the password should not be an empty value !");
+                            }
+                            else
+                                AppWindowConnect.PrintAlert("Change of the enterprise Name",
+                                        "that enterprise's name already existed in the database");
+
+
+                        } catch (IOException | ClassNotFoundException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    });
+                }
+            }else
+                AppWindowConnect.PrintAlert(String.format("Configuration of the enterprise '%s'", enterpriseValue),
+                        "that enterprise doesn't exist");
         });
 
     }
@@ -87,6 +180,7 @@ public class ManageController {
 
                     AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),
                             "Connection succeeded");
+
 
                 } else {
                     AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),

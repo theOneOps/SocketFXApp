@@ -32,6 +32,8 @@ public class AppWindowConnect {
 
     private Stage stage;
 
+    private Button configureEnterprise;
+
 
     // second window
 
@@ -39,19 +41,15 @@ public class AppWindowConnect {
         return stage;
     }
 
-    public void setEnterpriseName(LabeledComboHBox enterpriseName) {
-        this.enterpriseName = enterpriseName;
-    }
-
-    public AppWindowConnect() {
-
+    public AppWindowConnect()
+    {
         enterpriseName = new LabeledComboHBox("Enterprise Name", new String[]{"Enterprise name",
                 "Enterprise 1", "Enterprise 2", "Enterprise 3"});
         password = new LabeledTextFieldHBox("Password", "");
         password.setPromptText("your password");
         password.setDisableToFalse();
         BtnConnexion = new Button("Connection");
-        firstWindowAllBtns = new AllBtns("Quit", "Create Enterprise");
+        firstWindowAllBtns = new AllBtns("Quit","Config", "Create Enterprise");
     }
 
     public void connectToEnterprise()
@@ -66,14 +64,10 @@ public class AppWindowConnect {
 
             VBox container = new VBox();
 
-            HBox containerConnectORCreate = new HBox();
-            containerConnectORCreate.setSpacing(10);
-            containerConnectORCreate.setAlignment(Pos.CENTER);
-
             Region spacer = new Region();
             VBox.setVgrow(spacer, Priority.ALWAYS);
 
-            container.getChildren().addAll(enterpriseName, password,BtnConnexion, spacer, firstWindowAllBtns);
+            container.getChildren().addAll(enterpriseName, password, BtnConnexion, spacer, firstWindowAllBtns);
 
             container.setSpacing(10);
 
@@ -120,7 +114,11 @@ public class AppWindowConnect {
         return firstWindowAllBtns.getBtn1();
     }
 
-    public Button getCreateBtn(){return firstWindowAllBtns.getBtn2();}
+    public Button getConfigBtn(){
+        return firstWindowAllBtns.getBtn2();
+    }
+
+    public Button getCreateBtn(){return firstWindowAllBtns.getBtn3();}
 
     public static void PrintAlert(String title, String content)
     {
