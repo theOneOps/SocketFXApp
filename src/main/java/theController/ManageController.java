@@ -5,7 +5,7 @@ import theModel.DataNotSendSerialized;
 import theModel.DataSerialize;
 import theView.manage.AppManagement;
 import theView.manage.AppWindowConnect;
-import theView.manage.WindowShowEnt;
+import theView.manage.windowShowEnt.WindowShowEnt;
 import theView.pointer.Pointer;
 import java.io.IOException;
 import java.util.ArrayList;

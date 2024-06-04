@@ -24,4 +24,6 @@ module com.example.project {
     opens StartPoint to javafx.fxml;
     exports StartPoint;
     opens theModel to javafx.base, javafx.fxml;
+    exports theView.manage.windowShowEnt;
+    opens theView.manage.windowShowEnt to javafx.fxml;
 }
