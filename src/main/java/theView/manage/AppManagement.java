@@ -1,5 +1,7 @@
 package theView.manage;
 
+import theView.manage.windowShowEnt.WindowShowEnt;
+
 public class AppManagement {
 
     private AppWindowConnect appWindowConnect;

@@ -12,7 +12,6 @@ import java.time.LocalTime;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import static java.lang.Math.abs;
 
 public class ComponentDateHours extends HBox {
     private Label date;
@@ -31,7 +30,7 @@ public class ComponentDateHours extends HBox {
 
 
         Timeline tm = new Timeline();
-        tm.getKeyFrames().add(new KeyFrame(Duration.ZERO, e -> {
+        tm.getKeyFrames().add(new KeyFrame(Duration.ZERO, _ -> {
             hours.setText("Current Hour : " + DateTimeFormatter.ofPattern("HH:mm").format(LocalTime.now()));
             roundHours.setText("Round Hour : "+roundTime());
         }));
@@ -49,10 +48,6 @@ public class ComponentDateHours extends HBox {
         this.getChildren
                 ().addAll(date,spacer, hours, roundHours);
 
-    }
-
-    public String getRoundHours() {
-        return roundHours.getText();
     }
 
 
