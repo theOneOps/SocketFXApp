@@ -13,7 +13,6 @@ import javafx.scene.layout.VBox;
 import theModel.DataSerialize;
 import theModel.JobClasses.Employee;
 import theModel.JobClasses.Enterprise;
-import theView.manage.ShowEntUtility;
 import theView.pointer.Pointer;
 
 import java.io.IOException;
@@ -96,7 +95,7 @@ public class EmployeeTableView {
         startingHourColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Employee, String>>() {
             @Override
             public void handle(TableColumn.CellEditEvent<Employee, String> emp) {
-                if (ShowEntUtility.isValidTime(emp.getNewValue())) {
+                if (UtilityWindowShowEnt.isValidTime(emp.getNewValue())) {
                     emp.getTableView().getItems().get(
                             emp.getTablePosition().getRow()).setStartingHour(emp.getNewValue());
                     try {
@@ -117,7 +116,7 @@ public class EmployeeTableView {
         endingHourColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Employee, String>>() {
             @Override
             public void handle(TableColumn.CellEditEvent<Employee, String> emp) {
-                if (ShowEntUtility.isValidTime(emp.getNewValue())) {
+                if (UtilityWindowShowEnt.isValidTime(emp.getNewValue())) {
                     emp.getTableView().getItems().get(
                             emp.getTablePosition().getRow()).setEndingHour(emp.getNewValue());
                     try {
@@ -179,7 +178,7 @@ public class EmployeeTableView {
 
         Button addEmployeeBtn = new Button("addEmployee");
 
-        addEmployeeBtn.setOnAction(_ -> {
+        addEmployeeBtn.setOnAction(e -> {
             try {
                 Employee newEmp = new Employee("FirstName",
                         "LastName", "00:00",

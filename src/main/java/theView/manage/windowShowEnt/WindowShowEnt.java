@@ -37,7 +37,7 @@ public class WindowShowEnt {
 
             connectEnt = createEntClass;
 
-            stage.setOnCloseRequest(_ -> {
+            stage.setOnCloseRequest(e -> {
                 if (wserverThread.isAlive()) {
                     try {
                         wserversSocket.shutDown();
@@ -52,7 +52,7 @@ public class WindowShowEnt {
 
             welcomeWindowBtn = new Button("welcome window");
 
-            welcomeWindowBtn.setOnAction(_ -> {
+            welcomeWindowBtn.setOnAction(e -> {
                 try {
                     if (wserverThread.isAlive())
                         wserversSocket.shutDown();
@@ -89,17 +89,17 @@ public class WindowShowEnt {
 
             contents = new HBox();
 
-            seeEmps.setOnAction(_ -> {
+            seeEmps.setOnAction(e -> {
                 contents.getChildren().clear();
                 contents.getChildren().addAll(EmployeeTableView.seeTableAllEmp(d, ent));
             });
 
-            savePointers.setOnAction(_ -> {
+            savePointers.setOnAction(e -> {
                 contents.getChildren().clear();
                 contents.getChildren().add(WorkHourTableView.seeTableAllPointers(ent, true));
             });
 
-            currentPointers.setOnAction(_ -> {
+            currentPointers.setOnAction(e -> {
                 contents.getChildren().clear();
                 contents.getChildren().add(WorkHourTableView.seeTableAllPointers(ent, false));
             });
@@ -125,7 +125,7 @@ public class WindowShowEnt {
     }
 
     public static void quitWindowShowEvent(Stage stage) {
-        quitWindow.setOnAction(_ -> {
+        quitWindow.setOnAction(e -> {
             System.out.println("Quit button pressed");
             try {
                 if (wserverThread.isAlive())
@@ -156,20 +156,20 @@ public class WindowShowEnt {
             theMenu.getMenus().addAll(SeeEmpDailyPointers, AllEmpPointers);
 
             VBox empContents = new VBox();
-            empContents.getChildren().addAll(theView.manage.windowShowEnt.EmployeePointerView.getEmployeePointers(entName, d, emp, false));
+            empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entName, d, emp, false));
 
-            seeDaily.setOnAction(_ -> {
+            seeDaily.setOnAction(event -> {
                 empContents.getChildren().clear();
-                empContents.getChildren().addAll(theView.manage.windowShowEnt.EmployeePointerView.getEmployeePointers(entName, d, emp, false));
+                empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entName, d, emp, false));
             });
 
-            seeAll.setOnAction(_ -> {
+            seeAll.setOnAction(event -> {
                 empContents.getChildren().clear();
-                empContents.getChildren().addAll(theView.manage.windowShowEnt.EmployeePointerView.getEmployeePointers(entName, d, emp, true));
+                empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entName, d, emp, true));
             });
 
             Button quitWindow = new Button("Quit");
-            quitWindow.setOnAction(_ -> {
+            quitWindow.setOnAction(e -> {
                 openViewCheckInPointers[1] = false;
                 stage.close();
             });
@@ -182,7 +182,7 @@ public class WindowShowEnt {
             stage.setScene(scene);
             stage.show();
 
-            stage.setOnCloseRequest(_ -> openViewCheckInPointers[1] = false);
+            stage.setOnCloseRequest(e -> openViewCheckInPointers[1] = false);
 
             openViewCheckInPointers[1] = true;
         }

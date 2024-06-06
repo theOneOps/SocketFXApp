@@ -8,6 +8,7 @@ import javafx.scene.layout.VBox;
 import theModel.JobClasses.Enterprise;
 import theModel.JobClasses.WorkHour;
 
+
 public class WorkHourTableView {
 
     private static ObservableList<WorkHour> dataPointers;

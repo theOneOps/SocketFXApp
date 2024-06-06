@@ -13,7 +13,6 @@ import javafx.scene.layout.VBox;
 import theModel.DataSerialize;
 import theModel.JobClasses.Employee;
 import theModel.JobClasses.WorkHourEntry;
-import theView.manage.ShowEntUtility;
 import theView.pointer.Pointer;
 
 import java.io.IOException;
@@ -38,7 +37,7 @@ public class EmployeePointerView {
 
         Button addWorkHour = new Button("add workhour");
 
-        addWorkHour.setOnAction(_ -> {
+        addWorkHour.setOnAction(e -> {
             try {
                 WorkHourEntry newEntry = new WorkHourEntry(LocalDate.now(), LocalTime.parse("00:00"));
                 d.addNewWorkHour(entName, emp.getUuid(), newEntry.getDate(), newEntry.getTime());
@@ -98,7 +97,7 @@ public class EmployeePointerView {
                 System.out.println("change of the time's employee workhour !");
                 WorkHourEntry entry = event.getRowValue();
                 String newHour = event.getNewValue();
-                if (ShowEntUtility.isValidTime(newHour)) {
+                if (UtilityWindowShowEnt.isValidTime(newHour)) {
                     try {
                         d.modifyTimeWorkHour(entName, emp.getUuid(),
                                 entry.getDate(), entry.getTime(), newHour);
@@ -124,7 +123,7 @@ public class EmployeePointerView {
             public void handle(TableColumn.CellEditEvent<WorkHourEntry, String> event) {
                 WorkHourEntry entry = event.getRowValue();
                 String newDate = event.getNewValue();
-                if (ShowEntUtility.isValidDate(newDate)) {
+                if (UtilityWindowShowEnt.isValidDate(newDate)) {
                     try {
                         d.modifyDateWorkHour(entName, emp.getUuid(),
                                 entry.getDate(), newDate, entry.getTime());
