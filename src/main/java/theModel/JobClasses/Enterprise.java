@@ -66,20 +66,14 @@ public class Enterprise implements Serializable {
     public ArrayList<String> getAllEmployeesName()
     {
         ArrayList<String> AllEmployeesName = new ArrayList<>();
-        //ArrayList<String> defaultEntreprises = new ArrayList<>(List.of(new String[]{"Entreprise1", "Entreprise2"}));
-//        if (defaultEntreprises.contains(getEntname())) {
-//            AllEmployeesName.add("No employees");
-//        }
-//        else
-//        {
-            if (employees.isEmpty())
-                AllEmployeesName.add("No employees");
-            else
-            {
-                for (String id : employees.keySet())
-                    AllEmployeesName.add(String.format("%s %s (%s) ", employees.get(id).getEmpName(),
-                            employees.get(id).getEmpPrename(), id));
-            }
+        if (employees.isEmpty())
+            AllEmployeesName.add("No employees");
+        else
+        {
+            for (String id : employees.keySet())
+                AllEmployeesName.add(String.format("%s %s (%s) ", employees.get(id).getEmpName(),
+                        employees.get(id).getEmpPrename(), id));
+        }
 
         return AllEmployeesName;
     }

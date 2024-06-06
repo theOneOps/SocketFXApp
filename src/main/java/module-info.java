@@ -12,7 +12,6 @@ module com.example.project {
     exports theView.pointer;
     exports theView.utils;
 
-
     exports theModel;
     opens theModel.JobClasses to javafx.base;
     exports theModel.JobClasses;

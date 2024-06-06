@@ -9,7 +9,6 @@ import theModel.DataSerialize;
 import theView.pointer.Pointer;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class PointerMain extends Application {
 

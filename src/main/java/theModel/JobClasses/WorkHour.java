@@ -61,6 +61,9 @@ public class WorkHour implements Serializable {
             int idx = pointing.get(olderDateLt).indexOf(LocalTime.parse(hour));
             if (idx != -1)
                 pointing.get(olderDateLt).remove(LocalTime.parse(hour));
+
+            if (pointing.get(olderDateLt).isEmpty())
+                pointing.remove(olderDateLt);
         }
     }
 
