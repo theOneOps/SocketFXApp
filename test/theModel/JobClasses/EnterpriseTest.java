@@ -70,11 +70,15 @@ public class EnterpriseTest {
     {
         for (Employee emp: allEmps)
             ent.addEmployee(emp);
-        ArrayList<String> empNames = new ArrayList<>();
-        empNames.add(String.format("%s %s (%s) ", allEmps[1].getEmpName(), allEmps[1].getEmpPrename(),
-                allEmps[1].getUuid()));
-        empNames.add(String.format("%s %s (%s) ", allEmps[0].getEmpName(), allEmps[0].getEmpPrename(),
-                allEmps[0].getUuid()));
-        assertEquals(empNames, ent.getAllEmployeesName());
+
+        assertEquals(allEmps[0].getUuid(), ent.getEmployees().get(allEmps[0].getUuid()).getUuid());
+        assertEquals(allEmps[0].getEmpName(), ent.getEmployees().get(allEmps[0].getUuid()).getEmpName());
+        assertEquals(allEmps[0].getEmpPrename(), ent.getEmployees().get(allEmps[0].getUuid()).getEmpPrename());
+        assertEquals(allEmps[0].getStartingHour(), ent.getEmployees().get(allEmps[0].getUuid()).getStartingHour());
+        assertEquals(allEmps[0].getEndingHour(), ent.getEmployees().get(allEmps[0].getUuid()).getEndingHour());
+
+        assertEquals(allEmps[1].getUuid(), ent.getEmployees().get(allEmps[1].getUuid()).getUuid());
+        assertEquals(allEmps[1].getEmpName(), ent.getEmployees().get(allEmps[1].getUuid()).getEmpName());
+        assertEquals(allEmps[1].getEmpPrename(), ent.getEmployees().get(allEmps[1].getUuid()).getEmpPrename());
     }
 }

@@ -3,6 +3,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
+
 public class Enterprise implements Serializable {
 
     @Serial
@@ -106,4 +108,22 @@ public class Enterprise implements Serializable {
     public void setEntpasswd(String entpasswd) {
         Entpasswd = entpasswd;
     }
+
+    // Override equals and hashCode for the test in the test Modules
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Enterprise that = (Enterprise) o;
+        return Objects.equals(Entname, that.getEntname()) &&
+                Objects.equals(Entpasswd, that.getEntpasswd()) &&
+                Objects.equals(EntPort, that.getEntPort()) &&
+                Objects.equals(employees, that.employees);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(Entname, Entpasswd, EntPort, employees);
+    }
+
 }

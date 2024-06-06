@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class DataSerialize {
 
     private HashMap<String, Enterprise> allEnterprises = new HashMap<>();
-    private final String fileText = "data.ser";
+    private String fileText = "data.ser";
 
     public void saveData() throws IOException {
         // save all enterprises
@@ -133,7 +133,6 @@ public class DataSerialize {
 
     public Enterprise getEnterpriseClassByPort(String port)
     {
-        Enterprise res = null;
         for(Enterprise ent : this.allEnterprises.values())
         {
             if (ent.getEntPort().equals(port))
@@ -171,5 +170,9 @@ public class DataSerialize {
             res.append(String.format("entName %s -> %s \n", s, allEnterprises.get(s)));
         }
         return res.toString();
+    }
+
+    public void setFileText(String fileText) {
+        this.fileText = fileText;
     }
 }

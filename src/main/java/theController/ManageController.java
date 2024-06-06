@@ -27,7 +27,7 @@ public class ManageController {
 
         reloadEnterpriseCombox();
 
-        manageApp.getAppWindowConnect().getCreateBtn().setOnAction(_ ->
+        manageApp.getAppWindowConnect().getCreateBtn().setOnAction(e ->
                 manageApp.getWindowCreateEnt().createEnterprise());
 
 
@@ -43,7 +43,7 @@ public class ManageController {
         // Method to handle an enterprise's creation
         btnCreateEntEvent();
 
-        manageApp.getAppWindowConnect().getStage().setOnCloseRequest(_ ->{
+        manageApp.getAppWindowConnect().getStage().setOnCloseRequest(e ->{
             try {
                 dataSerialize.saveData();
             } catch (IOException ex) {
@@ -64,7 +64,7 @@ public class ManageController {
     }
 
     private void btnConfigParametersOfEnt() {
-        manageApp.getAppWindowConnect().getConfigBtn().setOnAction(_ -> {
+        manageApp.getAppWindowConnect().getConfigBtn().setOnAction(e -> {
             String enterpriseValue = manageApp.getAppWindowConnect().getEnterpriseName().getLCBComboBox()
                     .getSelectionModel().getSelectedItem();
             String PasswordValue = manageApp.getAppWindowConnect().getPassword().getLTFTextFieldValue();
@@ -78,7 +78,7 @@ public class ManageController {
 
                     // todo :  update the port of the enterprise
                     //manageApp.getWindowConfigEnterprise().
-                    manageApp.getWindowConfigEnterprise().getSaveConfigBtn().setOnAction(_ ->{
+                    manageApp.getWindowConfigEnterprise().getSaveConfigBtn().setOnAction(event ->{
                         try {
                             String newEntName = manageApp.getWindowConfigEnterprise().getNewEnterpriseName().getLTFTextFieldValue();
                             if (newEntName.equals(enterpriseValue) || (!dataSerialize.getAllEnterprises().containsKey(newEntName)))
@@ -153,7 +153,7 @@ public class ManageController {
 
     public void btnConnectionClicked()
     {
-        manageApp.getAppWindowConnect().getBtnConnexion().setOnAction(_ -> {
+        manageApp.getAppWindowConnect().getBtnConnexion().setOnAction(e -> {
             String enterpriseValue = manageApp.getAppWindowConnect().getEnterpriseName().getLCBComboBox()
                     .getSelectionModel().getSelectedItem();
             String PasswordValue = manageApp.getAppWindowConnect().getPassword().getLTFTextFieldValue();
@@ -196,7 +196,7 @@ public class ManageController {
 
     public void quitConnectWindowClosedEvent()
     {
-        manageApp.getAppWindowConnect().getQuitBtn().setOnAction(_ -> {
+        manageApp.getAppWindowConnect().getQuitBtn().setOnAction(e -> {
             System.out.println("Quit button pressed");
             try {
                 dataSerialize.saveData();
@@ -229,7 +229,7 @@ public class ManageController {
     public void btnCreateEntEvent() {
         if (manageApp.getWindowCreateEnt().getAllBtns().getBtn2() != null)
         {
-            manageApp.getWindowCreateEnt().getAllBtns().getBtn2().setOnAction(_ -> {
+            manageApp.getWindowCreateEnt().getAllBtns().getBtn2().setOnAction(e -> {
                 String entName = manageApp.getWindowCreateEnt().getNewEnterpriseName().getLTFTextFieldValue();
                 String entpasswd = manageApp.getWindowCreateEnt().getNewPasswd().getLTFTextFieldValue();
                 String entPort = manageApp.getWindowCreateEnt().getNewPort().getLTFTextFieldValue();
