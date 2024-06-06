@@ -23,22 +23,22 @@ public class ComponentDateHours extends HBox {
 
     ComponentDateHours() {
         super();
-        date = new Label("Date : " + LocalDate.now());
+        date = new Label(String.format("Date : %s", LocalDate.now()));
 
         time = LocalTime.now();
-        hours = new Label();
+        hours = new Label("");  // Initialisation du champ 'hours'
+        roundHours = new Label("");  // Initialisation du champ 'roundHours'
 
 
         Timeline tm = new Timeline();
-        tm.getKeyFrames().add(new KeyFrame(Duration.ZERO, _ -> {
-            hours.setText("Current Hour : " + DateTimeFormatter.ofPattern("HH:mm").format(LocalTime.now()));
-            roundHours.setText("Round Hour : "+roundTime());
+        tm.getKeyFrames().add(new KeyFrame(Duration.ZERO, e -> {
+            hours.setText(String.format("Current Hour : %s", DateTimeFormatter.ofPattern("HH:mm")
+                    .format(LocalTime.now())));
+            roundHours.setText(String.format("Round Hour : %s", roundTime()));
         }));
         tm.getKeyFrames().add(new KeyFrame(Duration.seconds(1))); // update every second
         tm.setCycleCount(Timeline.INDEFINITE); // repeat indefinitely
         tm.play();
-
-        roundHours = new Label();
 
         this.setSpacing(5);
 

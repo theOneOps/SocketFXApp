@@ -1,7 +1,6 @@
 package StartPoint;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import theController.PointerController;
@@ -18,7 +17,7 @@ public class PointerMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
-        Pointer pointer = new Pointer(setOnAction -> {
+        Pointer pointer = new Pointer(e -> {
             primaryStage.close();
         });
 

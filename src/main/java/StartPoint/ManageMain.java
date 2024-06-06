@@ -1,7 +1,6 @@
 package StartPoint;
 
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import theController.ManageController;
 import theModel.DataSerialize;
