@@ -12,24 +12,33 @@ public class Enterprise implements Serializable {
 
     private String Entname;
     private HashMap<String, Employee> employees = new HashMap<>();
-    private String Entpasswd;
+//    private String Entpasswd;
     private String EntPort;
 
     public Enterprise()
     {}
 
-
-
-    // to create new enterprise
-    public Enterprise(String name, String passwd, String port)
+    public Enterprise(String name, String port)
     {
         if (port.matches("\\d+"))
         {
             this.Entname = name;
-            this.Entpasswd = passwd;
             this.EntPort = port;
         }
     }
+
+
+
+//    // to create new enterprise
+//    public Enterprise(String name, String passwd, String port)
+//    {
+//        if (port.matches("\\d+"))
+//        {
+//            this.Entname = name;
+//            this.Entpasswd = passwd;
+//            this.EntPort = port;
+//        }
+//    }
 
     public String getEntname() {
         return Entname;
@@ -80,10 +89,10 @@ public class Enterprise implements Serializable {
         return AllEmployeesName;
     }
 
-    public String getEntpasswd()
-    {
-        return Entpasswd;
-    }
+//    public String getEntpasswd()
+//    {
+//        return Entpasswd;
+//    }
 
 
     @Override
@@ -105,9 +114,9 @@ public class Enterprise implements Serializable {
         Entname = entname;
     }
 
-    public void setEntpasswd(String entpasswd) {
-        Entpasswd = entpasswd;
-    }
+//    public void setEntpasswd(String entpasswd) {
+//        Entpasswd = entpasswd;
+//    }
 
     // Override equals and hashCode for the test in the test Modules
     @Override
@@ -116,14 +125,14 @@ public class Enterprise implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Enterprise that = (Enterprise) o;
         return Objects.equals(Entname, that.getEntname()) &&
-                Objects.equals(Entpasswd, that.getEntpasswd()) &&
+//                Objects.equals(Entpasswd, that.getEntpasswd()) &&
                 Objects.equals(EntPort, that.getEntPort()) &&
                 Objects.equals(employees, that.employees);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Entname, Entpasswd, EntPort, employees);
+        return Objects.hash(Entname, EntPort, employees);
     }
-
+    //                                                  Entpasswd,
 }

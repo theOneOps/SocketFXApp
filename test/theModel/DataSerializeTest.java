@@ -37,7 +37,9 @@ public class DataSerializeTest {
 
     @Test
     public void saveAndLoadData() throws IOException, ClassNotFoundException {
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
+        //dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
 
         DataSerialize loadedDataSerialize = new DataSerialize();
         loadedDataSerialize.setFileText(testfile);
@@ -49,8 +51,11 @@ public class DataSerializeTest {
 
     @Test
     public void getAllEnterprises() throws IOException {
-        Enterprise enterprise = new Enterprise("TestEnterprise", "password", "1234");
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        Enterprise enterprise = new Enterprise("TestEnterprise", "1234");
+//        Enterprise enterprise = new Enterprise("TestEnterprise", "password", "1234");
+//        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
+
         HashMap<String, Enterprise> ents = new HashMap<>();
         ents.put(enterprise.getEntname(), enterprise);
 
@@ -59,16 +64,20 @@ public class DataSerializeTest {
 
     @Test
     public void getEntByName() throws IOException {
-        Enterprise enterprise = new Enterprise("TestEnterprise", "password", "1234");
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        Enterprise enterprise = new Enterprise("TestEnterprise", "1234");
+//        Enterprise enterprise = new Enterprise("TestEnterprise", "password", "1234");
+//        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
 
         assertEquals(enterprise, dataSerialize.getEntByName("TestEnterprise"));
     }
 
     @Test
     public void addNewEmployeeToEnterprise()throws IOException {
-        Enterprise enterprise = new Enterprise("TestEnterprise", "password", "1234");
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        Enterprise enterprise = new Enterprise("TestEnterprise", "1234");
+//        Enterprise enterprise = new Enterprise("TestEnterprise", "password", "1234");
+//        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
         dataSerialize.addNewEmployeeToEnterprise("TestEnterprise", "John", "Doe", "09:00", "17:00");
 
         Enterprise ent = dataSerialize.getEntByName("TestEnterprise");
@@ -81,7 +90,8 @@ public class DataSerializeTest {
 
     @Test
     public void removeEmployeeFromEnterprise() throws IOException {
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+//        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
         Employee employee = new Employee("John", "Doe", "09:00", "17:00",
                 "");
         dataSerialize.addNewEmployeeToEnterprise("TestEnterprise", employee);
@@ -96,7 +106,7 @@ public class DataSerializeTest {
 
     @Test
     public void addNewEnterprise() throws IOException {
-        dataSerialize.addNewEnterprise("NewEnterprise", "password", "5678");
+        dataSerialize.addNewEnterprise("NewEnterprise", "5678");
 
         assertNotNull(dataSerialize.getEntByName("NewEnterprise"));
         assertEquals("NewEnterprise", dataSerialize.getEntByName("NewEnterprise").getEntname());
@@ -105,7 +115,7 @@ public class DataSerializeTest {
 
     @Test
     public void modifyEmpName() throws IOException {
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
         Employee employee = new Employee("John", "Doe", "09:00", "17:00","");
         dataSerialize.addNewEmployeeToEnterprise("TestEnterprise", employee);
 
@@ -118,7 +128,7 @@ public class DataSerializeTest {
 
     @Test
     public void modifyEmpPrename() throws IOException {
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
         Employee employee = new Employee("John", "Doe", "09:00", "17:00","");
         dataSerialize.addNewEmployeeToEnterprise("TestEnterprise", employee);
 
@@ -131,7 +141,7 @@ public class DataSerializeTest {
 
     @Test
     public void modifyEmpStartingHour() throws IOException {
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
         Employee employee = new Employee("John", "Doe", "09:00", "17:00","");
         dataSerialize.addNewEmployeeToEnterprise("TestEnterprise", employee);
 
@@ -144,7 +154,7 @@ public class DataSerializeTest {
 
     @Test
     public void modifyEmpEndingHour() throws IOException {
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
         Employee employee = new Employee("John", "Doe", "09:00", "17:00","");
         dataSerialize.addNewEmployeeToEnterprise("TestEnterprise", employee);
 
@@ -157,7 +167,7 @@ public class DataSerializeTest {
 
     @Test
     public void modifyEmpDepartement() throws IOException {
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
         Employee employee = new Employee("John", "Doe", "09:00", "17:00","");
         dataSerialize.addNewEmployeeToEnterprise("TestEnterprise", employee);
 
@@ -170,7 +180,7 @@ public class DataSerializeTest {
 
     @Test
     public void addNewWorkHour() throws IOException {
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
         Employee employee = new Employee("John", "Doe", "09:00", "17:00","");
         dataSerialize.addNewEmployeeToEnterprise("TestEnterprise", employee);
 
@@ -188,7 +198,7 @@ public class DataSerializeTest {
     @Test
     public void modifyTimeWorkHour() throws IOException {
 
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
         Employee employee = new Employee("John", "Doe", "09:00", "17:00","");
         dataSerialize.addNewEmployeeToEnterprise("TestEnterprise", employee);
         dataSerialize.addNewWorkHour("TestEnterprise", employee.getUuid(), LocalDate.now().toString(),
@@ -204,7 +214,7 @@ public class DataSerializeTest {
 
     @Test
     public void modifyDateWorkHour() throws IOException {
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
         Employee employee = new Employee("John", "Doe", "09:00", "17:00", "");
         dataSerialize.addNewEmployeeToEnterprise("TestEnterprise", employee);
         dataSerialize.addNewWorkHour("TestEnterprise", employee.getUuid(), LocalDate.now().toString(),
@@ -221,7 +231,7 @@ public class DataSerializeTest {
 
     @Test
     public void removeWorkHour() throws IOException {
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
         Employee employee = new Employee("John", "Doe", "09:00", "17:00","");
         dataSerialize.addNewEmployeeToEnterprise("TestEnterprise", employee);
 
@@ -238,28 +248,28 @@ public class DataSerializeTest {
 
     @Test
     public void getEnterpriseClassByPort() throws IOException {
-        dataSerialize.addNewEnterprise("Enterprise1", "password1", "1234");
-        dataSerialize.addNewEnterprise("Enterprise2", "password2", "5678");
+        dataSerialize.addNewEnterprise("Enterprise1","1234");
+        dataSerialize.addNewEnterprise("Enterprise2", "5678");
 
         Enterprise foundEnterprise = dataSerialize.getEnterpriseClassByPort("5678");
 
         assertNotNull(foundEnterprise);
         assertEquals("Enterprise2", foundEnterprise.getEntname());
     }
-
-    @Test
-    public void changeEntPassword() throws IOException {
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
-
-        dataSerialize.changeEntPassword("TestEnterprise", "newPassword");
-
-        assertEquals("newPassword", dataSerialize.getEntByName("TestEnterprise").getEntpasswd());
-
-    }
+//
+//    @Test
+//    public void changeEntPassword() throws IOException {
+//        dataSerialize.addNewEnterprise("TestEnterprise","1234");
+//
+//        //dataSerialize.changeEntPassword("TestEnterprise", "newPassword");
+//
+//        assertEquals("newPassword", dataSerialize.getEntByName("TestEnterprise").getEntpasswd());
+//
+//    }
 
     @Test
     public void changeEntPort() throws IOException {
-        dataSerialize.addNewEnterprise("TestEnterprise", "password", "1234");
+        dataSerialize.addNewEnterprise("TestEnterprise", "1234");
 
         dataSerialize.changeEntPort("TestEnterprise", "5678");
 
@@ -268,7 +278,7 @@ public class DataSerializeTest {
 
     @Test
     public void changeEntName() throws IOException {
-        dataSerialize.addNewEnterprise("OldName", "password", "1234");
+        dataSerialize.addNewEnterprise("OldName", "1234");
 
         dataSerialize.changeEntName("OldName", "NewName");
 

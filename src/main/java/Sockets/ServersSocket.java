@@ -1,6 +1,8 @@
 package Sockets;
 
 import theModel.DataSerialize;
+import theModel.JobClasses.WorkHourEntry;
+import theView.manage.windowShowEnt.EmployeePointerView;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -106,6 +108,8 @@ public class ServersSocket implements Runnable {
                         {
                             data.addNewWorkHour(messageSplit[0], messageSplit[1],
                                     messageSplit[2], messageSplit[3]);
+
+                            EmployeePointerView.loadWorkHour(messageSplit[1], new WorkHourEntry(messageSplit[2],messageSplit[3]));
                         }
 
                         System.out.printf("receive something else from client ! -> %s", message);

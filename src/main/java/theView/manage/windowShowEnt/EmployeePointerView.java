@@ -14,7 +14,6 @@ import theModel.DataSerialize;
 import theModel.JobClasses.Employee;
 import theModel.JobClasses.WorkHourEntry;
 import theView.pointer.Pointer;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,16 +22,25 @@ import java.util.HashMap;
 
 public class EmployeePointerView {
 
-    public static VBox getEmployeePointers(String entName, DataSerialize d, Employee emp, boolean allpointers) {
+    public static ObservableList<WorkHourEntry> workHourEntries = null;
+    public static String theCurrentEmpId = "";
+
+    public static VBox getEmployeePointers(String entPort, DataSerialize d, Employee emp, boolean allpointers) throws IOException, ClassNotFoundException {
         VBox EmpView = new VBox();
+        theCurrentEmpId = emp.getUuid();
 
         TableView<WorkHourEntry> employeeTableView = new TableView<>();
         employeeTableView.setEditable(true);
 
+        DataSerialize data = new DataSerialize();
+        data.loadData();
+
+        String entName = data.getEnterpriseClassByPort(entPort).getEntname();
+
         TableColumn<WorkHourEntry, String> dateColumn = getWorkHourEntryStringTableColumn(entName, d, emp);
         TableColumn<WorkHourEntry, String> timesColumn = getHourEntryStringTableColumn(entName, d, emp);
 
-        ObservableList<WorkHourEntry> workHourEntries = FXCollections.observableArrayList();
+        workHourEntries = FXCollections.observableArrayList();
         HashMap<LocalDate, ArrayList<LocalTime>> pointing = emp.getWorkHour().getPointing();
 
         Button addWorkHour = new Button("add workhour");
@@ -40,7 +48,7 @@ public class EmployeePointerView {
         addWorkHour.setOnAction(e -> {
             try {
                 WorkHourEntry newEntry = new WorkHourEntry(LocalDate.now(), LocalTime.parse("00:00"));
-                d.addNewWorkHour(entName, emp.getUuid(), newEntry.getDate(), newEntry.getTime());
+                d.addNewWorkHour(entPort, emp.getUuid(), newEntry.getDate(), newEntry.getTime());
                 workHourEntries.add(newEntry);
                 Pointer.PrintAlert(String.format("creation of a new workhour for employee %s", emp.getEmpName()),
                         "workhour added successfully !");
@@ -72,11 +80,12 @@ public class EmployeePointerView {
 
         EmpView.setSpacing(10);
 
+        // remove a workhour
         employeeTableView.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2 && event.getButton() == MouseButton.SECONDARY) {
+            if (event.getClickCount() == 1 && event.getButton() == MouseButton.SECONDARY) {
                 WorkHourEntry selectedItem = employeeTableView.getSelectionModel().getSelectedItem();
                 try {
-                    d.removeWorkHour(entName, emp.getUuid(), selectedItem.getDate(), selectedItem.getTime());
+                    d.removeWorkHour(entPort, emp.getUuid(), selectedItem.getDate(), selectedItem.getTime());
                     workHourEntries.remove(selectedItem);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -87,7 +96,16 @@ public class EmployeePointerView {
         return EmpView;
     }
 
-    private static TableColumn<WorkHourEntry, String> getHourEntryStringTableColumn(String entName, DataSerialize d, Employee emp) {
+    public static void loadWorkHour(String uuid, WorkHourEntry entry)
+    {
+        if (workHourEntries != null)
+        {
+            if (theCurrentEmpId.equals(uuid))
+                workHourEntries.add(entry);
+        }
+    }
+
+    private static TableColumn<WorkHourEntry, String> getHourEntryStringTableColumn(String entPort, DataSerialize d, Employee emp) {
         TableColumn<WorkHourEntry, String> timesColumn = new TableColumn<>("Times");
         timesColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
         timesColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -99,7 +117,7 @@ public class EmployeePointerView {
                 String newHour = event.getNewValue();
                 if (UtilityWindowShowEnt.isValidTime(newHour)) {
                     try {
-                        d.modifyTimeWorkHour(entName, emp.getUuid(),
+                        d.modifyTimeWorkHour(entPort, emp.getUuid(),
                                 entry.getDate(), entry.getTime(), newHour);
                         entry.setTime(newHour);
                     } catch (IOException e) {
@@ -113,7 +131,7 @@ public class EmployeePointerView {
         return timesColumn;
     }
 
-    private static TableColumn<WorkHourEntry, String> getWorkHourEntryStringTableColumn(String entName, DataSerialize d, Employee emp) {
+    private static TableColumn<WorkHourEntry, String> getWorkHourEntryStringTableColumn(String entPort, DataSerialize d, Employee emp) {
         TableColumn<WorkHourEntry, String> dateColumn = new TableColumn<>("Day Of Work");
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
 
@@ -125,7 +143,7 @@ public class EmployeePointerView {
                 String newDate = event.getNewValue();
                 if (UtilityWindowShowEnt.isValidDate(newDate)) {
                     try {
-                        d.modifyDateWorkHour(entName, emp.getUuid(),
+                        d.modifyDateWorkHour(entPort, emp.getUuid(),
                                 entry.getDate(), newDate, entry.getTime());
                         entry.setDate(newDate);
                     } catch (IOException e) {

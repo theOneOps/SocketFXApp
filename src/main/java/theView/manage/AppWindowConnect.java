@@ -22,7 +22,7 @@ public class AppWindowConnect {
 
     private LabeledComboHBox enterpriseName;
 
-    private LabeledTextFieldHBox password;
+//    private LabeledTextFieldHBox password;
 
     private Button BtnConnexion;
 
@@ -45,9 +45,9 @@ public class AppWindowConnect {
     {
         enterpriseName = new LabeledComboHBox("Enterprise Name", new String[]{"Enterprise name",
                 "Enterprise 1", "Enterprise 2", "Enterprise 3"});
-        password = new LabeledTextFieldHBox("Password", "");
-        password.setPromptText("your password");
-        password.setDisableToFalse();
+//        password = new LabeledTextFieldHBox("Password", "");
+//        password.setPromptText("your password");
+//        password.setDisableToFalse();
         BtnConnexion = new Button("Connection");
         firstWindowAllBtns = new AllBtns("Quit","Config", "Create Enterprise");
     }
@@ -66,8 +66,8 @@ public class AppWindowConnect {
 
             Region spacer = new Region();
             VBox.setVgrow(spacer, Priority.ALWAYS);
-
-            container.getChildren().addAll(enterpriseName, password, BtnConnexion, spacer, firstWindowAllBtns);
+            //                                            password,
+            container.getChildren().addAll(enterpriseName, BtnConnexion, spacer, firstWindowAllBtns);
 
             container.setSpacing(10);
 
@@ -75,7 +75,7 @@ public class AppWindowConnect {
 
             container.setPadding(new Insets(10));
 
-            Scene scene = new Scene(container, 300, 200);
+            Scene scene = new Scene(container, 300, 150);
 
             stage.setScene(scene);
 
@@ -98,9 +98,9 @@ public class AppWindowConnect {
         return enterpriseName;
     }
 
-    public LabeledTextFieldHBox getPassword() {
-        return password;
-    }
+//    public LabeledTextFieldHBox getPassword() {
+//        return password;
+//    }
 
     public Button getBtnConnexion() {
         return BtnConnexion;

@@ -84,9 +84,11 @@ public class ClientSocket implements Runnable {
             System.out.println("Connection reset, server might be down");
         } catch (IOException e) {
             System.out.println("IOException while reading from server: " + e.getMessage());
-        } finally {
+        }
+        finally {
             serverConnected = false;
             System.out.println("Server disconnected");
+            clientClose();
         }
     }
 
