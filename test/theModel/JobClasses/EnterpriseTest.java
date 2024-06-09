@@ -7,7 +7,8 @@ import static org.junit.Assert.*;
 
 public class EnterpriseTest {
 
-    private Enterprise ent = new Enterprise("microsoft", "micro", "10000");
+    private Enterprise ent = new Enterprise("microsoft", "10000");
+//    private Enterprise ent = new Enterprise("microsoft", "micro", "10000");
     private final Employee[] allEmps = {new Employee("ted", "mosby", "12:00", "17:30", ""),
             new Employee("barney", "stinsky", "08:30", "20:30", "")};
 
@@ -21,10 +22,10 @@ public class EnterpriseTest {
         assertEquals("10000", ent.getEntPort());
     }
 
-    @org.junit.Test
-    public void getEntpasswd() {
-        assertEquals("micro", ent.getEntpasswd());
-    }
+//    @org.junit.Test
+//    public void getEntpasswd() {
+//        assertEquals("micro", ent.getEntpasswd());
+//    }
 
     @org.junit.Test
     public void setEntname() {
@@ -32,12 +33,12 @@ public class EnterpriseTest {
         assertEquals("yahoo", ent.getEntname());
     }
 
-    @org.junit.Test
-    public void setEntpasswd() {
-        ent.setEntpasswd("yah");
-        assertEquals("yah", ent.getEntpasswd());
-
-    }
+//    @org.junit.Test
+//    public void setEntpasswd() {
+//        ent.setEntpasswd("yah");
+//        assertEquals("yah", ent.getEntpasswd());
+//
+//    }
 
     @org.junit.Test
     public void setEntPort() {

@@ -9,9 +9,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import theModel.DataSerialize;
+import theModel.ParameterSerialize;
 import theView.utils.AllBtns;
 import theView.utils.LabeledComboHBox;
-import theView.utils.LabeledTextFieldHBox;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class Pointer extends VBox {
 
@@ -19,29 +23,18 @@ public class Pointer extends VBox {
     private LabeledComboHBox Employees;
     private AllBtns logincheckInOut;
     private Button Quit;
-
-    private LabeledTextFieldHBox port;
-    private LabeledTextFieldHBox ip;
+    private ChangePointerConfig config;
 
     public Pointer(EventHandler<ActionEvent> quit)
     {
         super();
+        config = new ChangePointerConfig();
+        config.WindowConfigPointer();
         DateHours = new ComponentDateHours();
         Employees = new LabeledComboHBox("Employees", new String[]{"choose your name"});
 
-        HBox ipPort = new HBox();
-        port = new LabeledTextFieldHBox("Port : ", "", 100);
-        port.setPromptText("Enter Port Number");
-        ip = new LabeledTextFieldHBox("IP : ", "", 100);
-        ip.setPromptText("Enter IP Address");
-        Region spacerOne = new Region();
-        HBox.setHgrow(spacerOne, Priority.ALWAYS);
-        ipPort.getChildren().addAll(ip, spacerOne, port);
-        ip.setDisableToFalse();
-        port.setDisableToFalse();
-
         HBox buttons = new HBox();
-        logincheckInOut = new AllBtns("Connection", "Check In/Out");
+        logincheckInOut = new AllBtns("Config", "Check In/Out");
         Quit = new Button("Quit");
 
         Region spacerTwo = new Region();
@@ -51,7 +44,7 @@ public class Pointer extends VBox {
         Region spacerThree = new Region();
         VBox.setVgrow(spacerThree, Priority.ALWAYS);
 
-        this.getChildren().addAll(DateHours,ipPort, Employees,spacerThree, buttons);
+        this.getChildren().addAll(DateHours, Employees,spacerThree, buttons);
 
         this.setPadding(new Insets(10));
         this.setSpacing(10);
@@ -73,12 +66,17 @@ public class Pointer extends VBox {
         return Quit;
     }
 
-    public LabeledTextFieldHBox getPort() {
-        return port;
-    }
+    public void saveNewConfigPointer() throws IOException {
+        config.getNewIp().setLTFTextFieldValue(config.getNewIp().getLTFTextFieldValue());
+        config.getNewPort().setLTFTextFieldValue(config.getNewPort().getLTFTextFieldValue());
 
-    public LabeledTextFieldHBox getIp() {
-        return ip;
+        ParameterSerialize p = new ParameterSerialize();
+
+        ArrayList<String> newParams = new ArrayList<>();
+        newParams.add(config.getNewIp().getLTFTextFieldValue());
+        newParams.add(config.getNewPort().getLTFTextFieldValue());
+
+        p.saveData(newParams);
     }
 
     public static void PrintAlert(String title, String content)
@@ -89,5 +87,10 @@ public class Pointer extends VBox {
         alert.setContentText(content);
 
         alert.show();
+    }
+
+    public ChangePointerConfig getConfig()
+    {
+        return config;
     }
 }

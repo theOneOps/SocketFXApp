@@ -63,32 +63,41 @@ public class ManageController {
 
     }
 
+
+
+
     private void btnConfigParametersOfEnt() {
         manageApp.getAppWindowConnect().getConfigBtn().setOnAction(e -> {
             String enterpriseValue = manageApp.getAppWindowConnect().getEnterpriseName().getLCBComboBox()
                     .getSelectionModel().getSelectedItem();
-            String PasswordValue = manageApp.getAppWindowConnect().getPassword().getLTFTextFieldValue();
+            System.out.printf("old value of the enterprise %s%n", enterpriseValue);
+//            String PasswordValue = manageApp.getAppWindowConnect().getPassword().getLTFTextFieldValue();
 
             if (dataSerialize.getAllEnterprises().containsKey(enterpriseValue))
             {
-                if (!PasswordValue.isEmpty() && PasswordValue.equals(dataSerialize.getAllEnterprises().get(enterpriseValue)
-                        .getEntpasswd())) {
+
+//                if (!PasswordValue.isEmpty() && PasswordValue.equals(dataSerialize.getAllEnterprises().get(enterpriseValue)
+//                        .getEntpasswd())) {
 
                     manageApp.getWindowConfigEnterprise().configEnterprise(dataSerialize.getEntByName(enterpriseValue));
+                    String portValue = dataSerialize.getEntByName(enterpriseValue).getEntPort();
+                    System.out.printf("old value of the enterprise's port %s%n", portValue);
 
-                    // todo :  update the port of the enterprise
+                // todo :  update the port of the enterprise
                     //manageApp.getWindowConfigEnterprise().
                     manageApp.getWindowConfigEnterprise().getSaveConfigBtn().setOnAction(event ->{
                         try {
                             String newEntName = manageApp.getWindowConfigEnterprise().getNewEnterpriseName().getLTFTextFieldValue();
+                            System.out.printf("new value of the enterprise %s%n", newEntName);
+
                             if (newEntName.equals(enterpriseValue) || (!dataSerialize.getAllEnterprises().containsKey(newEntName)))
                             {
-                                String newEntPassword = manageApp.getWindowConfigEnterprise().getNewPasswd().getLTFTextFieldValue();
+//                                String newEntPassword = manageApp.getWindowConfigEnterprise().getNewPasswd().getLTFTextFieldValue();
 
-                                if (!newEntPassword.isEmpty())
-                                {
+//                                if (!newEntPassword.isEmpty())
+//                                {
                                     String newEntPort = manageApp.getWindowConfigEnterprise().getNewPort().getLTFTextFieldValue();
-
+                                    System.out.printf("new value of the enterprise's port %s%n", newEntPort);
                                     if (newEntPort.matches("[+-]?\\d*(\\.\\d+)?"))
                                     {
                                         // change the enterprise's name if needed it !
@@ -97,8 +106,8 @@ public class ManageController {
                                                     newEntName);
 
                                         // change the enterprise's password
-                                        dataSerialize.changeEntPassword(newEntName,
-                                                newEntPassword);
+//                                        dataSerialize.changeEntPassword(newEntName,
+//                                                newEntPassword);
 
                                         // change the enterprise's port's to connect with
                                         dataSerialize.changeEntPort(newEntName, newEntPort);
@@ -107,16 +116,22 @@ public class ManageController {
                                         DataNotSendSerialized dataNotSerialized = new DataNotSendSerialized();
 
                                         ArrayList<String> allCheckInNotSerials = dataNotSerialized.loadData();
+                                        System.out.printf("the new values of the workhours : %s %n", allCheckInNotSerials);
 
-                                        for (int i = 0; i < allCheckInNotSerials.size();i++)
-                                        {
+                                        for (int i = 0; i < allCheckInNotSerials.size();i++) {
                                             String[] allStrs = allCheckInNotSerials.get(i).split("\\|");
-                                            if (allStrs[0].equals(enterpriseValue))
-                                                allStrs[0] = newEntName;
-                                            allCheckInNotSerials.set(i, String.join("|", allStrs));
+                                            if (allStrs[0].equals(portValue))
+                                                allStrs[0] = newEntPort;
+                                            allCheckInNotSerials.set(i,String.join("|", allStrs));
                                         }
                                         // update workhours 'enterprise
+                                        System.out.printf("the new values of the workhours : %s %n", allCheckInNotSerials);
                                         dataNotSerialized.saveData(allCheckInNotSerials);
+
+                                        // Vérifiez que les modifications sont bien sauvegardées
+                                        ArrayList<String> checkSavedData = dataNotSerialized.loadData();
+                                        System.out.printf("Verified saved values of the workhours : %s %n", checkSavedData);
+
 
                                         // we reload the enterprises' values names
                                         reloadEnterpriseCombox();
@@ -129,10 +144,10 @@ public class ManageController {
                                     else
                                         AppWindowConnect.PrintAlert("Change of the enterprise Port",
                                                 "port should be only a numeric value !");
-                                }
-                                else
-                                    AppWindowConnect.PrintAlert("Change of the enterprise password",
-                                            "the password should not be an empty value !");
+//                                }
+//                                else
+//                                    AppWindowConnect.PrintAlert("Change of the enterprise password",
+//                                            "the password should not be an empty value !");
                             }
                             else
                                 AppWindowConnect.PrintAlert("Change of the enterprise Name",
@@ -144,9 +159,9 @@ public class ManageController {
                         }
                     });
                 }
-            }else
-                AppWindowConnect.PrintAlert(String.format("Configuration of the enterprise '%s'", enterpriseValue),
-                        "that enterprise doesn't exist");
+//            }else
+//                AppWindowConnect.PrintAlert(String.format("Configuration of the enterprise '%s'", enterpriseValue),
+//                        "that enterprise doesn't exist");
         });
 
     }
@@ -156,12 +171,12 @@ public class ManageController {
         manageApp.getAppWindowConnect().getBtnConnexion().setOnAction(e -> {
             String enterpriseValue = manageApp.getAppWindowConnect().getEnterpriseName().getLCBComboBox()
                     .getSelectionModel().getSelectedItem();
-            String PasswordValue = manageApp.getAppWindowConnect().getPassword().getLTFTextFieldValue();
+//            String PasswordValue = manageApp.getAppWindowConnect().getPassword().getLTFTextFieldValue();
 
             if (dataSerialize.getAllEnterprises().containsKey(enterpriseValue))
             {
-                if (!PasswordValue.isEmpty() && PasswordValue.equals(dataSerialize.getAllEnterprises().get(enterpriseValue)
-                        .getEntpasswd())) {
+//                if (!PasswordValue.isEmpty() && PasswordValue.equals(dataSerialize.getAllEnterprises().get(enterpriseValue)
+//                        .getEntpasswd())) {
 
 
                     serversSocket = new ServersSocket(dataSerialize,
@@ -182,14 +197,14 @@ public class ManageController {
                             "Connection succeeded");
 
 
-                } else {
-                    AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),
-                            "Try again with other password");
-                }
+//                } else {
+//                    AppWindowConnect.PrintAlert(String.format("Connection to %s", enterpriseValue),
+//                            "Try again with other password");
+//                }
             }
-            else
-                AppWindowConnect.PrintAlert(String.format("Connection to an enterprise '%s'", enterpriseValue),
-                        "that enterprise doesn't exist");
+//            else
+//                AppWindowConnect.PrintAlert(String.format("Connection to an enterprise '%s'", enterpriseValue),
+//                        "that enterprise doesn't exist");
         });
     }
 
@@ -231,20 +246,21 @@ public class ManageController {
         {
             manageApp.getWindowCreateEnt().getAllBtns().getBtn2().setOnAction(e -> {
                 String entName = manageApp.getWindowCreateEnt().getNewEnterpriseName().getLTFTextFieldValue();
-                String entpasswd = manageApp.getWindowCreateEnt().getNewPasswd().getLTFTextFieldValue();
+//                String entpasswd = manageApp.getWindowCreateEnt().getNewPasswd().getLTFTextFieldValue();
                 String entPort = manageApp.getWindowCreateEnt().getNewPort().getLTFTextFieldValue();
 
 
                 if (!dataSerialize.getAllEnterprises().containsKey(entName.toLowerCase())) {
-                    if (!entpasswd.isEmpty()) {
+//                    if (!entpasswd.isEmpty()) {
                         try {
-                            dataSerialize.addNewEnterprise(entName, entpasswd, entPort);
+                            //                                  entpasswd,
+                            dataSerialize.addNewEnterprise(entName, entPort);
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
 
                         manageApp.getWindowCreateEnt().getNewEnterpriseName().setLTFTextFieldValue("");
-                        manageApp.getWindowCreateEnt().getNewPasswd().setLTFTextFieldValue("");
+//                        manageApp.getWindowCreateEnt().getNewPasswd().setLTFTextFieldValue("");
                         manageApp.getWindowCreateEnt().getNewPort().setLTFTextFieldValue("");
 
                         System.out.println("creation of enterprise succeeded");
@@ -258,10 +274,10 @@ public class ManageController {
                         }
                         reloadEnterpriseCombox();
                     }
-                } else {
-                    AppWindowConnect.PrintAlert(String.format("Creation of the enterprise %s", entName),
-                            "Creation failed because an enterprise with this name already exists");
-                }
+//                } else {
+//                    AppWindowConnect.PrintAlert(String.format("Creation of the enterprise %s", entName),
+//                            "Creation failed because an enterprise with this name already exists");
+//                }
             });
         }
 

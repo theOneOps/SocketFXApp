@@ -140,15 +140,23 @@ public class EmployeeTableView {
 
         Pane detailsEmp = new Pane();
 
+
         table.setOnMouseClicked(event -> {
+            // show the employee workhours
             if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
                 Employee selectedItem = table.getSelectionModel().getSelectedItem();
-                WindowShowEnt.seeEmployeePointers(ent.getEntname(), d, selectedItem);
+                try {
+                    WindowShowEnt.seeEmployeePointers(ent.getEntPort(), d, selectedItem);
+                } catch (IOException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                // delete the employee we click on with the right click
             } else if (event.getButton() == MouseButton.SECONDARY) {
                 Employee selectedItem = table.getSelectionModel().getSelectedItem();
                 try {
                     d.removeEmployeeFromEnterprise(ent.getEntname(), selectedItem);
                     dataEmps.remove(selectedItem);
+                    //PointerController.reloadEmployeesCombox(d.getEntByName(ent.getEntname()));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -173,6 +181,7 @@ public class EmployeeTableView {
         dataEmps = FXCollections.observableArrayList(array);
     }
 
+    // add new employee
     private static HBox EmployeeBtnsCrud(Enterprise ent, DataSerialize d) {
         HBox contentAddEmp = new HBox();
 
@@ -185,8 +194,8 @@ public class EmployeeTableView {
                         "00:00", "unknown");
 
                 d.addNewEmployeeToEnterprise(ent.getEntname(), newEmp);
-
                 dataEmps.add(newEmp);
+                //PointerController.reloadEmployeesCombox(d.getEntByName(ent.getEntname()));
 
             } catch (IOException ex) {
                 throw new RuntimeException(ex);

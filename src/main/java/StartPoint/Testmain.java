@@ -2,6 +2,7 @@ package StartPoint;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Testmain {
 
@@ -31,5 +32,10 @@ public class Testmain {
 //        HashMap<LocalDate, ArrayList<LocalTime>> pointing = workHour.getPointing();
 //
 //        System.out.println(workHour);
+
+        ArrayList<String> listStr = new ArrayList<>();
+        listStr.add("hello");
+        System.out.println(listStr);
     }
+
 }

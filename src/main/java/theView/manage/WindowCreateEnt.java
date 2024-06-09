@@ -15,7 +15,7 @@ public class WindowCreateEnt {
     
     private LabeledTextFieldHBox newEnterpriseName;
 
-    private LabeledTextFieldHBox newPasswd;
+//    private LabeledTextFieldHBox newPasswd;
 
     private AllBtns allBtns;
 
@@ -26,9 +26,9 @@ public class WindowCreateEnt {
     public WindowCreateEnt()
     {
         newEnterpriseName = new LabeledTextFieldHBox("Enterprise Name : ", "");
-        newPasswd = new LabeledTextFieldHBox("Password : ", "");
+//        newPasswd = new LabeledTextFieldHBox("Password : ", "");
         newEnterpriseName.setDisableToFalse();
-        newPasswd.setDisableToFalse();
+//        newPasswd.setDisableToFalse();
         allBtns = new AllBtns("Quit", "Create");
         newPort = new LabeledTextFieldHBox("Port : ", "");
         newPort.setDisableToFalse();
@@ -55,8 +55,8 @@ public class WindowCreateEnt {
                 stage.close();
             });
 
-            containerCreateEnterprise.getChildren().addAll(newEnterpriseName, newPasswd,
-                    newPort, region, allBtns);
+            //                                                              newPasswd,
+            containerCreateEnterprise.getChildren().addAll(newEnterpriseName, newPort, region, allBtns);
             containerCreateEnterprise.setSpacing(10);
             containerCreateEnterprise.setAlignment(Pos.CENTER);
             containerCreateEnterprise.setPadding(new Insets(10));
@@ -78,9 +78,9 @@ public class WindowCreateEnt {
         return newEnterpriseName;
     }
 
-    public LabeledTextFieldHBox getNewPasswd() {
-        return newPasswd;
-    }
+//    public LabeledTextFieldHBox getNewPasswd() {
+//        return newPasswd;
+//    }
 
     public AllBtns getAllBtns()
     {

@@ -16,6 +16,11 @@ public class WorkHourEntry {
         this.time = time;
     }
 
+    public WorkHourEntry(String theDate, String theTime) {
+        this.date = theDate;
+        this.time = theTime;
+    }
+
     public WorkHourEntry(LocalDate date, LocalTime time) {
         this.date = date.toString();
         this.time = time.toString();

@@ -138,7 +138,7 @@ public class WindowShowEnt {
         });
     }
 
-    public static void seeEmployeePointers(String entName, DataSerialize d, Employee emp) {
+    public static void seeEmployeePointers(String entPort, DataSerialize d, Employee emp) throws IOException, ClassNotFoundException {
         if (!openViewCheckInPointers[1]) {
             Stage stage = new Stage();
             stage.setTitle(String.format("Employee (%s %s) pointers management", emp.getEmpName(),
@@ -156,16 +156,24 @@ public class WindowShowEnt {
             theMenu.getMenus().addAll(SeeEmpDailyPointers, AllEmpPointers);
 
             VBox empContents = new VBox();
-            empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entName, d, emp, false));
+            empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entPort, d, emp, false));
 
             seeDaily.setOnAction(event -> {
                 empContents.getChildren().clear();
-                empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entName, d, emp, false));
+                try {
+                    empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entPort, d, emp, false));
+                } catch (IOException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
             });
 
             seeAll.setOnAction(event -> {
                 empContents.getChildren().clear();
-                empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entName, d, emp, true));
+                try {
+                    empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entPort, d, emp, true));
+                } catch (IOException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
             });
 
             Button quitWindow = new Button("Quit");
