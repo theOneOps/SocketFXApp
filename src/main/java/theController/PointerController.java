@@ -8,6 +8,8 @@ import theModel.DataSerialize;
 import theModel.JobClasses.Enterprise;
 import theModel.ParameterSerialize;
 import theView.pointer.Pointer;
+
+import java.io.EOFException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,21 +19,22 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class PointerController {
-    private static Pointer pointer = null;
     private ClientSocket clientSocket;
     private Thread clientThread;
     private Thread threadConnection;
+    private boolean connected;
+    private ScheduledExecutorService scheduler;
+    private CountDownLatch latch;
+
+    private static Pointer pointer = null;
     private static Enterprise ent;
     private ArrayList<String> workhours = new ArrayList<>();
     private final DataNotSendSerialized dataNotSendSerialized;
     private final ParameterSerialize parameterSerialize;
     private String ipConnectTo = "";
     private String portConnectTo = "";
-    private ScheduledExecutorService scheduler;
-    private boolean connected;
-    private CountDownLatch latch;
 
-    public PointerController(Pointer p, DataSerialize d, Stage stage) throws ClassNotFoundException, IOException {
+    public PointerController(Pointer p, Stage stage) throws ClassNotFoundException, IOException, InterruptedException {
         pointer = p;
         ent = null;
         dataNotSendSerialized = new DataNotSendSerialized();
@@ -70,9 +73,10 @@ public class PointerController {
             }
         });
 
+        startUpdateEmployeeList();
+
         // Faire un check-in/out
         pointer.getLoginCheckInOut().getBtn2().setOnAction(e -> {
-            //if ()
             if (!pointer.getEmployees().getLCBComboBox().getValue().equals("choose your name")) {
                 StringBuilder res = new StringBuilder(String.format("%s", ent.getEntPort()));
                 int startIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf('(');
@@ -91,9 +95,9 @@ public class PointerController {
                     clientSocket.clientSendMessage(res.toString());
                 } else {
                     // Lorsque le serveur n'est plus connecté
-                    System.out.println("server not connected anymore!");
+                    Platform.runLater(() -> Pointer.PrintAlert("Server not connected",
+                            "The server is not connected. Data will be sent once the connection is restored."));
                     workhours.add(res.toString());
-                    Platform.runLater(() -> Pointer.PrintAlert("Server not connected", "The server is not connected. Data will be sent once the connection is restored."));
                     connected = false;
                 }
             }
@@ -101,6 +105,10 @@ public class PointerController {
     }
 
     public void startScheduledConnection() {
+        if (scheduler.isShutdown() || scheduler.isTerminated()) {
+            scheduler = Executors.newScheduledThreadPool(1);
+        }
+
         scheduler.scheduleAtFixedRate(() -> {
             try {
                 if (!connected) {
@@ -109,7 +117,7 @@ public class PointerController {
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
-        }, 0, 2, TimeUnit.SECONDS);
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     public void stopScheduledConnection() {
@@ -124,11 +132,42 @@ public class PointerController {
         startScheduledConnection();
     }
 
+    public void startUpdateEmployeeList() {
+        Runnable updateEmpList = () -> {
+            try {
+                if (ent != null) {
+                    DataSerialize data = new DataSerialize();
+                    data.loadData();
+                    Enterprise theEnt = data.getEnterpriseClassByPort(ent.getEntPort());
+
+                    if (theEnt != null) {
+                        ArrayList<String> emp = new ArrayList<>();
+                        emp.add("choose your name");
+                        emp.add("reboot");
+                        emp.addAll(theEnt.getAllEmployeesName());
+                        // Update the ComboBox on the JavaFX Application Thread
+                        Platform.runLater(() -> {
+                            pointer.getEmployees().clearLCBComboBox();
+                            pointer.getEmployees().setLCBComboBox(emp.toArray(new String[0]));
+                        });
+                    } else {
+                        System.out.println("Enterprise is null");
+                    }
+                }
+            } catch (EOFException eof) {
+                System.out.println("EOFException: Possible corrupted data file. " + eof.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace(); // Log the exception for debugging
+            }
+        };
+        scheduler.scheduleAtFixedRate(updateEmpList, 0, 10, TimeUnit.SECONDS);
+    }
+
     public void startConnectionThread() throws IOException, ClassNotFoundException {
         ArrayList<String> parametersConnection = parameterSerialize.loadData();
 
         if (parametersConnection.size() == 2) {
-            ipConnectTo = parametersConnection.get(0); // Use get(0) instead of getFirst
+            ipConnectTo = parametersConnection.get(0);
             portConnectTo = parametersConnection.get(1);
         }
         String ip = ipConnectTo;
@@ -162,41 +201,58 @@ public class PointerController {
                     } else {
                         connected = true;
                         Platform.runLater(this::reloadEmployeesCombox);
-                        try {
-                            if (workhours.isEmpty())
-                                workhours = dataNotSendSerialized.loadData();
-                        } catch (IOException | ClassNotFoundException ex) {
-                            ex.printStackTrace(); // Traiter les exceptions
-                        }
-                        if (!workhours.isEmpty()) {
-                            for (String res : workhours)
-                                clientSocket.clientSendMessage(res);
-
-                            try {
-                                dataNotSendSerialized.saveData(new ArrayList<>());
-                                workhours.clear();
-                                System.out.println("empty the dataNotSendSerialized");
-                            } catch (IOException ex) {
-                                ex.printStackTrace(); // Traiter les exceptions
-                            }
-                        }
+                        sendPendingData();
+                        startUpdateEmployeeList(); // Redémarrer la mise à jour de la liste des employés
                     }
                 } else {
-                    clientSocket.clientClose();
+                    // Demande de renvoi des informations d'entreprise
+                    clientSocket.clientSendMessage("resendEnterprise");
+                    if (latch.await(2, TimeUnit.SECONDS)) {
+                        ent = clientSocket.getCorrectEnterprise();
+                        if (ent != null) {
+                            connected = true;
+                            Platform.runLater(this::reloadEmployeesCombox);
+                            sendPendingData();
+                            startUpdateEmployeeList(); // Redémarrer la mise à jour de la liste des employés
+                        }
+                    }
                 }
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
                 System.out.println("Thread interrupted while waiting for connection.");
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println("IOException or ClassNotFoundException during connection: " + e.getMessage());
             }
-//            } finally {
-//                if (clientSocket != null) {
-//                    clientSocket.clientClose();
-//                }
-//            }
         };
-
         threadConnection = new Thread(connectTask);
         threadConnection.start();
+    }
+
+    private void sendPendingData() throws IOException, ClassNotFoundException {
+        try {
+            // Charger les données de pointage non envoyées
+            ArrayList<String> notSended = dataNotSendSerialized.loadData();
+
+            if (!notSended.isEmpty()) {
+                for (String res : notSended) {
+                    clientSocket.clientSendMessage(res);
+                }
+            }
+
+            // Charger les heures de travail non envoyées
+            if (!workhours.isEmpty()) {
+                for (String res : workhours) {
+                    clientSocket.clientSendMessage(res);
+                }
+            }
+
+            // Vider les données de pointage non envoyées après envoi
+            dataNotSendSerialized.saveData(new ArrayList<>());
+            workhours.clear();
+            System.out.println("Emptied the dataNotSendSerialized");
+        } catch (EOFException eof) {
+            System.out.println("EOFException while sending pending data: " + eof.getMessage());
+        }
     }
 
     public void stopConnectionThread() {
@@ -214,7 +270,6 @@ public class PointerController {
                     try {
                         System.out.printf("all workhours saved : %s", workhours);
                         dataNotSendSerialized.saveData(workhours);
-                        workhours.clear();
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -227,33 +282,22 @@ public class PointerController {
     }
 
     public void reloadEmployeesCombox() {
-        ArrayList<String> empData = new ArrayList<>();
-        // we clear the combobox
-        pointer.getEmployees().clearLCBComboBox();
-        // then we fill it with the new array
         if (ent != null) {
-            empData.add("choose your name");
-            empData.addAll(ent.getAllEmployeesName());
-        } else {
-            empData.add("choose your name");
+            DataSerialize data = new DataSerialize();
+            try {
+                data.loadData();
+            } catch (IOException | ClassNotFoundException e) {
+                // todo : ignore
+            }
+
+            Enterprise theEnt = data.getEnterpriseClassByPort(ent.getEntPort());
+            if (theEnt != null) {
+                ArrayList<String> empData = new ArrayList<>();
+                empData.add("choose your name");
+                empData.addAll(theEnt.getAllEmployeesName());
+                pointer.getEmployees().clearLCBComboBox();
+                pointer.getEmployees().setLCBComboBox(empData.toArray(new String[0]));
+            }
         }
-
-        pointer.getEmployees().setLCBComboBox(empData.toArray(new String[0]));
     }
-
-//    public void reloadEmployeesComboxAfterConnection()
-//    {
-//        DataSerialize d = new DataSerialize();
-//        Enterprise theEnt = d.getEntByName(ent.getEntname());
-//        ArrayList<String> empData = new ArrayList<>();
-//        // we clear the combobox
-//        pointer.getEmployees().clearLCBComboBox();
-//        // then we fill it with the new array
-//        if (theEnt != null) {
-//            empData.add("choose your name");
-//            empData.addAll(theEnt.getAllEmployeesName());
-//        } else {
-//            empData.add("choose your name");
-//        }
-//    }
 }

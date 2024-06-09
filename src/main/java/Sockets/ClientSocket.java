@@ -23,36 +23,39 @@ public class ClientSocket implements Runnable {
         this.ip = ip;
         this.port = Integer.parseInt(port);
         this.latch = ilatch;
-        this.serverConnected = false; // Initial state is disconnected
+        this.serverConnected = false;
     }
 
     @Override
     public void run() {
         try {
-            clientSocket = new Socket(ip, port);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            ObjectInputStream input = new ObjectInputStream(clientSocket.getInputStream());
-
-            // We read the enterprise object just after the connection
-            currentEnt = (Enterprise) input.readObject();
-            latch.countDown();
-
-            this.serverConnected = true;
-            this.runningThreadPing = true;
-
-            // Start the ping thread
-            pings = new Thread(this::pingServer);
-            pings.start();
-
-            // Start the reader thread
-            readerThread = new Thread(this::readServerMessages);
-            readerThread.start();
-
+            connectToServer();
         } catch (IOException | ClassNotFoundException e) {
             System.out.printf("Server not found or not responding: %s\n", e.getMessage());
             latch.countDown();
         }
+    }
+
+    private void connectToServer() throws IOException, ClassNotFoundException {
+        clientSocket = new Socket(ip, port);
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        out = new PrintWriter(clientSocket.getOutputStream(), true);
+        ObjectInputStream input = new ObjectInputStream(clientSocket.getInputStream());
+
+        // Read the enterprise object after connection
+        currentEnt = (Enterprise) input.readObject();
+        latch.countDown();
+
+        this.serverConnected = true;
+        this.runningThreadPing = true;
+
+        // Start the ping thread
+        pings = new Thread(this::pingServer);
+        pings.start();
+
+        // Start the reader thread
+        readerThread = new Thread(this::readServerMessages);
+        readerThread.start();
     }
 
     private void pingServer() {
@@ -65,9 +68,6 @@ public class ClientSocket implements Runnable {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            }
-            finally {
-                runningThreadPing = false;
             }
         }
         System.out.println("Ping thread stopping");
@@ -84,11 +84,17 @@ public class ClientSocket implements Runnable {
             System.out.println("Connection reset, server might be down");
         } catch (IOException e) {
             System.out.println("IOException while reading from server: " + e.getMessage());
-        }
-        finally {
+        } finally {
             serverConnected = false;
             System.out.println("Server disconnected");
             clientClose();
+
+            // Attempt to reconnect
+            try {
+                connectToServer();
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.printf("Reconnection failed: %s\n", e.getMessage());
+            }
         }
     }
 
@@ -100,7 +106,7 @@ public class ClientSocket implements Runnable {
         this.runningThreadPing = false;
         System.out.println("Put runningThreadPing to false");
         if (pings != null) {
-            pings.interrupt(); // Interrupts the thread to exit sleep immediately
+            pings.interrupt();
         }
     }
 

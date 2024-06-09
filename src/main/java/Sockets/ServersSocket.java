@@ -1,6 +1,7 @@
 package Sockets;
 
 import theModel.DataSerialize;
+import theModel.JobClasses.Enterprise;
 import theModel.JobClasses.WorkHourEntry;
 import theView.manage.windowShowEnt.EmployeePointerView;
 
@@ -19,8 +20,7 @@ public class ServersSocket implements Runnable {
     private boolean isListening;
     private ExecutorService pool;
 
-    public ServersSocket(DataSerialize d, String port)
-    {
+    public ServersSocket(DataSerialize d, String port) {
         serverPort = port;
         data = d;
         connections = new ArrayList<>();
@@ -29,29 +29,22 @@ public class ServersSocket implements Runnable {
 
     @Override
     public void run() {
-        try
-        {
+        try {
             server = new ServerSocket(Integer.parseInt(serverPort));
-//            System.out.println("server en attente !");
             pool = Executors.newCachedThreadPool();
-            while(!isListening)
-            {
+            while (!isListening) {
                 Socket client = server.accept();
-//                System.out.println("client connecté");
                 ObjectOutputStream objOut = new ObjectOutputStream(client.getOutputStream());
                 objOut.writeObject(data.getEnterpriseClassByPort(serverPort));
                 objOut.flush();
 
-                ConnectionHandler ch = new ConnectionHandler(client);
+                ConnectionHandler ch = new ConnectionHandler(client, objOut);
                 connections.add(ch);
                 pool.execute(ch);
             }
-
         } catch (IOException e) {
             // Ignore
-        }
-
-        finally {
+        } finally {
             try {
                 shutDown();
             } catch (IOException e) {
@@ -61,29 +54,26 @@ public class ServersSocket implements Runnable {
     }
 
     public void shutDown() throws IOException {
-        if (!server.isClosed())
-        {
+        if (!server.isClosed()) {
             server.close();
             pool.shutdown();
             isListening = true;
         }
 
-        for (ConnectionHandler ch : connections)
-        {
+        for (ConnectionHandler ch : connections) {
             ch.shutConnectionDown();
         }
     }
 
-    class ConnectionHandler implements Runnable
-    {
+    class ConnectionHandler implements Runnable {
         private Socket client;
         private BufferedReader in;
         private PrintWriter out;
+        private ObjectOutputStream objOut;
 
-
-        public ConnectionHandler(Socket client)
-        {
+        public ConnectionHandler(Socket client, ObjectOutputStream objOut) {
             this.client = client;
+            this.objOut = objOut;
         }
 
         @Override
@@ -93,38 +83,30 @@ public class ServersSocket implements Runnable {
                 in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 String message;
 
-                while((message = in.readLine())!= null)
-                {
-                    if (message.equals("ping"))
-                    {
+                while ((message = in.readLine()) != null) {
+                    if (message.equals("ping")) {
                         out.flush();
                         out.println("here");
-//                        System.out.println("receive ping from clientSocket !");
-                    }
-                    else
-                    {
-                        String[]messageSplit = message.split("\\|");
-                        if (messageSplit.length == 4)
-                        {
-                            data.addNewWorkHour(messageSplit[0], messageSplit[1],
-                                    messageSplit[2], messageSplit[3]);
-
-                            EmployeePointerView.loadWorkHour(messageSplit[1], new WorkHourEntry(messageSplit[2],messageSplit[3]));
+                    } else if (message.equals("resendEnterprise")) {
+                        objOut.writeObject(data.getEnterpriseClassByPort(serverPort));
+                        objOut.flush();
+                    } else {
+                        String[] messageSplit = message.split("\\|");
+                        if (messageSplit.length == 4) {
+                            data.addNewWorkHour(messageSplit[0], messageSplit[1], messageSplit[2], messageSplit[3]);
+                            EmployeePointerView.loadAddWorkHour(messageSplit[1], new WorkHourEntry(messageSplit[2], messageSplit[3]));
                         }
 
                         System.out.printf("receive something else from client ! -> %s", message);
                     }
                 }
-            }
-            catch(IOException e)
-            {
+            } catch (IOException e) {
                 // todo : handle
             }
         }
 
         public void shutConnectionDown() throws IOException {
-            if (!client.isClosed())
-            {
+            if (!client.isClosed()) {
                 client.close();
                 out.close();
                 in.close();
@@ -132,4 +114,3 @@ public class ServersSocket implements Runnable {
         }
     }
 }
-

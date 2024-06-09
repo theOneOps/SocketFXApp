@@ -1,11 +1,9 @@
 package theModel;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import theModel.JobClasses.Employee;
 import theModel.JobClasses.Enterprise;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -186,7 +184,7 @@ public class DataSerializeTest {
 
         String date = "2023-06-05";
         String time = "09:00";
-        dataSerialize.addNewWorkHour("TestEnterprise", employee.getUuid(), date, time);
+        dataSerialize.addNewWorkHour("1234", employee.getUuid(), date, time);
 
         assertTrue(dataSerialize.getEntByName("TestEnterprise").getEmployees()
                 .get(employee.getUuid()).getWorkHour().getPointing().containsKey(LocalDate.parse(date)));
@@ -204,7 +202,7 @@ public class DataSerializeTest {
         dataSerialize.addNewWorkHour("TestEnterprise", employee.getUuid(), LocalDate.now().toString(),
                 "09:00");
 
-        dataSerialize.modifyTimeWorkHour("TestEnterprise", employee.getUuid(), LocalDate.now().toString(),
+        dataSerialize.modifyTimeWorkHour("1234", employee.getUuid(), LocalDate.now().toString(),
                 "09:00", "10:00");
 
         assertEquals(LocalTime.parse("10:00"), employee.getWorkHour().getPointing().get(LocalDate.now())
@@ -221,7 +219,7 @@ public class DataSerializeTest {
                 "09:00");
 
         LocalDate newDate = LocalDate.now().plusDays(1);
-        dataSerialize.modifyDateWorkHour("TestEnterprise", employee.getUuid(),
+        dataSerialize.modifyDateWorkHour("1234", employee.getUuid(),
                 LocalDate.now().toString(), newDate.toString(), "09:00");
 
         assertFalse(employee.getWorkHour().getPointing().containsKey(LocalDate.now()));
@@ -237,9 +235,9 @@ public class DataSerializeTest {
 
         String date = "2023-06-05";
         String time = "09:00";
-        dataSerialize.addNewWorkHour("TestEnterprise", employee.getUuid(), date, time);
+        dataSerialize.addNewWorkHour("1234", employee.getUuid(), date, time);
 
-        dataSerialize.removeWorkHour("TestEnterprise", employee.getUuid(), date, time);
+        dataSerialize.removeWorkHour("1234", employee.getUuid(), date, time);
 
         assertFalse(dataSerialize.getEntByName("TestEnterprise").getEmployees()
                 .get(employee.getUuid()).getWorkHour().getPointing().get(LocalDate.parse(date)).contains(LocalTime.parse(time)));

@@ -35,10 +35,8 @@ public class EmployeePointerView {
         DataSerialize data = new DataSerialize();
         data.loadData();
 
-        String entName = data.getEnterpriseClassByPort(entPort).getEntname();
-
-        TableColumn<WorkHourEntry, String> dateColumn = getWorkHourEntryStringTableColumn(entName, d, emp);
-        TableColumn<WorkHourEntry, String> timesColumn = getHourEntryStringTableColumn(entName, d, emp);
+        TableColumn<WorkHourEntry, String> dateColumn = getWorkHourEntryStringTableColumn(entPort, d, emp);
+        TableColumn<WorkHourEntry, String> timesColumn = getHourEntryStringTableColumn(entPort, d, emp);
 
         workHourEntries = FXCollections.observableArrayList();
         HashMap<LocalDate, ArrayList<LocalTime>> pointing = emp.getWorkHour().getPointing();
@@ -96,7 +94,7 @@ public class EmployeePointerView {
         return EmpView;
     }
 
-    public static void loadWorkHour(String uuid, WorkHourEntry entry)
+    public static void loadAddWorkHour(String uuid, WorkHourEntry entry)
     {
         if (workHourEntries != null)
         {
@@ -115,7 +113,8 @@ public class EmployeePointerView {
                 System.out.println("change of the time's employee workhour !");
                 WorkHourEntry entry = event.getRowValue();
                 String newHour = event.getNewValue();
-                if (UtilityWindowShowEnt.isValidTime(newHour)) {
+                if (UtilityWindowShowEnt.isValidTime(newHour))
+                {
                     try {
                         d.modifyTimeWorkHour(entPort, emp.getUuid(),
                                 entry.getDate(), entry.getTime(), newHour);

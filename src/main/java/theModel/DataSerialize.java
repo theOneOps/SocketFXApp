@@ -110,9 +110,13 @@ public class DataSerialize {
         if (getEnterpriseClassByPort(port)!=null)
         {
             String entName = getEnterpriseClassByPort(port).getEntname();
-            this.allEnterprises.get(entName).getEmployees()
-                    .get(empId).getWorkHour().addWorkHour(LocalDate.parse(dateDay), LocalTime.parse(hourStart));
-            saveData();
+            if (this.allEnterprises.get(entName).getEmployees()
+                    .get(empId)!=null)
+            {
+                this.allEnterprises.get(entName).getEmployees()
+                        .get(empId).getWorkHour().addWorkHour(LocalDate.parse(dateDay), LocalTime.parse(hourStart));
+                saveData();
+            }
         }
     }
 
@@ -124,12 +128,10 @@ public class DataSerialize {
         if (getEnterpriseClassByPort(entPort)!=null)
         {
             String entName = getEnterpriseClassByPort(entPort).getEntname();
-
             this.allEnterprises.get(entName).getEmployees().get(empId)
                     .getWorkHour().changeLocalTime(dateDay, olderHour, newHour);
             saveData();
         }
-
     }
 
     // todo : test this function which allows to modify the date of a workhour for an employee
@@ -141,7 +143,6 @@ public class DataSerialize {
             String entName = getEnterpriseClassByPort(entPort).getEntname();
             this.allEnterprises.get(entName).getEmployees().get(empId)
                     .getWorkHour().changeDateWorkHour(olderDate, newDate, newHour);
-
             saveData();
         }
     }

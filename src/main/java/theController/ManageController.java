@@ -9,8 +9,6 @@ import theView.manage.windowShowEnt.WindowShowEnt;
 import theView.pointer.Pointer;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class ManageController {
     private AppManagement manageApp;
