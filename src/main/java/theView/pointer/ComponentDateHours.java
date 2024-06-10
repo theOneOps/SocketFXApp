@@ -12,23 +12,29 @@ import java.time.LocalTime;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-
+/**
+ * This class represents a custom JavaFX component that displays the current date, time, and a rounded time.
+ * <p>
+ * The component updates the time every second.
+ */
 public class ComponentDateHours extends HBox {
-    private Label date;
-    private Label hours;
-    private Label roundHours;
-    private LocalTime time;
+    private Label date;      // Label to display the current date
+    private Label hours;     // Label to display the current hour
+    private Label roundHours; // Label to display the rounded hour
+    private LocalTime time;  // The current local time
 
-
-
-    ComponentDateHours() {
+    /**
+     * Constructor for ComponentDateHours.
+     * <p>
+     * Initializes the labels and starts a timeline to update the time every second.
+     */
+    public ComponentDateHours() {
         super();
-        date = new Label(String.format("Date : %s", LocalDate.now()));
+        date = new Label(String.format("Date : %s", LocalDate.now())); // Initialize the date label with the current date
 
         time = LocalTime.now();
-        hours = new Label("");  // Initialisation du champ 'hours'
-        roundHours = new Label("");  // Initialisation du champ 'roundHours'
-
+        hours = new Label("");  // Initialize the hours label
+        roundHours = new Label("");  // Initialize the roundHours label
 
         Timeline tm = new Timeline();
         tm.getKeyFrames().add(new KeyFrame(Duration.ZERO, e -> {
@@ -45,12 +51,14 @@ public class ComponentDateHours extends HBox {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        this.getChildren
-                ().addAll(date,spacer, hours, roundHours);
-
+        this.getChildren().addAll(date, spacer, hours, roundHours); // Add the labels to the HBox
     }
 
-
+    /**
+     * Rounds the current time to the nearest 15-minute interval.
+     *
+     * @return A string representing the rounded time in HH:mm format.
+     */
     public String roundTime() {
         int minutes = time.getMinute();
         int modMinutes = minutes % 15;
@@ -65,4 +73,3 @@ public class ComponentDateHours extends HBox {
         return String.format("%s:%02d", res, roundedTime.getMinute());
     }
 }
-

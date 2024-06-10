@@ -4,7 +4,6 @@ import Sockets.ClientSocket;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import theModel.DataNotSendSerialized;
-import theModel.DataSerialize;
 import theModel.JobClasses.Enterprise;
 import theModel.ParameterSerialize;
 import theView.pointer.Pointer;
@@ -73,8 +72,6 @@ public class PointerController {
             }
         });
 
-        startUpdateEmployeeList();
-
         // Faire un check-in/out
         pointer.getLoginCheckInOut().getBtn2().setOnAction(e -> {
             if (!pointer.getEmployees().getLCBComboBox().getValue().equals("choose your name")) {
@@ -132,37 +129,6 @@ public class PointerController {
         startScheduledConnection();
     }
 
-    public void startUpdateEmployeeList() {
-        Runnable updateEmpList = () -> {
-            try {
-                if (ent != null) {
-                    DataSerialize data = new DataSerialize();
-                    data.loadData();
-                    Enterprise theEnt = data.getEnterpriseClassByPort(ent.getEntPort());
-
-                    if (theEnt != null) {
-                        ArrayList<String> emp = new ArrayList<>();
-                        emp.add("choose your name");
-                        emp.add("reboot");
-                        emp.addAll(theEnt.getAllEmployeesName());
-                        // Update the ComboBox on the JavaFX Application Thread
-                        Platform.runLater(() -> {
-                            pointer.getEmployees().clearLCBComboBox();
-                            pointer.getEmployees().setLCBComboBox(emp.toArray(new String[0]));
-                        });
-                    } else {
-                        System.out.println("Enterprise is null");
-                    }
-                }
-            } catch (EOFException eof) {
-                System.out.println("EOFException: Possible corrupted data file. " + eof.getMessage());
-            } catch (Exception e) {
-                e.printStackTrace(); // Log the exception for debugging
-            }
-        };
-        scheduler.scheduleAtFixedRate(updateEmpList, 0, 10, TimeUnit.SECONDS);
-    }
-
     public void startConnectionThread() throws IOException, ClassNotFoundException {
         ArrayList<String> parametersConnection = parameterSerialize.loadData();
 
@@ -178,7 +144,8 @@ public class PointerController {
             return;
         }
 
-        Runnable connectTask = () -> {
+        Runnable connectTask = () ->
+        {
             try {
                 latch = new CountDownLatch(1);
                 clientSocket = new ClientSocket(ip, port, latch);
@@ -202,7 +169,6 @@ public class PointerController {
                         connected = true;
                         Platform.runLater(this::reloadEmployeesCombox);
                         sendPendingData();
-                        startUpdateEmployeeList(); // Redémarrer la mise à jour de la liste des employés
                     }
                 } else {
                     // Demande de renvoi des informations d'entreprise
@@ -213,7 +179,6 @@ public class PointerController {
                             connected = true;
                             Platform.runLater(this::reloadEmployeesCombox);
                             sendPendingData();
-                            startUpdateEmployeeList(); // Redémarrer la mise à jour de la liste des employés
                         }
                     }
                 }
@@ -251,7 +216,7 @@ public class PointerController {
             workhours.clear();
             System.out.println("Emptied the dataNotSendSerialized");
         } catch (EOFException eof) {
-            System.out.println("EOFException while sending pending data: " + eof.getMessage());
+            // todo : ignore
         }
     }
 
@@ -281,23 +246,15 @@ public class PointerController {
         }
     }
 
-    public void reloadEmployeesCombox() {
-        if (ent != null) {
-            DataSerialize data = new DataSerialize();
-            try {
-                data.loadData();
-            } catch (IOException | ClassNotFoundException e) {
-                // todo : ignore
-            }
-
-            Enterprise theEnt = data.getEnterpriseClassByPort(ent.getEntPort());
-            if (theEnt != null) {
-                ArrayList<String> empData = new ArrayList<>();
-                empData.add("choose your name");
-                empData.addAll(theEnt.getAllEmployeesName());
-                pointer.getEmployees().clearLCBComboBox();
-                pointer.getEmployees().setLCBComboBox(empData.toArray(new String[0]));
-            }
+    public void reloadEmployeesCombox()
+    {
+        if (ent != null)
+        {
+            ArrayList<String> empData = new ArrayList<>();
+            empData.add("choose your name");
+            empData.addAll(ent.getAllEmployeesName());
+            pointer.getEmployees().clearLCBComboBox();
+            pointer.getEmployees().setLCBComboBox(empData.toArray(new String[0]));
         }
     }
 }

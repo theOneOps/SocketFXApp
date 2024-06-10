@@ -6,19 +6,30 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * The ClientSocket class handles the client-side socket connection to a server.
+ * It manages the connection, communication, and reconnection logic.
+ */
 public class ClientSocket implements Runnable {
-    private String ip;
-    private int port;
-    private Socket clientSocket;
-    private BufferedReader in;
-    private PrintWriter out;
-    private Enterprise currentEnt = null;
-    private CountDownLatch latch;
-    private volatile boolean runningThreadPing;
-    private volatile boolean serverConnected;
-    private Thread pings;
-    private Thread readerThread;
+    private String ip; // IP address of the server
+    private int port; // Port number of the server
+    private Socket clientSocket; // Client socket
+    private BufferedReader in; // BufferedReader for reading messages from the server
+    private PrintWriter out; // PrintWriter for sending messages to the server
+    private Enterprise currentEnt = null; // Current enterprise object received from the server
+    private CountDownLatch latch; // CountDownLatch to synchronize threads
+    private volatile boolean runningThreadPing; // Flag to control the ping thread
+    private volatile boolean serverConnected; // Flag to indicate server connection status
+    private Thread pings; // Thread for sending ping messages
+    private Thread readerThread; // Thread for reading server messages
 
+    /**
+     * Constructs a ClientSocket instance with specified IP, port, and latch.
+     *
+     * @param ip    the IP address of the server
+     * @param port  the port number of the server
+     * @param ilatch the CountDownLatch to synchronize threads
+     */
     public ClientSocket(String ip, String port, CountDownLatch ilatch) {
         this.ip = ip;
         this.port = Integer.parseInt(port);
@@ -36,6 +47,12 @@ public class ClientSocket implements Runnable {
         }
     }
 
+    /**
+     * Connects to the server and initializes communication streams.
+     *
+     * @throws IOException if an I/O error occurs during connection
+     * @throws ClassNotFoundException if the class of the serialized object cannot be found
+     */
     private void connectToServer() throws IOException, ClassNotFoundException {
         clientSocket = new Socket(ip, port);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -58,6 +75,9 @@ public class ClientSocket implements Runnable {
         readerThread.start();
     }
 
+    /**
+     * Sends periodic ping messages to the server to keep the connection alive.
+     */
     private void pingServer() {
         while (runningThreadPing) {
             try {
@@ -73,6 +93,9 @@ public class ClientSocket implements Runnable {
         System.out.println("Ping thread stopping");
     }
 
+    /**
+     * Reads messages from the server continuously.
+     */
     private void readServerMessages() {
         try {
             String serverMessage;
@@ -98,10 +121,18 @@ public class ClientSocket implements Runnable {
         }
     }
 
+    /**
+     * Checks if the server is connected.
+     *
+     * @return true if the server is connected, false otherwise
+     */
     public boolean isServerConnected() {
         return serverConnected;
     }
 
+    /**
+     * Stops the ping thread.
+     */
     public void setRunningThreadPingToFalse() {
         this.runningThreadPing = false;
         System.out.println("Put runningThreadPing to false");
@@ -110,6 +141,9 @@ public class ClientSocket implements Runnable {
         }
     }
 
+    /**
+     * Closes the client connection and all related resources.
+     */
     public void clientClose() {
         try {
             setRunningThreadPingToFalse();
@@ -126,6 +160,11 @@ public class ClientSocket implements Runnable {
         }
     }
 
+    /**
+     * Sends a message to the server.
+     *
+     * @param message the message to send
+     */
     public void clientSendMessage(String message) {
         if (out != null && serverConnected) {
             out.println(message);
@@ -134,6 +173,11 @@ public class ClientSocket implements Runnable {
         }
     }
 
+    /**
+     * Gets the current enterprise object.
+     *
+     * @return the current enterprise object
+     */
     public Enterprise getCorrectEnterprise() {
         return currentEnt;
     }

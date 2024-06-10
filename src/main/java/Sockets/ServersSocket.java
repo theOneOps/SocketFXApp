@@ -1,32 +1,46 @@
 package Sockets;
 
 import theModel.DataSerialize;
-import theModel.JobClasses.Enterprise;
 import theModel.JobClasses.WorkHourEntry;
 import theView.manage.windowShowEnt.EmployeePointerView;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * The ServersSocket class is responsible for handling incoming client connections,
+ * managing the communication between clients and the server, and processing
+ * the received messages.
+ */
 public class ServersSocket implements Runnable {
     private String serverPort;
-    private ArrayList<ConnectionHandler> connections;
+    private List<ConnectionHandler> connections;
     private DataSerialize data;
     private ServerSocket server;
     private boolean isListening;
     private ExecutorService pool;
 
+    /**
+     * Constructs a new ServersSocket with the specified data serializer and port.
+     *
+     * @param d the data serializer
+     * @param port the port to listen on
+     */
     public ServersSocket(DataSerialize d, String port) {
         serverPort = port;
         data = d;
-        connections = new ArrayList<>();
+        connections = new CopyOnWriteArrayList<>();
         isListening = false;
     }
 
+    /**
+     * Runs the server, accepting client connections and creating handlers for each connection.
+     */
     @Override
     public void run() {
         try {
@@ -53,6 +67,11 @@ public class ServersSocket implements Runnable {
         }
     }
 
+    /**
+     * Shuts down the server, closing all client connections and stopping the thread pool.
+     *
+     * @throws IOException if an I/O error occurs
+     */
     public void shutDown() throws IOException {
         if (!server.isClosed()) {
             server.close();
@@ -65,17 +84,29 @@ public class ServersSocket implements Runnable {
         }
     }
 
+    /**
+     * The ConnectionHandler class handles the communication with a single client.
+     */
     class ConnectionHandler implements Runnable {
         private Socket client;
         private BufferedReader in;
         private PrintWriter out;
         private ObjectOutputStream objOut;
 
+        /**
+         * Constructs a new ConnectionHandler with the specified client socket and output stream.
+         *
+         * @param client the client socket
+         * @param objOut the object output stream
+         */
         public ConnectionHandler(Socket client, ObjectOutputStream objOut) {
             this.client = client;
             this.objOut = objOut;
         }
 
+        /**
+         * Runs the handler, reading messages from the client and processing them.
+         */
         @Override
         public void run() {
             try {
@@ -97,14 +128,19 @@ public class ServersSocket implements Runnable {
                             EmployeePointerView.loadAddWorkHour(messageSplit[1], new WorkHourEntry(messageSplit[2], messageSplit[3]));
                         }
 
-                        System.out.printf("receive something else from client ! -> %s", message);
+                        System.out.printf("Received something else from client! -> %s", message);
                     }
                 }
             } catch (IOException e) {
-                // todo : handle
+                // Handle exception
             }
         }
 
+        /**
+         * Shuts down the connection, closing all streams and the client socket.
+         *
+         * @throws IOException if an I/O error occurs
+         */
         public void shutConnectionDown() throws IOException {
             if (!client.isClosed()) {
                 client.close();
