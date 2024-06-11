@@ -18,13 +18,23 @@ import theView.pointer.Pointer;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * The EmployeeTableView class provides the UI and functionality for viewing and managing
+ * the list of employees in an enterprise. It allows adding, editing, and removing employees.
+ */
 public class EmployeeTableView {
 
-    private static ObservableList<Employee> dataEmps;
-    private static TableView<Employee> table;
+    private static ObservableList<Employee> dataEmps; // List of employees
+    private static TableView<Employee> table; // Table view for displaying employees
 
+    /**
+     * Creates a VBox containing the table view of all employees in the enterprise.
+     *
+     * @param d   the data serialization handler
+     * @param ent the enterprise
+     * @return a VBox containing the employee table view
+     */
     public static VBox seeTableAllEmp(DataSerialize d, Enterprise ent) {
-
         VBox EmpView = new VBox();
 
         loadDataEmp(ent);
@@ -32,15 +42,15 @@ public class EmployeeTableView {
         table = new TableView<>();
         table.setEditable(true);
 
-        // Configuration des colonnes
-        TableColumn<Employee, String> uuidcolumn = new TableColumn<>("UUID");
+        // Configuration of columns
+        TableColumn<Employee, String> uuidColumn = new TableColumn<>("UUID");
         TableColumn<Employee, String> nameColumn = new TableColumn<>("FirstName");
         TableColumn<Employee, String> prenameColumn = new TableColumn<>("Prename");
         TableColumn<Employee, String> departmentColumn = new TableColumn<>("Department");
-        TableColumn<Employee, String> startingHourColumn = new TableColumn<>("startingHour");
+        TableColumn<Employee, String> startingHourColumn = new TableColumn<>("StartingHour");
         TableColumn<Employee, String> endingHourColumn = new TableColumn<>("EndingHour");
 
-        uuidcolumn.setCellValueFactory(new PropertyValueFactory<>("uuid"));
+        uuidColumn.setCellValueFactory(new PropertyValueFactory<>("uuid"));
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("empName"));
         nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -104,10 +114,10 @@ public class EmployeeTableView {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                } else
-                    Pointer.PrintAlert("modification failed ",
-                            "the value you enter for the hour is not valid");
-
+                } else {
+                    Pointer.PrintAlert("Modification failed",
+                            "The value you entered for the hour is not valid");
+                }
             }
         });
 
@@ -125,14 +135,14 @@ public class EmployeeTableView {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                } else
-                    Pointer.PrintAlert("modification failed ",
-                            "the value you enter for the hour is not valid");
-
+                } else {
+                    Pointer.PrintAlert("Modification failed",
+                            "The value you entered for the hour is not valid");
+                }
             }
         });
 
-        table.getColumns().addAll(uuidcolumn, nameColumn, prenameColumn, departmentColumn,
+        table.getColumns().addAll(uuidColumn, nameColumn, prenameColumn, departmentColumn,
                 startingHourColumn, endingHourColumn);
 
         table.setMinWidth(700);
@@ -140,9 +150,8 @@ public class EmployeeTableView {
 
         Pane detailsEmp = new Pane();
 
-
         table.setOnMouseClicked(event -> {
-            // show the employee workhours
+            // Show the employee work hours
             if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
                 Employee selectedItem = table.getSelectionModel().getSelectedItem();
                 try {
@@ -150,7 +159,7 @@ public class EmployeeTableView {
                 } catch (IOException | ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
-                // delete the employee we click on with the right click
+                // Delete the employee we click on with the right click
             } else if (event.getButton() == MouseButton.SECONDARY) {
                 Employee selectedItem = table.getSelectionModel().getSelectedItem();
                 try {
@@ -172,6 +181,11 @@ public class EmployeeTableView {
         return EmpView;
     }
 
+    /**
+     * Loads the employee data into an observable list.
+     *
+     * @param ent the enterprise
+     */
     private static void loadDataEmp(Enterprise ent) {
         ArrayList<Employee> array = new ArrayList<>();
         for (Employee emp : ent.getEmployees().values()) {
@@ -181,11 +195,17 @@ public class EmployeeTableView {
         dataEmps = FXCollections.observableArrayList(array);
     }
 
-    // add new employee
+    /**
+     * Creates an HBox containing the button for adding a new employee.
+     *
+     * @param ent the enterprise
+     * @param d   the data serialization handler
+     * @return an HBox containing the add employee button
+     */
     private static HBox EmployeeBtnsCrud(Enterprise ent, DataSerialize d) {
         HBox contentAddEmp = new HBox();
 
-        Button addEmployeeBtn = new Button("addEmployee");
+        Button addEmployeeBtn = new Button("Add Employee");
 
         addEmployeeBtn.setOnAction(e -> {
             try {
@@ -195,16 +215,15 @@ public class EmployeeTableView {
 
                 d.addNewEmployeeToEnterprise(ent.getEntname(), newEmp);
                 dataEmps.add(newEmp);
-
+                //Pointer.PrintAlert("Reload employees combobox");
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
 
-            Pointer.PrintAlert("creation of new employee", "employee added successfully !");
+            Pointer.PrintAlert("Creation of new employee", "Employee added successfully!");
         });
 
         contentAddEmp.getChildren().addAll(addEmployeeBtn);
-
         contentAddEmp.setSpacing(2);
 
         return contentAddEmp;

@@ -6,6 +6,19 @@ import java.util.ArrayList;
 /**
  * The ParameterSerialize class handles the serialization and deserialization of parameter data.
  * This class is used to save and load a list of strings to and from a file.
+ * The file is named parameterSerialize.ser and is located in the root directory of the project.
+ * The class uses the Java serialization API to save and load data.
+ *
+ * Here are the attributes of the class:
+ * <ul>
+ *     <li>{@code fileText} String: the name of the file to save/load data</li>
+ * </ul>
+ *
+ * @see java.io.Serializable
+ * @see java.io.FileOutputStream
+ * @see java.io.ObjectOutputStream
+ * @see java.io.FileInputStream
+ *
  */
 public class ParameterSerialize {
     private final String fileText = "parameterSerialize.ser"; // The file to save/load data

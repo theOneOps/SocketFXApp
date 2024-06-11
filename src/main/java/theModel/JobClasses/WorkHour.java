@@ -10,6 +10,16 @@ import java.util.HashMap;
 /**
  * The WorkHour class represents the working hours of an employee.
  * Implements Serializable for object serialization.
+ * <p>
+ *     The class contains the following attributes:
+ *     <ul>
+ *         <li>{@code pointing} HashMap: the map containing the work hours with the date as the key and a list of times as the value</li>
+ *         <li>{@code serialVersionUID} long: the serial version UID for serialization</li>
+ *         </ul>
+ *         <p>
+ * @see Serializable
+ * @see LocalDate
+ * @see LocalTime
  */
 public class WorkHour implements Serializable {
 

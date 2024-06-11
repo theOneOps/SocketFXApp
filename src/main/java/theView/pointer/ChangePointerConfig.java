@@ -25,6 +25,10 @@ import java.util.ArrayList;
  *     <li>{@code openViewConfigPointer}: Boolean - a flag to check if the configuration window is open</li>
  *     <li>{@code stage} : Stage - the stage for the configuration window</li>
  * </ul>
+ *
+ * @see LabeledTextFieldHBox
+ * @see AllBtns
+ * @see Stage
  */
 public class ChangePointerConfig {
 

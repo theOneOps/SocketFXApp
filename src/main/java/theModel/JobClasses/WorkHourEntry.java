@@ -6,6 +6,16 @@ import java.time.LocalTime;
 /**
  * The WorkHourEntry class represents a single work hour entry with a date and time.
  * This class is used to print work hours of employees on the TableView of the central application.
+ * <p>
+ *     The class contains the following attributes:
+ *     <ul>
+ *         <li>{@code date} String: the date of the work hour entry</li>
+ *         <li>{@code time} String: the time of the work hour entry</li>
+ *         </ul>
+ *         <p>
+ * @see WorkHour
+ * @see String
+ *
  */
 public class WorkHourEntry {
     private String date; // The date of the work hour entry

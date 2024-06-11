@@ -17,6 +17,49 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * <p>The PointerController class manages the connection between the client and the server,
+ * handles check-in/out operations, and manages the scheduling of connection attempts.</p>
+ * <p>It also sets up event handlers for various UI components.</p>
+ * <p>It uses the ClientSocket class to establish a connection with the server.</p>
+ * <p>It uses the DataNotSendSerialized class to store the check-in/out data locally if the server is not connected.</p>
+ * <p>It uses the ParameterSerialize class to store the IP and port of the server.</p>
+ * <p>It uses the Enterprise class to store the enterprise data we are connected to</p>
+ * <p>It uses the Pointer class to access the UI components.</p>
+ * <p>It uses the ScheduledExecutorService class to schedule connection attempts.</p>
+ * <p>It uses the CountDownLatch class to wait for the connection to be established.</p>
+ * <p>It uses the ArrayList class to store the check-in/out data.</p>
+ * <p>It uses the Thread class to manage the connection thread.</p>
+ * <p>It uses the Runnable interface to manage the connection task.</p>
+ *
+ * Its attributes are as follows:
+ * <ul>
+ *     <li>{@code clientSocket} ClientSocket: the ClientSocket object</li>
+ *     <li>{@code clientThread} Thread: the Thread object for the client socket</li>
+ *     <li>{@code threadConnection} Thread: the Thread object for the connection</li>
+ *     <li>{@code connected} boolean: the flag to indicate if the client is connected to the server</li>
+ *     <li>{@code scheduler} ScheduledExecutorService: the ScheduledExecutorService object to schedule connection attempts</li>
+ *     <li>{@code latch} CountDownLatch: the CountDownLatch object to wait for the connection to be established</li>
+ *     <li>{@code pointer} Pointer: the Pointer object</li>
+ *     <li>{@code ent} Enterprise: the Enterprise object</li>
+ *     <li>{@code workhours} ArrayList: the list of check-in/out data</li>
+ *     <li>{@code dataNotSendSerialized} DataNotSendSerialized: the DataNotSendSerialized object</li>
+ *     <li>{@code parameterSerialize} ParameterSerialize: the ParameterSerialize object</li>
+ *     <li>{@code ipConnectTo} String: the IP address of the server</li>
+ *     <li>{@code portConnectTo} String: the port of the server</li>
+ * </ul>
+ *
+ * @see Sockets.ClientSocket
+ * @see theModel.DataNotSendSerialized
+ * @see theModel.JobClasses.Enterprise
+ * @see theModel.ParameterSerialize
+ * @see theView.pointer.Pointer
+ * @see java.util.concurrent.CountDownLatch
+ * @see java.util.concurrent.Executors
+ * @see java.util.concurrent.ScheduledExecutorService
+ * @see java.util.concurrent.TimeUnit
+ *
+ */
 public class PointerController {
     private ClientSocket clientSocket;
     private Thread clientThread;
@@ -33,7 +76,13 @@ public class PointerController {
     private String ipConnectTo = "";
     private String portConnectTo = "";
 
-    public PointerController(Pointer p, Stage stage) throws ClassNotFoundException, IOException, InterruptedException {
+    /**
+     * Constructs a new PointerController with the given Pointer and Stage objects.
+     *
+     * @param p the Pointer object
+     * @param stage the Stage object
+     */
+    public PointerController(Pointer p, Stage stage) {
         pointer = p;
         ent = null;
         dataNotSendSerialized = new DataNotSendSerialized();
@@ -41,19 +90,30 @@ public class PointerController {
         this.scheduler = Executors.newScheduledThreadPool(1);
         this.connected = false;
 
-        // Initialiser la connexion avec l'application centrale
-        startScheduledConnection();
+        initializeConnection();
+        setupEventHandlers(stage);
+    }
 
-        // Fermer la fenêtre et arrêter la connexion lorsqu'on clique sur le bouton de fermeture
+    /**
+     * Initializes the connection by starting the scheduled connection attempts.
+     */
+    private void initializeConnection() {
+        startScheduledConnection();
+    }
+
+    /**
+     * Sets up the event handlers for various UI components.
+     *
+     * @param stage the Stage object
+     */
+    private void setupEventHandlers(Stage stage) {
         pointer.getQuit().setOnAction(e -> {
             stage.close();
             stopScheduledConnection();
         });
 
-        // Fermer la fenêtre et arrêter la connexion lorsqu'on clique sur le bouton X
         stage.setOnCloseRequest(e -> stopScheduledConnection());
 
-        // Ouvrir la vue pour configurer les paramètres de connexion
         pointer.getLoginCheckInOut().getBtn1().setOnAction(e -> {
             try {
                 pointer.getConfig().openConfigPointer();
@@ -62,7 +122,6 @@ public class PointerController {
             }
         });
 
-        // Se connecter avec de nouveaux paramètres de configuration
         pointer.getConfig().getAllBtns().getBtn2().setOnAction(event -> {
             try {
                 pointer.saveNewConfigPointer();
@@ -72,35 +131,40 @@ public class PointerController {
             }
         });
 
-        // Faire un check-in/out
-        pointer.getLoginCheckInOut().getBtn2().setOnAction(e -> {
-            if (!pointer.getEmployees().getLCBComboBox().getValue().equals("choose your name")) {
-                StringBuilder res = new StringBuilder(String.format("%s", ent.getEntPort()));
-                int startIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf('(');
-                int endIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf(')');
-
-                // Extraire le uuid entre parenthèses
-                if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
-                    String result = pointer.getEmployees().getLCBComboBox().getValue().substring(startIndex + 1, endIndex);
-                    res.append(String.format("|%s", result));
-                }
-
-                res.append(String.format("|%s|%s", LocalDate.now(), pointer.getDateHours().roundTime()));
-
-                // Vérifier si le serveur est connecté
-                if (clientSocket != null && clientSocket.isServerConnected()) {
-                    clientSocket.clientSendMessage(res.toString());
-                } else {
-                    // Lorsque le serveur n'est plus connecté
-                    Platform.runLater(() -> Pointer.PrintAlert("Server not connected",
-                            "The server is not connected. Data will be sent once the connection is restored."));
-                    workhours.add(res.toString());
-                    connected = false;
-                }
-            }
-        });
+        pointer.getLoginCheckInOut().getBtn2().setOnAction(e -> handleCheckInOut());
     }
 
+    /**
+     * Handles the check-in/out operation by sending the check-in/out message to the server
+     * or storing it locally if the server is not connected.
+     */
+    private void handleCheckInOut() {
+        if (!pointer.getEmployees().getLCBComboBox().getValue().equals("choose your name")) {
+            StringBuilder res = new StringBuilder(String.format("%s", ent.getEntPort()));
+            int startIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf('(');
+            int endIndex = pointer.getEmployees().getLCBComboBox().getValue().indexOf(')');
+
+            if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
+                String result = pointer.getEmployees().getLCBComboBox().getValue().substring(startIndex + 1, endIndex);
+                res.append(String.format("|%s", result));
+            }
+
+            res.append(String.format("|%s|%s", LocalDate.now(), pointer.getDateHours().roundTime()));
+
+            if (clientSocket != null && clientSocket.isServerConnected()) {
+                clientSocket.clientSendMessage(res.toString());
+            } else {
+                Platform.runLater(() -> Pointer.PrintAlert("Server not connected",
+                        "The server is not connected. Data will be sent once the connection is restored."));
+                workhours.add(res.toString());
+                connected = false;
+            }
+        }
+    }
+
+    /**
+     * Starts the scheduled connection attempts.
+     */
     public void startScheduledConnection() {
         if (scheduler.isShutdown() || scheduler.isTerminated()) {
             scheduler = Executors.newScheduledThreadPool(1);
@@ -117,6 +181,9 @@ public class PointerController {
         }, 0, 1, TimeUnit.SECONDS);
     }
 
+    /**
+     * Stops the scheduled connection attempts.
+     */
     public void stopScheduledConnection() {
         if (scheduler != null && !scheduler.isShutdown()) {
             scheduler.shutdownNow();
@@ -124,11 +191,20 @@ public class PointerController {
         }
     }
 
+    /**
+     * Restarts the scheduled connection attempts.
+     */
     public void restartScheduledConnection() {
         stopScheduledConnection();
         startScheduledConnection();
     }
 
+    /**
+     * Starts the connection thread to attempt connecting to the server.
+     *
+     * @throws IOException if an I/O error occurs
+     * @throws ClassNotFoundException if the class of a serialized object cannot be found
+     */
     public void startConnectionThread() throws IOException, ClassNotFoundException {
         ArrayList<String> parametersConnection = parameterSerialize.loadData();
 
@@ -144,58 +220,90 @@ public class PointerController {
             return;
         }
 
-        Runnable connectTask = () ->
-        {
-            try {
-                latch = new CountDownLatch(1);
-                clientSocket = new ClientSocket(ip, port, latch);
-
-                clientThread = new Thread(clientSocket);
-                clientThread.start();
-
-                if (!latch.await(2, TimeUnit.SECONDS)) {
-                    System.out.println("Connection timeout. Server not responding.");
-                    clientSocket.clientClose();
-                    clientThread.interrupt();
-                    return;
-                }
-
-                if (clientSocket.getCorrectEnterprise() != null) {
-                    ent = clientSocket.getCorrectEnterprise();
-
-                    if (ent == null) {
-                        System.out.println("ent still null");
-                    } else {
-                        connected = true;
-                        Platform.runLater(this::reloadEmployeesCombox);
-                        sendPendingData();
-                    }
-                } else {
-                    // Demande de renvoi des informations d'entreprise
-                    clientSocket.clientSendMessage("resendEnterprise");
-                    if (latch.await(2, TimeUnit.SECONDS)) {
-                        ent = clientSocket.getCorrectEnterprise();
-                        if (ent != null) {
-                            connected = true;
-                            Platform.runLater(this::reloadEmployeesCombox);
-                            sendPendingData();
-                        }
-                    }
-                }
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                System.out.println("Thread interrupted while waiting for connection.");
-            } catch (IOException | ClassNotFoundException e) {
-                System.out.println("IOException or ClassNotFoundException during connection: " + e.getMessage());
-            }
-        };
+        Runnable connectTask = () -> connectToServer(ip, port);
         threadConnection = new Thread(connectTask);
         threadConnection.start();
     }
 
+    /**
+     * Connects to the server with the given IP and port.
+     *
+     * @param ip the IP address of the server
+     * @param port the port of the server
+     */
+    private void connectToServer(String ip, String port) {
+        try {
+            latch = new CountDownLatch(1);
+            clientSocket = new ClientSocket(ip, port, latch);
+
+            clientThread = new Thread(clientSocket);
+            clientThread.start();
+
+            if (!latch.await(2, TimeUnit.SECONDS)) {
+                System.out.println("Connection timeout. Server not responding.");
+                clientSocket.clientClose();
+                clientThread.interrupt();
+                return;
+            }
+
+            if (clientSocket.getCorrectEnterprise() != null) {
+                ent = clientSocket.getCorrectEnterprise();
+                handleServerConnection();
+            } else {
+                requestEnterpriseData();
+            }
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            System.out.println("Thread interrupted while waiting for connection.");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("IOException or ClassNotFoundException during connection: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Handles the server connection by setting the connected flag and reloading the employee combo box.
+     */
+    private void handleServerConnection() {
+        if (ent == null) {
+            System.out.println("ent still null");
+        } else {
+            connected = true;
+            Platform.runLater(this::reloadEmployeesCombox);
+            try {
+                sendPendingData();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Requests the enterprise data from the server.
+     *
+     * @throws InterruptedException if the thread is interrupted
+     * @throws IOException if an I/O error occurs
+     * @throws ClassNotFoundException if the class of a serialized object cannot be found
+     */
+    private void requestEnterpriseData() throws InterruptedException, IOException, ClassNotFoundException {
+        clientSocket.clientSendMessage("resendEnterprise");
+        if (latch.await(2, TimeUnit.SECONDS)) {
+            ent = clientSocket.getCorrectEnterprise();
+            if (ent != null) {
+                connected = true;
+                Platform.runLater(this::reloadEmployeesCombox);
+                sendPendingData();
+            }
+        }
+    }
+
+    /**
+     * Sends the pending data to the server.
+     *
+     * @throws IOException if an I/O error occurs
+     * @throws ClassNotFoundException if the class of a serialized object cannot be found
+     */
     private void sendPendingData() throws IOException, ClassNotFoundException {
         try {
-            // Charger les données de pointage non envoyées
             ArrayList<String> notSended = dataNotSendSerialized.loadData();
 
             if (!notSended.isEmpty()) {
@@ -204,14 +312,12 @@ public class PointerController {
                 }
             }
 
-            // Charger les heures de travail non envoyées
             if (!workhours.isEmpty()) {
                 for (String res : workhours) {
                     clientSocket.clientSendMessage(res);
                 }
             }
 
-            // Vider les données de pointage non envoyées après envoi
             dataNotSendSerialized.saveData(new ArrayList<>());
             workhours.clear();
             System.out.println("Emptied the dataNotSendSerialized");
@@ -220,6 +326,9 @@ public class PointerController {
         }
     }
 
+    /**
+     * Stops the connection thread and closes the client socket.
+     */
     public void stopConnectionThread() {
         if (threadConnection != null && threadConnection.isAlive()) {
             threadConnection.interrupt();
@@ -246,10 +355,11 @@ public class PointerController {
         }
     }
 
-    public void reloadEmployeesCombox()
-    {
-        if (ent != null)
-        {
+    /**
+     * Reloads the employee combo box with the updated list of employees.
+     */
+    public void reloadEmployeesCombox() {
+        if (ent != null) {
             ArrayList<String> empData = new ArrayList<>();
             empData.add("choose your name");
             empData.addAll(ent.getAllEmployeesName());

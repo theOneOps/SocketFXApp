@@ -15,20 +15,33 @@ import theView.manage.AppWindowConnect;
 
 import java.io.IOException;
 
+/**
+ * The WindowShowEnt class provides the UI and functionality for viewing and managing
+ * the details of an enterprise, including its employees and work hours.
+ */
 public class WindowShowEnt {
 
-    private static ObservableList<Employee> dataEmps;
-    private static ObservableList<WorkHour> dataPointers;
-    private static HBox contents;
-    private static TableView<Employee> table;
-    private static TableView<WorkHour> tablePointer;
-    private static Button quitWindow;
-    static Thread wserverThread;
-    private static ServersSocket wserversSocket;
-    private static Boolean[] openViewCheckInPointers = {false, false};
-    private static AppWindowConnect connectEnt;
-    private static Button welcomeWindowBtn;
+    private static ObservableList<Employee> dataEmps; // List of employees
+    private static ObservableList<WorkHour> dataPointers; // List of work hours
+    private static HBox contents; // Container for the main content
+    private static TableView<Employee> table; // Table view for employees
+    private static TableView<WorkHour> tablePointer; // Table view for work hours
+    private static Button quitWindow; // Button to quit the window
+    private static Thread wserverThread; // Thread for the server
+    private static ServersSocket wserversSocket; // Server socket
+    private static Boolean[] openViewCheckInPointers = {false, false}; // Flags to check if views are open
+    private static AppWindowConnect connectEnt; // Connection window for the app
+    private static Button welcomeWindowBtn; // Button to open the welcome window
 
+    /**
+     * Displays the enterprise management window.
+     *
+     * @param createEntClass the connection window class
+     * @param d              the data serialization handler
+     * @param ent            the enterprise
+     * @param serverThread   the server thread
+     * @param serversSocket  the server socket
+     */
     public static void showEnterpriseContent(AppWindowConnect createEntClass, DataSerialize d,
                                              Enterprise ent, Thread serverThread,
                                              ServersSocket serversSocket) {
@@ -50,7 +63,7 @@ public class WindowShowEnt {
             stage.setTitle(String.format("Enterprise '%s' management", ent.getEntname()));
             quitWindow = new Button("Quit window");
 
-            welcomeWindowBtn = new Button("welcome window");
+            welcomeWindowBtn = new Button("Welcome window");
 
             welcomeWindowBtn.setOnAction(e -> {
                 try {
@@ -69,14 +82,16 @@ public class WindowShowEnt {
             quitWindowShowEvent(stage);
 
             MenuBar theMenu = new MenuBar();
-            final Menu SeeEmp = new Menu("See all Employees");
-            theMenu.getMenus().addAll(SeeEmp);
+
+            final RadioMenuItem seeEmps = new RadioMenuItem("See all employees");
+
             contents = new HBox();
 
-            SeeEmp.setOnAction(e -> {
+            seeEmps.setOnAction(e -> {
                 contents.getChildren().clear();
                 contents.getChildren().addAll(EmployeeTableView.seeTableAllEmp(d, ent));
             });
+
 
             VBox container = new VBox();
 
@@ -98,6 +113,11 @@ public class WindowShowEnt {
         }
     }
 
+    /**
+     * Sets the action for the quit button to close the window and stop the server.
+     *
+     * @param stage the stage of the window
+     */
     public static void quitWindowShowEvent(Stage stage) {
         quitWindow.setOnAction(e -> {
             System.out.println("Quit button pressed");
@@ -112,6 +132,15 @@ public class WindowShowEnt {
         });
     }
 
+    /**
+     * Displays the employee pointers management window.
+     *
+     * @param entPort the enterprise port
+     * @param d       the data serialization handler
+     * @param emp     the employee
+     * @throws IOException            if an I/O error occurs during data loading
+     * @throws ClassNotFoundException if the class for the serialized object cannot be found
+     */
     public static void seeEmployeePointers(String entPort, DataSerialize d, Employee emp) throws IOException, ClassNotFoundException {
         if (!openViewCheckInPointers[1]) {
             Stage stage = new Stage();
@@ -119,36 +148,9 @@ public class WindowShowEnt {
                     emp.getEmpPrename()));
 
             MenuBar theMenu = new MenuBar();
-            Menu SeeEmpDailyPointers = new Menu("See daily Pointers");
-            Menu AllEmpPointers = new Menu("See all Pointers");
-
-            MenuItem seeDaily = new MenuItem("See daily Pointers");
-            MenuItem seeAll = new MenuItem("See all Pointers");
-
-            SeeEmpDailyPointers.getItems().add(seeDaily);
-            AllEmpPointers.getItems().add(seeAll);
-            theMenu.getMenus().addAll(SeeEmpDailyPointers, AllEmpPointers);
 
             VBox empContents = new VBox();
             empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entPort, d, emp, false));
-
-            seeDaily.setOnAction(event -> {
-                empContents.getChildren().clear();
-                try {
-                    empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entPort, d, emp, false));
-                } catch (IOException | ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-
-            seeAll.setOnAction(event -> {
-                empContents.getChildren().clear();
-                try {
-                    empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entPort, d, emp, true));
-                } catch (IOException | ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            });
 
             Button quitWindow = new Button("Quit");
             quitWindow.setOnAction(e -> {

@@ -10,6 +10,37 @@ import java.util.HashMap;
 /**
  * The DataSerialize class handles the serialization and deserialization of enterprise data,
  * including saving and loading enterprises and their employees.
+ * <p> The class also provides methods to add, remove, and modify enterprises and employees.
+ * <p> The class also provides methods to add, remove, and modify work hours for employees.
+ * <p> The class also provides methods to get an enterprise by its port, and to change the port and name of an enterprise.
+ * <p> The class also provides a method to get a string representation of all enterprises.
+ * <p> The class also provides a method to set the file text for serialization.
+ * <p> The class also provides a method to get all enterprises.
+ * <p> Here is a list of the methods in this class:
+ * <ul>
+ *     <li> {@link #saveData()} saves the current state of all enterprises to a file.
+ *     <li> {@link #loadData()} loads the state of all enterprises from a file.
+ *     <li> {@link #getAllEnterprises()} gets all enterprises.
+ *     <li> {@link #getEntByName(String)} gets an enterprise by its name.
+ *     <li> {@link #addNewEmployeeToEnterprise(String, String, String, String, String)} adds a new employee to an enterprise by name.
+ *     <li> {@link #addNewEmployeeToEnterprise(String, Employee)} adds a new employee to an enterprise.
+ *     <li> {@link #removeEmployeeFromEnterprise(String, Employee)} removes an employee from an enterprise.
+ *     <li> {@link #addNewEnterprise(String, String)} adds a new enterprise.
+ *     <li> {@link #modifyEmpName(String, String, String)} modifies the name of an employee.
+ *     <li> {@link #modifyEmpPrename(String, String, String)} modifies the prename of an employee.
+ *     <li> {@link #modifyEmpStartingHour(String, String, String)} modifies the starting hour of an employee.
+ *     <li> {@link #modifyEmpEndingHour(String, String, String)} modifies the ending hour of an employee.
+ *     <li> {@link #modifyEmpDepartement(String, String, String)} modifies the department of an employee.
+ *     <li> {@link #addNewWorkHour(String, String, String, String)} adds a new work hour entry for an employee.
+ *     <li> {@link #modifyTimeWorkHour(String, String, String, String, String)} modifies the time of a work hour entry for an employee.
+ *     <li> {@link #modifyDateWorkHour(String, String, String, String, String)} modifies the date of a work hour entry for an employee.
+ *     <li> {@link #removeWorkHour(String, String, String, String)} removes a work hour entry for an employee.
+ *     <li> {@link #getEnterpriseClassByPort(String)} gets the enterprise by its port.
+ *     <li> {@link #changeEntPort(String, String)} changes the port of an enterprise.
+ *     <li> {@link #changeEntName(String, String)} changes the name of an enterprise.
+ *     <li> {@link #toString()} returns a string representation of all enterprises.
+ *     <li> {@link #setFileText(String)} sets the file text for serialization.
+ * </ul>
  */
 public class DataSerialize {
 

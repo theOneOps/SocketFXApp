@@ -7,6 +7,24 @@ import java.util.UUID;
 /**
  * The Employee class represents an employee with their personal details and work hours.
  * Implements Serializable for object serialization.
+ * <p>
+ *     The class contains the following attributes:
+ *     <ul>
+ *         <li>{@code uuid} String: the unique identifier of the employee</li>
+ *         <li>{@code empName} String: the name of the employee</li>
+ *         <li>{@code empPrename} String: the prename of the employee</li>
+ *         <li>{@code emDep} String: the department of the employee</li>
+ *         <li>{@code startingHour} String: the starting hour of the employee</li>
+ *         <li>{@code endingHour} String: the ending hour of the employee</li>
+ *         <li>{@code workHour} WorkHour: the work hour details of the employee</li>
+ *         <li>{@code serialVersionUID} long: the serial version UID for serialization</li>
+ *         </ul>
+ *         <p>
+ * @see WorkHour
+ * @see Serializable
+ * @see UUID
+ * @see WorkHour
+ *
  */
 public class Employee implements Serializable {
 

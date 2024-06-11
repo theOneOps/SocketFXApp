@@ -7,6 +7,20 @@ import java.util.ArrayList;
  * The DataNotSendSerialized class handles the serialization and deserialization of work hours data
  * that have not been sent yet. This class is used to save and load a list of unsent work hours to
  * and from a file.
+ * <p>
+ *     The class contains the following attributes:
+ *     <ul>
+ *         <li>{@code fileText} String: the name of the file to save/load data</li>
+ *         </ul>
+ *         <p>
+ * @see IOException
+ * @see ObjectOutputStream
+ * @see ObjectInputStream
+ * @see ArrayList
+ * @see File
+ *
+ *
+ *
  */
 public class DataNotSendSerialized {
     private final String fileText = "workhoursNotSended.ser"; // The file to save/load data

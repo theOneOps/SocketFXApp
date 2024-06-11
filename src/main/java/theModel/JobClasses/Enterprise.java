@@ -9,6 +9,18 @@ import java.util.Objects;
 /**
  * The Enterprise class represents an enterprise with a name, a port, and a collection of employees.
  * Implements Serializable for object serialization.
+ * <p>
+ *     The Enterprise class has the following attributes:
+ *     <ul>
+ *         <li>{@code Entname} String: the name of the enterprise</li>
+ *         <li>{@code employees} HashMap(String, Enterprise): the collection of employees in the enterprise</li>
+ *         <li>{@code EntPort} String: the port of the enterprise</li>
+ *     </ul>
+ *     <p>
+ * @see Employee
+ * @see Serializable
+ * @see HashMap
+ * @see Employee
  */
 public class Enterprise implements Serializable {
 

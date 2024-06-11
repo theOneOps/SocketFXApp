@@ -14,17 +14,33 @@ import theModel.DataSerialize;
 import theModel.JobClasses.Employee;
 import theModel.JobClasses.WorkHourEntry;
 import theView.pointer.Pointer;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * The EmployeePointerView class provides the UI and functionality for viewing and managing
+ * the work hours of an employee. It allows adding, editing, and removing work hour entries.
+ */
 public class EmployeePointerView {
 
-    public static ObservableList<WorkHourEntry> workHourEntries = null;
-    public static String theCurrentEmpId = "";
+    public static ObservableList<WorkHourEntry> workHourEntries = null; // List of work hour entries
+    public static String theCurrentEmpId = ""; // The ID of the current employee
 
+    /**
+     * Creates a VBox containing the table view of employee work hours and a button to add work hours.
+     *
+     * @param entPort     the enterprise port
+     * @param d           the data serialization handler
+     * @param emp         the employee
+     * @param allpointers flag to indicate whether to show all pointers or only today's pointers
+     * @return a VBox containing the employee work hours view
+     * @throws IOException            if an I/O error occurs during data loading
+     * @throws ClassNotFoundException if the class for the serialized object cannot be found
+     */
     public static VBox getEmployeePointers(String entPort, DataSerialize d, Employee emp, boolean allpointers) throws IOException, ClassNotFoundException {
         VBox EmpView = new VBox();
         theCurrentEmpId = emp.getUuid();
@@ -41,15 +57,15 @@ public class EmployeePointerView {
         workHourEntries = FXCollections.observableArrayList();
         HashMap<LocalDate, ArrayList<LocalTime>> pointing = emp.getWorkHour().getPointing();
 
-        Button addWorkHour = new Button("add workhour");
+        Button addWorkHour = new Button("Add Work Hour");
 
         addWorkHour.setOnAction(e -> {
             try {
                 WorkHourEntry newEntry = new WorkHourEntry(LocalDate.now(), LocalTime.parse("00:00"));
                 d.addNewWorkHour(entPort, emp.getUuid(), newEntry.getDate(), newEntry.getTime());
                 workHourEntries.add(newEntry);
-                Pointer.PrintAlert(String.format("creation of a new workhour for employee %s", emp.getEmpName()),
-                        "workhour added successfully !");
+                Pointer.PrintAlert(String.format("Creation of a new work hour for employee %s", emp.getEmpName()),
+                        "Work hour added successfully!");
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -75,10 +91,9 @@ public class EmployeePointerView {
         employeeTableView.setItems(workHourEntries);
 
         EmpView.getChildren().addAll(employeeTableView, addWorkHour);
-
         EmpView.setSpacing(10);
 
-        // remove a workhour
+        // Remove a work hour
         employeeTableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1 && event.getButton() == MouseButton.SECONDARY) {
                 WorkHourEntry selectedItem = employeeTableView.getSelectionModel().getSelectedItem();
@@ -94,15 +109,28 @@ public class EmployeePointerView {
         return EmpView;
     }
 
-    public static void loadAddWorkHour(String uuid, WorkHourEntry entry)
-    {
-        if (workHourEntries != null)
-        {
-            if (theCurrentEmpId.equals(uuid))
+    /**
+     * Adds a new work hour entry to the current list if the employee ID matches.
+     *
+     * @param uuid  the employee ID
+     * @param entry the work hour entry to add
+     */
+    public static void loadAddWorkHour(String uuid, WorkHourEntry entry) {
+        if (workHourEntries != null) {
+            if (theCurrentEmpId.equals(uuid)) {
                 workHourEntries.add(entry);
+            }
         }
     }
 
+    /**
+     * Creates a TableColumn for work hour times with edit functionality.
+     *
+     * @param entPort the enterprise port
+     * @param d       the data serialization handler
+     * @param emp     the employee
+     * @return a TableColumn for work hour times
+     */
     private static TableColumn<WorkHourEntry, String> getHourEntryStringTableColumn(String entPort, DataSerialize d, Employee emp) {
         TableColumn<WorkHourEntry, String> timesColumn = new TableColumn<>("Times");
         timesColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
@@ -110,11 +138,10 @@ public class EmployeePointerView {
         timesColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<WorkHourEntry, String>>() {
             @Override
             public void handle(TableColumn.CellEditEvent<WorkHourEntry, String> event) {
-                System.out.println("change of the time's employee workhour !");
+                System.out.println("Change of the time's employee work hour!");
                 WorkHourEntry entry = event.getRowValue();
                 String newHour = event.getNewValue();
-                if (UtilityWindowShowEnt.isValidTime(newHour))
-                {
+                if (UtilityWindowShowEnt.isValidTime(newHour)) {
                     try {
                         d.modifyTimeWorkHour(entPort, emp.getUuid(),
                                 entry.getDate(), entry.getTime(), newHour);
@@ -122,18 +149,26 @@ public class EmployeePointerView {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                } else
-                    Pointer.PrintAlert("modification failed ",
-                            "the value you enter for the hour is not valid");
+                } else {
+                    Pointer.PrintAlert("Modification failed",
+                            "The value you entered for the hour is not valid");
+                }
             }
         });
         return timesColumn;
     }
 
+    /**
+     * Creates a TableColumn for work hour dates with edit functionality.
+     *
+     * @param entPort the enterprise port
+     * @param d       the data serialization handler
+     * @param emp     the employee
+     * @return a TableColumn for work hour dates
+     */
     private static TableColumn<WorkHourEntry, String> getWorkHourEntryStringTableColumn(String entPort, DataSerialize d, Employee emp) {
         TableColumn<WorkHourEntry, String> dateColumn = new TableColumn<>("Day Of Work");
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-
         dateColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         dateColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<WorkHourEntry, String>>() {
             @Override
@@ -148,10 +183,10 @@ public class EmployeePointerView {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                } else
-                    Pointer.PrintAlert("modification failed ",
-                            "the value you enter for the date is not valid");
-
+                } else {
+                    Pointer.PrintAlert("Modification failed",
+                            "The value you entered for the date is not valid");
+                }
             }
         });
         return dateColumn;
