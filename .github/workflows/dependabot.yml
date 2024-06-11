@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/" # Location of your pom.xml file
+    schedule:
+      interval: "weekly"
