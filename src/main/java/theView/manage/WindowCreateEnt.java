@@ -1,6 +1,4 @@
 package theView.manage;
-
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -15,8 +13,6 @@ public class WindowCreateEnt {
     
     private LabeledTextFieldHBox newEnterpriseName;
 
-//    private LabeledTextFieldHBox newPasswd;
-
     private AllBtns allBtns;
 
     private LabeledTextFieldHBox newPort;
@@ -26,9 +22,7 @@ public class WindowCreateEnt {
     public WindowCreateEnt()
     {
         newEnterpriseName = new LabeledTextFieldHBox("Enterprise Name : ", "");
-//        newPasswd = new LabeledTextFieldHBox("Password : ", "");
         newEnterpriseName.setDisableToFalse();
-//        newPasswd.setDisableToFalse();
         allBtns = new AllBtns("Quit", "Create");
         newPort = new LabeledTextFieldHBox("Port : ", "");
         newPort.setDisableToFalse();
@@ -77,10 +71,6 @@ public class WindowCreateEnt {
     public LabeledTextFieldHBox getNewEnterpriseName() {
         return newEnterpriseName;
     }
-
-//    public LabeledTextFieldHBox getNewPasswd() {
-//        return newPasswd;
-//    }
 
     public AllBtns getAllBtns()
     {

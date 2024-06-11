@@ -4,8 +4,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
 /**
- * LabeledIntel is a custom JavaFX component that combines two labels within an HBox.
- * This component is useful for displaying a piece of information with a title.
+ * LabeledIntel is a custom JavaFX component that combines two labels within an HBox.<br>
+ * This component is useful for displaying a piece of information with a title.<br>
+ * Its attributes are:
+ * <ul>
+ *     <li>{@code title} Label : the title label</li>
+ *     <li>{@code intel} Label : the information label</li>
+ *     </ul>
  */
 public class LabeledIntel extends HBox {
 

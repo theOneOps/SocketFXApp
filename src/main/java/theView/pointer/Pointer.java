@@ -17,7 +17,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * The Pointer class is a JavaFX component that includes date and time display, employee selection, and buttons for configuration and check-in/out.
+ * The Pointer class is a JavaFX component that includes date and time display,
+ * employee selection, and buttons for configuration and check-in/out.<br>
+ * Its attributes are:
+ * <ul>
+ *     <li>{@code DateHours}: ComponentDateHours - Component to display the current date and time</li>
+ *     <li>{@code Employees}: LabeledComboHBox - Dropdown component for selecting employees</li>
+ *     <li>{@code logincheckInOut}: AllBtns - Buttons for configuration and check-in/out actions</li>
+ *     <li>{@code Quit}: Button - Button to quit the application</li>
+ *     <li>{@code config}: ChangePointerConfig - Configuration component for changing pointer settings</li>
+ * </ul>
  */
 public class Pointer extends VBox {
 

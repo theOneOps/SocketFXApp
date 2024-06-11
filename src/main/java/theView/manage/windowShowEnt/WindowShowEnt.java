@@ -70,38 +70,12 @@ public class WindowShowEnt {
 
             MenuBar theMenu = new MenuBar();
             final Menu SeeEmp = new Menu("See all Employees");
-            final Menu AllPointers = new Menu("All Pointers");
-
-            final RadioMenuItem seeEmps = new RadioMenuItem("See all employees");
-            final ToggleGroup toggleGroupOne = new ToggleGroup();
-            seeEmps.setToggleGroup(toggleGroupOne);
-
-            final RadioMenuItem savePointers = new RadioMenuItem("All save pointers");
-            final RadioMenuItem currentPointers = new RadioMenuItem("All current pointers");
-
-            final ToggleGroup toggleGroupTwo = new ToggleGroup();
-            savePointers.setToggleGroup(toggleGroupTwo);
-            currentPointers.setToggleGroup(toggleGroupTwo);
-
-            AllPointers.getItems().addAll(savePointers, currentPointers);
-            SeeEmp.getItems().add(seeEmps);
-            theMenu.getMenus().addAll(SeeEmp, AllPointers);
-
+            theMenu.getMenus().addAll(SeeEmp);
             contents = new HBox();
 
-            seeEmps.setOnAction(e -> {
+            SeeEmp.setOnAction(e -> {
                 contents.getChildren().clear();
                 contents.getChildren().addAll(EmployeeTableView.seeTableAllEmp(d, ent));
-            });
-
-            savePointers.setOnAction(e -> {
-                contents.getChildren().clear();
-                contents.getChildren().add(WorkHourTableView.seeTableAllPointers(ent, true));
-            });
-
-            currentPointers.setOnAction(e -> {
-                contents.getChildren().clear();
-                contents.getChildren().add(WorkHourTableView.seeTableAllPointers(ent, false));
             });
 
             VBox container = new VBox();

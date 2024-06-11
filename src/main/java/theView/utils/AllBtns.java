@@ -8,8 +8,14 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
 /**
- * AllBtns is a custom JavaFX component that creates a horizontal box containing up to three buttons.
- * It provides constructors for creating two or three buttons with optional action handlers.
+ * AllBtns is a custom JavaFX component that creates a horizontal box containing up to three buttons.<br>
+ * It provides constructors for creating two or three buttons with optional action handlers.<br>
+ * Its attributes are:
+ * <ul>
+ *     <li>{@code btn1} Button : the first button</li>
+ *     <li>{@code btn2} Button : the second button</li>
+ *     <li>{@code btn3} Button : the third button, (optional)</li>
+ *     </ul>
  */
 public class AllBtns extends HBox {
     private Button btn1; // The first button

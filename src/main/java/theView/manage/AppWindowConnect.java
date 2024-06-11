@@ -18,11 +18,7 @@ import theView.utils.LabeledTextFieldHBox;
 
 public class AppWindowConnect {
 
-    //  first window
-
     private LabeledComboHBox enterpriseName;
-
-//    private LabeledTextFieldHBox password;
 
     private Button BtnConnexion;
 
@@ -32,11 +28,6 @@ public class AppWindowConnect {
 
     private Stage stage;
 
-    private Button configureEnterprise;
-
-
-    // second window
-
     public Stage getStage() {
         return stage;
     }
@@ -45,9 +36,6 @@ public class AppWindowConnect {
     {
         enterpriseName = new LabeledComboHBox("Enterprise Name", new String[]{"Enterprise name",
                 "Enterprise 1", "Enterprise 2", "Enterprise 3"});
-//        password = new LabeledTextFieldHBox("Password", "");
-//        password.setPromptText("your password");
-//        password.setDisableToFalse();
         BtnConnexion = new Button("Connection");
         firstWindowAllBtns = new AllBtns("Quit","Config", "Create Enterprise");
     }
@@ -66,7 +54,7 @@ public class AppWindowConnect {
 
             Region spacer = new Region();
             VBox.setVgrow(spacer, Priority.ALWAYS);
-            //                                            password,
+
             container.getChildren().addAll(enterpriseName, BtnConnexion, spacer, firstWindowAllBtns);
 
             container.setSpacing(10);
@@ -98,16 +86,8 @@ public class AppWindowConnect {
         return enterpriseName;
     }
 
-//    public LabeledTextFieldHBox getPassword() {
-//        return password;
-//    }
-
     public Button getBtnConnexion() {
         return BtnConnexion;
-    }
-
-    public AllBtns getFirstWindowAllBtns() {
-        return firstWindowAllBtns;
     }
 
     public Button getQuitBtn() {

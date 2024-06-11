@@ -14,8 +14,15 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * This class represents a custom JavaFX component that displays the current date, time, and a rounded time.
- * <p>
- * The component updates the time every second.
+ * <p>The component updates the time every second.</p>
+ *
+ * Its attributes are:
+ * <ul>
+ *     <li>{@code data}: Label to display the current date</li>
+ *     <li>{@code hours}: Label to display the current hour</li>
+ *     <li>{@code roundHours}: Label to display the rounded hour</li>
+ *     <li>{@code time}: The current local time</li>
+ * </ul>
  */
 public class ComponentDateHours extends HBox {
     private Label date;      // Label to display the current date

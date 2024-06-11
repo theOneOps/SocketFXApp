@@ -6,8 +6,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
 /**
- * LabeledComboHBox is a custom JavaFX component that combines a label and a combo box within an HBox.
- * This component is useful for displaying a label next to a combo box for selecting items.
+ * LabeledComboHBox is a custom JavaFX component that combines a label and a combo box within an HBox.<br>
+ * This component is useful for displaying a label next to a combo box for selecting items.<br>
+ * Its attributes are:
+ * <ul>
+ *     <li>{@code LCBLabel} Label : the label component</li>
+ *     <li>{@code LCBComboBox} ComboBox : the combo box component</li>
+ *     </ul>
  */
 public class LabeledComboHBox extends HBox {
 

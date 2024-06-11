@@ -8,6 +8,11 @@ import javafx.scene.layout.HBox;
 /**
  * LabeledTextFieldHBox is a custom JavaFX component that combines a label and a text field within an HBox.
  * The text field can be enabled or disabled, and its size can be set.
+ * Its attributes are:
+ * <ul>
+ *     <li>{@code LTFLabel} Label : the label component</li>
+ *     <li>{@code LTFTextField} TextField : the text field component</li>
+ *  </ul>
  */
 public class LabeledTextFieldHBox extends HBox {
     private Label LTFLabel;      // The label component

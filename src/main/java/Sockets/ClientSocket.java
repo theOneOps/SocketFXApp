@@ -7,8 +7,32 @@ import java.net.SocketException;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * The ClientSocket class handles the client-side socket connection to a server.
- * It manages the connection, communication, and reconnection logic.
+ * The ClientSocket class handles the client-side socket connection to a server.<br>
+ * It manages the connection, communication, and reconnection logic.<br>
+ * It also sends ping messages to the server to keep the connection alive.<br>
+ * The class implements the Runnable interface to run the connection in a separate thread.<br>
+ * It also uses a CountDownLatch to synchronize threads.<br>
+ * Its attributes are:
+ * <ul>
+ *     <li>{@code ip} String: the IP address of the server</li>
+ *     <li>{@code port} int: the port number of the server</li>
+ *     <li>{@code clientSocket} Socket: the client socket</li>
+ *     <li>{@code in} BufferedReader: for reading messages from the server</li>
+ *     <li>{@code out} PrintWriter: for sending messages to the server</li>
+ *     <li>{@code currentEnt} Enterprise: the current enterprise object received from the server</li>
+ *     <li>{@code latch} CountDownLatch: to synchronize threads</li>
+ *     <li>{@code runningThreadPing} boolean: flag to control the ping thread</li>
+ *     <li>{@code serverConnected} boolean: flag to indicate server connection status</li>
+ *     <li>{@code pings} Thread: thread for sending ping messages</li>
+ *     <li>{@code readerThread} Thread: thread for reading server messages</li>
+ * </ul>
+ * @see Runnable
+ * @see CountDownLatch
+ * @see Thread
+ * @see Socket
+ * @see BufferedReader
+ * @see PrintWriter
+ * @see Enterprise
  */
 public class ClientSocket implements Runnable {
     private String ip; // IP address of the server

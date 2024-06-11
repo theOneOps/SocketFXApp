@@ -195,7 +195,6 @@ public class EmployeeTableView {
 
                 d.addNewEmployeeToEnterprise(ent.getEntname(), newEmp);
                 dataEmps.add(newEmp);
-                //PointerController.reloadEmployeesCombox(d.getEntByName(ent.getEntname()));
 
             } catch (IOException ex) {
                 throw new RuntimeException(ex);

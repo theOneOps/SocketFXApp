@@ -16,7 +16,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * This class provides the UI and functionality for changing pointer configuration parameters such as IP and port.
+ * This class provides the UI and functionality for changing pointer configuration parameters such as IP and port.<br>
+ * Its attributes are:
+ * <ul>
+ *     <li>{@code newPort} : LabeledTextFieldHBox- the UI component for entering a new port</li>
+ *     <li>{@code newIp} : LabeledTextFieldHBox - the UI component for entering a new IP address</li>
+ *     <li>{@code allBtns} : AllBtns - the UI component for action buttons (Quit, Save Configuration)</li>
+ *     <li>{@code openViewConfigPointer}: Boolean - a flag to check if the configuration window is open</li>
+ *     <li>{@code stage} : Stage - the stage for the configuration window</li>
+ * </ul>
  */
 public class ChangePointerConfig {
 

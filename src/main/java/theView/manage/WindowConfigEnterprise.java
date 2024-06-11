@@ -81,21 +81,8 @@ public class WindowConfigEnterprise {
         return newEnterpriseName;
     }
 
-    public AllBtns getAllBtns() {
-        return allBtns;
-    }
-
     public LabeledTextFieldHBox getNewPort() {
         return newPort;
-    }
-
-    public Boolean getOpenViewConfigEnt() {
-        return openViewConfigEnt;
-    }
-
-    public Button getQuit()
-    {
-        return allBtns.getBtn1();
     }
 
     public Button getSaveConfigBtn()

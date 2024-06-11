@@ -13,9 +13,32 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * The ServersSocket class is responsible for handling incoming client connections,
- * managing the communication between clients and the server, and processing
- * the received messages.
+ * <p>The ServersSocket class is responsible for handling incoming client connections,
+ * managing the communication between clients and the server, and processing the received messages.</p>
+ * <p>It contains a nested ConnectionHandler class that handles the communication with a single client.</p>
+ * <p>It implements the Runnable interface to run the server in a separate thread.</p>
+ * <p>It provides methods to start and shut down the server.</p>
+ * <p>It uses a ServerSocket to listen for incoming client connections and a thread pool to handle multiple clients concurrently.</p>
+ * <p>It uses a list of ConnectionHandler objects to keep track of all client connections.</p>
+ * <p>It uses a DataSerialize object to serialize and deserialize data.</p>
+ * <p>It uses a boolean flag to indicate whether the server is listening for connections.</p>
+ * <p>It uses a port number to listen on.</p>
+ * <p>It uses an ExecutorService to manage the thread pool.</p>
+ *
+ * Its attributes are:
+ * <ul>
+ *     <li>{@code serverPort} String : the port to listen on</li>
+ *     <li>{@code connections} List&lt;ConnectionHandler&gt; : the list of client connections</li>
+ *     <li>{@code data} DataSerialize : the data serializer</li>
+ *     <li>{@code server} ServerSocket : the server socket</li>
+ *     <li>{@code isListening} boolean : flag indicating whether the server is listening</li>
+ *     <li>{@code pool} ExecutorService : the thread pool</li>
+ *     </ul>
+ * @see ConnectionHandler
+ * @see Runnable
+ * @see DataSerialize
+ * @see ServerSocket
+ * @see ExecutorService
  */
 public class ServersSocket implements Runnable {
     private String serverPort;
