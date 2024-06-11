@@ -166,7 +166,12 @@ public class PointerController {
      * Starts the scheduled connection attempts.
      */
     public void startScheduledConnection() {
+        // If the scheduler is shutdown or terminated, create a new one
+        // the scheduler is responsible for the connection attempts
+        // so we need to make sure it is running
         if (scheduler.isShutdown() || scheduler.isTerminated()) {
+            // we create a new scheduler with a single thread hence the 1
+            // this is because we only need one thread to handle the connection attempts
             scheduler = Executors.newScheduledThreadPool(1);
         }
 
