@@ -35,5 +35,6 @@ jobs:
     - name: Run tests with Maven
       run: mvn -B test --file pom.xml
 
-    - name: Analyze dependencies
-      run: mvn dependency:analyze --file pom.xml
+    # Temporarily disable the dependency graph step
+    # - name: Update dependency graph
+    #   uses: advanced-security/maven-dependency-submission-action@v4.0.3
