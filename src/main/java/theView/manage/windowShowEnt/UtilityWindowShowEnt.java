@@ -7,8 +7,8 @@ import java.time.format.DateTimeParseException;
 /**
  * The UtilityWindowShowEnt class provides utility methods for validating date and time strings.
  */
-public class UtilityWindowShowEnt {
-
+public class UtilityWindowShowEnt
+{
     /**
      * Checks if the given time string is valid.
      *

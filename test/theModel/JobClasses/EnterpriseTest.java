@@ -1,54 +1,70 @@
 package theModel.JobClasses;
-import org.junit.Assert;
 
-import java.util.ArrayList;
+import org.junit.Assert;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * Test class for Enterprise.
+ * This class contains unit tests for the Enterprise class.
+ */
 public class EnterpriseTest {
 
+    // Initialize a test Enterprise object
     private Enterprise ent = new Enterprise("microsoft", "10000");
-//    private Enterprise ent = new Enterprise("microsoft", "micro", "10000");
-    private final Employee[] allEmps = {new Employee("ted", "mosby", "12:00", "17:30", ""),
-            new Employee("barney", "stinsky", "08:30", "20:30", "")};
 
-    @org.junit.Test
+    // Array of test Employee objects
+    private final Employee[] allEmps = {
+            new Employee("ted", "mosby", "12:00", "17:30", ""),
+            new Employee("barney", "stinsky", "08:30", "20:30", "")
+    };
+
+    /**
+     * Tests the getEntname method.
+     * Ensures that the enterprise name is correctly returned.
+     */
+    @Test
     public void getEntname() {
         assertEquals("microsoft", ent.getEntname());
     }
 
-    @org.junit.Test
+    /**
+     * Tests the getEntPort method.
+     * Ensures that the enterprise port is correctly returned.
+     */
+    @Test
     public void getEntPort() {
         assertEquals("10000", ent.getEntPort());
     }
 
-//    @org.junit.Test
-//    public void getEntpasswd() {
-//        assertEquals("micro", ent.getEntpasswd());
-//    }
-
-    @org.junit.Test
+    /**
+     * Tests the setEntname method.
+     * Ensures that the enterprise name is correctly set.
+     */
+    @Test
     public void setEntname() {
         ent.setEntname("yahoo");
         assertEquals("yahoo", ent.getEntname());
     }
 
-//    @org.junit.Test
-//    public void setEntpasswd() {
-//        ent.setEntpasswd("yah");
-//        assertEquals("yah", ent.getEntpasswd());
-//
-//    }
-
-    @org.junit.Test
+    /**
+     * Tests the setEntPort method.
+     * Ensures that the enterprise port is correctly set.
+     */
+    @Test
     public void setEntPort() {
         ent.setEntPort("8000");
         assertEquals("8000", ent.getEntPort());
     }
 
-    @org.junit.Test
+    /**
+     * Tests the addEmployee method.
+     * Ensures that employees are correctly added to the enterprise.
+     */
+    @Test
     public void addEmployee() {
-        for (Employee emp: allEmps)
+        for (Employee emp : allEmps)
             ent.addEmployee(emp);
 
         assertEquals(2, ent.getEmployees().size());
@@ -56,9 +72,13 @@ public class EnterpriseTest {
         assertNotEquals(ent.getEmployees().get(allEmps[1].getUuid()).getUuid(), allEmps[0].getUuid());
     }
 
-    @org.junit.Test
+    /**
+     * Tests the removeEmployee method.
+     * Ensures that employees are correctly removed from the enterprise.
+     */
+    @Test
     public void removeEmployee() {
-        for (Employee emp: allEmps)
+        for (Employee emp : allEmps)
             ent.addEmployee(emp);
 
         ent.removeEmployee(allEmps[0]);
@@ -66,10 +86,13 @@ public class EnterpriseTest {
         assertNull(ent.getEmployees().get(allEmps[0].getUuid()));
     }
 
-    @org.junit.Test
-    public void getAllEmployeesName()
-    {
-        for (Employee emp: allEmps)
+    /**
+     * Tests the getAllEmployeesName method.
+     * Ensures that all employee names are correctly returned.
+     */
+    @Test
+    public void getAllEmployeesName() {
+        for (Employee emp : allEmps)
             ent.addEmployee(emp);
 
         assertEquals(allEmps[0].getUuid(), ent.getEmployees().get(allEmps[0].getUuid()).getUuid());

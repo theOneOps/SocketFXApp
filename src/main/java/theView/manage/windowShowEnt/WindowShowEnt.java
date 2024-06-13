@@ -149,8 +149,36 @@ public class WindowShowEnt {
 
             MenuBar theMenu = new MenuBar();
 
+            Menu SeeEmpDailyPointers = new Menu("See daily Pointers");
+            Menu AllEmpPointers = new Menu("See all Pointers");
+
+            MenuItem seeDaily = new MenuItem("See daily Pointers");
+            MenuItem seeAll = new MenuItem("See all Pointers");
+
+            SeeEmpDailyPointers.getItems().add(seeDaily);
+            AllEmpPointers.getItems().add(seeAll);
+            theMenu.getMenus().addAll(SeeEmpDailyPointers, AllEmpPointers);
+
             VBox empContents = new VBox();
             empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entPort, d, emp, false));
+
+            seeDaily.setOnAction(event -> {
+                empContents.getChildren().clear();
+                try {
+                    empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entPort, d, emp, false));
+                } catch (ClassNotFoundException | IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            seeAll.setOnAction(event -> {
+                empContents.getChildren().clear();
+                try {
+                    empContents.getChildren().addAll(EmployeePointerView.getEmployeePointers(entPort, d, emp, true));
+                } catch (ClassNotFoundException|IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
             Button quitWindow = new Button("Quit");
             quitWindow.setOnAction(e -> {

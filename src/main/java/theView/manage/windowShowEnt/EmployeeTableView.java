@@ -215,7 +215,6 @@ public class EmployeeTableView {
 
                 d.addNewEmployeeToEnterprise(ent.getEntname(), newEmp);
                 dataEmps.add(newEmp);
-                //Pointer.PrintAlert("Reload employees combobox");
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }

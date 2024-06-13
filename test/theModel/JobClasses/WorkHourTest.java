@@ -9,9 +9,17 @@ import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
+/**
+ * Test class for WorkHour.
+ * This class contains unit tests for the WorkHour class.
+ */
 public class WorkHourTest {
     private final WorkHour workHour = new WorkHour();
 
+    /**
+     * Tests the addWorkHour method.
+     * Ensures that work hours are correctly added to the WorkHour instance.
+     */
     @Test
     public void testAddWorkHour() {
         LocalDate date = LocalDate.of(2023, 6, 5);
@@ -24,6 +32,10 @@ public class WorkHourTest {
         assertTrue(pointing.get(date).contains(time));
     }
 
+    /**
+     * Tests the changeLocalTime method.
+     * Ensures that a specific work hour can be changed to a new time.
+     */
     @Test
     public void testChangeLocalTime() {
         LocalDate date = LocalDate.of(2023, 6, 5);
@@ -40,6 +52,10 @@ public class WorkHourTest {
         assertTrue(pointing.get(date).contains(newTime));
     }
 
+    /**
+     * Tests the changeDateWorkHour method.
+     * Ensures that a specific work hour can be moved to a new date.
+     */
     @Test
     public void testChangeDateWorkHour() {
         LocalDate oldDate = LocalDate.of(2023, 6, 5);
@@ -56,6 +72,10 @@ public class WorkHourTest {
         assertTrue(pointing.get(newDate).contains(time));
     }
 
+    /**
+     * Tests the removeLocalTime method.
+     * Ensures that a specific work hour can be removed.
+     */
     @Test
     public void testRemoveLocalTime() {
         LocalDate date = LocalDate.of(2023, 6, 5);
@@ -70,6 +90,10 @@ public class WorkHourTest {
         assertFalse(pointing.get(date).contains(time));
     }
 
+    /**
+     * Tests the toString method.
+     * Ensures that the WorkHour instance is correctly converted to a string.
+     */
     @Test
     public void testToString() {
         LocalDate date1 = LocalDate.of(2023, 6, 5);
