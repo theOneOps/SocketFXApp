@@ -16,13 +16,13 @@ public class PointerMain extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws IOException, ClassNotFoundException {
+    public void start(Stage primaryStage) throws IOException, ClassNotFoundException, InterruptedException {
         Pointer pointer = new Pointer(e -> {
             primaryStage.close();
         });
 
         DataSerialize dataSerialize = new DataSerialize();
-        PointerController pointerController = new PointerController(pointer, dataSerialize, primaryStage);
+        PointerController pointerController = new PointerController(pointer, primaryStage);
         Scene scene = new Scene(pointer, 450, 200); // create a scene with a specific width and height
         primaryStage.setTitle("Time tracker Emulator");
         primaryStage.setScene(scene);

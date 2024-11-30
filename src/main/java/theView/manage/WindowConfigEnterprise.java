@@ -16,8 +16,6 @@ public class WindowConfigEnterprise {
 
     private LabeledTextFieldHBox newEnterpriseName;
 
-    private LabeledTextFieldHBox newPasswd;
-
     private LabeledTextFieldHBox newPort;
 
     private AllBtns allBtns;
@@ -29,9 +27,7 @@ public class WindowConfigEnterprise {
     public WindowConfigEnterprise()
     {
         newEnterpriseName = new LabeledTextFieldHBox("new Enterprise Name : ", "");
-        newPasswd = new LabeledTextFieldHBox("new Password : ", "");
         newEnterpriseName.setDisableToFalse();
-        newPasswd.setDisableToFalse();
         allBtns = new AllBtns("Quit", "Save Configuration");
         newPort = new LabeledTextFieldHBox("Port : ", "");
         newPort.setDisableToFalse();
@@ -58,12 +54,11 @@ public class WindowConfigEnterprise {
             container.setPadding(new Insets(10));
 
             newEnterpriseName.setLTFTextFieldValue(oldEnt.getEntname());
-            newPasswd.setLTFTextFieldValue(oldEnt.getEntpasswd());
             newPort.setLTFTextFieldValue(oldEnt.getEntPort());
 
-            container.getChildren().addAll(newEnterpriseName, newPasswd, newPort,spacer, allBtns);
+            container.getChildren().addAll(newEnterpriseName, newPort,spacer, allBtns);
 
-            Scene scene = new Scene(container, 400, 200);
+            Scene scene = new Scene(container, 400, 120);
 
             stage.setScene(scene);
 
@@ -84,10 +79,6 @@ public class WindowConfigEnterprise {
 
     public LabeledTextFieldHBox getNewEnterpriseName() {
         return newEnterpriseName;
-    }
-
-    public LabeledTextFieldHBox getNewPasswd() {
-        return newPasswd;
     }
 
     public AllBtns getAllBtns() {
